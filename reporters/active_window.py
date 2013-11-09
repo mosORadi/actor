@@ -8,16 +8,24 @@ from plugins import IReporter
 class ActiveWindowReporter(IReporter):
 
     def report(self):
+        name = None
+        process_name = None
+        process_command = None
+
         screen = wnck.screen_get_default()
         screen.force_update()
         while gtk.events_pending():
             gtk.main_iteration()
 
-        active_window = screen.get_active_window()
-        process_table = psi.process.ProcessTable()
+        if screen:
+            active_window = screen.get_active_window()
 
-        name = active_window.get_name()
-        process_name = process_table.get(active_window.get_pid()).name
-        process_command = process_table.get(active_window.get_pid()).command
+            if active_window:
+                name = active_window.get_name()
+                pid = active_window.get_pid()
+
+                process_table = psi.process.ProcessTable()
+                process_name = process_table.get(pid).name
+                process_command = process_table.get(pid).command
 
         return (name, process_name, process_command)
