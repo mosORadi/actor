@@ -1,0 +1,9 @@
+[Core]
+Name = Time Receiver
+Module = time
+
+[Documentation]
+Author = Tomas babej
+Version = 0.1
+Website = http://tomasbabej.me
+Description = Returns active window using wnck
