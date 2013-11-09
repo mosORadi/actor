@@ -5,7 +5,7 @@ import psi.process
 from plugins import IReporter
 
 
-class ActiveWindow(IReporter):
+class ActiveWindowReporter(IReporter):
 
     def report(self):
         screen = wnck.screen_get_default()

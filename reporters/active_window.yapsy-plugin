@@ -1,6 +1,6 @@
 [Core]
 Name = Active Window
-Module = active
+Module = active_window
 
 [Documentation]
 Author = Tomas babej
