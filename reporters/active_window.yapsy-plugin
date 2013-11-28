@@ -1,5 +1,5 @@
 [Core]
-Name = Active Window
+Name = Active Window Reporter
 Module = active_window
 
 [Documentation]

@@ -1,5 +1,5 @@
 [Core]
-Name = Signal Receiver
+Name = Signal Reporter
 Module = signal
 
 [Documentation]
