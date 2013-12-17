@@ -101,9 +101,10 @@ class Activity(object):
                 activity.reporters.append(reporter)
 
         for checker_info in checkers_info:
+            print checker_info
             for plugin_name, options in checker_info.iteritems():
                 options = options or {}
-
+                print plugin_name
                 checker_plugin = actor.plugin_manager.getPluginByName(
                                     plugin_name,
                                     category="Checker").plugin_object

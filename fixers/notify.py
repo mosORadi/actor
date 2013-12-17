@@ -4,6 +4,15 @@ from plugins import IFixer
 
 
 class NotifyFixer(IFixer):
+    """
+    Simple fixer, that sends a D-Bus notification.
+
+    Accepted options:
+      - message : Text of the message sent
+    """
+
+    def __init__(self, **options):
+        self.message = options.get('message', '')
 
     def notify(self, body, headline='AcTor Ready!', app_name='AcTor',
         app_icon='', timeout=50000, actions=["one", "two"],
@@ -19,4 +28,4 @@ class NotifyFixer(IFixer):
                 headline, body, actions, hints, timeout)
 
     def fix(self, **data):
-        self.notify("This is a test notification!")
+        self.notify(self.message)
