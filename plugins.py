@@ -7,8 +7,13 @@ class IReporter(IPlugin):
     export_as = None
 
     def __init__(self, **options):
-        self.options = options
+        if 'export_as' in options:
+            assert type(options['export_as']) == str
+            self.run_fixers = options['export_as']
+            del options['export_as']
+
         assert self.export_as is not None
+        self.options = options
 
     def report(self):
         """Returns user activity value"""
@@ -18,8 +23,28 @@ class IReporter(IPlugin):
 class IChecker(IPlugin):
     """Evaluates user activity depending on the input from the responders"""
 
+    run_fixers = None
+
     def __init__(self, **options):
+        if 'run_fixers' in options:
+            assert type(options['run_fixers']) == list
+            self.run_fixers = options['run_fixers']
+            del options['run_fixers']
+
         self.options = options
+
+
+    def does_run(self, fixer):
+        """
+        Evaluates whether this checker should cause running of the fixer
+        plugin passed as argument.
+
+        If no run_fixers list attribute is specified, every fixers should be 
+        run.
+        If it is, only fixers speciefied in the run_fixers list should be run.
+        """
+
+        return run_fixers is None or fixer.export_as in self.run_fixers
 
     def check(self, *reports):
         """
@@ -36,6 +61,13 @@ class IChecker(IPlugin):
 
 class IFixer(IPlugin):
     def __init__(self, **options):
+        if 'export_as' in options:
+            assert type(options['export_as']) == str
+            self.run_fixers = options['export_as']
+            del options['export_as']
+
+        assert self.export_as is not None
+
         self.options = options
 
     def fix(self, *data):

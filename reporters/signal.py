@@ -4,6 +4,7 @@ import dbus
 
 class DBusSignalReporter(IReporter):
     signal = None
+    export_as = 'signal'
 
     def __init__(self):
         super(IReporter, self).__init__()

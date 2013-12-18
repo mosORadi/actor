@@ -11,6 +11,8 @@ class NotifyFixer(IFixer):
       - message : Text of the message sent
     """
 
+    export_as = "notify"
+
     def __init__(self, **options):
         self.message = options.get('message', '')
 
