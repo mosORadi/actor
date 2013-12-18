@@ -7,6 +7,8 @@ from plugins import IReporter
 
 class ActiveWindowReporter(IReporter):
 
+    export_as = 'active_window'
+
     def report(self):
         name = None
         process_name = None

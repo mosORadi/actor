@@ -5,6 +5,8 @@ import dbus
 class HamsterActivityReporter(IReporter):
     activity = None
 
+    export_as = 'hamster'
+
     def __init__(self):
         super(IReporter, self).__init__()
         self.bus = dbus.SessionBus()

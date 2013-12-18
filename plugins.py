@@ -3,8 +3,12 @@ from yapsy.IPlugin import IPlugin
 
 class IReporter(IPlugin):
     """Reports user activity to the AcTor"""
+
+    export_as = None
+
     def __init__(self, **options):
         self.options = options
+        assert self.export_as is not None
 
     def report(self):
         """Returns user activity value"""
