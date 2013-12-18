@@ -101,10 +101,8 @@ class Activity(object):
                 activity.reporters.append(reporter)
 
         for checker_info in checkers_info:
-            print checker_info
             for plugin_name, options in checker_info.iteritems():
                 options = options or {}
-                print plugin_name
                 checker_plugin = actor.plugin_manager.getPluginByName(
                                     plugin_name,
                                     category="Checker").plugin_object
@@ -143,9 +141,21 @@ if __name__ == '__main__':
         time.sleep(5)
 
         for activity in actor.activities:
-            print activity
 
-            reports = [reporter.report() for reporter in activity.reporters]
-            if any(checker.check(*reports) for checker in activity.checkers):
-                for fixer in activity.fixers:
-                    fixer.fix()
+            reports = {reporter.export_as:reporter.report()
+                       for reporter in activity.reporters}
+
+            fixers_to_run = {fixer.export_as:False
+                             for fixer in activity.fixers}
+
+            # Determine which fixers should be run
+            for checker in activity.checkers:
+                if checker.check(**reports):
+                    for fixer in activity.fixers:
+                        if checker.does_run(fixer):
+                            fixers_to_run[fixer.export_as] = True
+
+            # Run all the fixers necessary
+            for fixer in activity.fixers:
+                 if fixers_to_run[fixer.export_as]:
+                     fixer.fix()
