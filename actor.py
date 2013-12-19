@@ -146,20 +146,17 @@ if __name__ == '__main__':
 
         for activity in actor.activities:
 
+            # Generate reports
             reports = {reporter.export_as:reporter.report()
                        for reporter in activity.reporters}
 
-            fixers_to_run = {fixer.export_as:False
-                             for fixer in activity.fixers}
+            # Determine which checkers approve the situation
+            active_checkers = [checker.export_as
+                               for checker in activity.checkers
+                               if checker.check(**reports)]
 
-            # Determine which fixers should be run
-            for checker in activity.checkers:
-                if checker.check(**reports):
-                    for fixer in activity.fixers:
-                        if checker.does_run(fixer):
-                            fixers_to_run[fixer.export_as] = True
-
-            # Run all the fixers necessary
+            # Run all the fixers that were triggered
+            # By default fixer needs all the checkers defined to be active
             for fixer in activity.fixers:
-                 if fixers_to_run[fixer.export_as]:
+                 if set(fixer.triggered_by).issubset(set(active_checkers)):
                      fixer.fix()
