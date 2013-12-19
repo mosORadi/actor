@@ -97,7 +97,7 @@ class Activity(object):
                                     plugin_name,
                                     category="Reporter").plugin_object
                 reporter = copy.deepcopy(reporter_plugin)
-                reporter.__init__(**options)
+                reporter.setup(**options)
                 activity.reporters.append(reporter)
 
         for checker_info in checkers_info:
@@ -107,19 +107,23 @@ class Activity(object):
                                     plugin_name,
                                     category="Checker").plugin_object
                 checker = copy.deepcopy(checker_plugin)
-                checker.__init__(**options)
+                checker.setup(**options)
 
                 activity.checkers.append(checker)
+
+        all_checker_names = [checker.export_as for checker in activity.checkers]
 
         for fixer_info in fixers_info:
             for plugin_name, options in fixer_info.iteritems():
                 options = options or {}
+                if 'triggered_by' not in options:
+                    options['triggered_by'] = all_checker_names
 
                 fixer_plugin = actor.plugin_manager.getPluginByName(
                                     plugin_name,
                                     category="Fixer").plugin_object
                 fixer = copy.deepcopy(fixer_plugin)
-                fixer.__init__(**options)
+                fixer.setup(**options)
 
                 activity.fixers.append(fixer)
 

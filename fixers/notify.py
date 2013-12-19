@@ -12,8 +12,10 @@ class NotifyFixer(IFixer):
     """
 
     export_as = "notify"
+    last_notification = 0
 
-    def __init__(self, **options):
+    def setup(self, **options):
+        super(NotifyFixer, self).setup(**options)
         self.message = options.get('message', '')
 
     def notify(self, body, headline='AcTor Ready!', app_name='AcTor',

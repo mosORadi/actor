@@ -15,10 +15,9 @@ class TimeIntervalChecker(IChecker):
       - end : The end of the interval, H:M format
     """
 
-    def __init__(self, **options):
-        if options == {}:
-            return
+    export_as = 'time_interval'
 
+    def setup(self, **options):
         # This saves the time in the timestamp of the following form:
         #     datetime.datetime(1900, 1, 1, 12, 23)
         self.start = datetime.datetime.strptime(str(options['start']), "%H.%M")

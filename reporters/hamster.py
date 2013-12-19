@@ -7,8 +7,8 @@ class HamsterActivityReporter(IReporter):
 
     export_as = 'hamster'
 
-    def __init__(self):
-        super(IReporter, self).__init__()
+    def setup(self):
+        super(IReporter, self).setup()
         self.bus = dbus.SessionBus()
         self.bus.add_signal_receiver(
             self.get_current_activity,

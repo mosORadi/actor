@@ -12,5 +12,7 @@ class TautologyChecker(IChecker):
     None.
     """
 
+    export_as = 'tautology'
+
     def check(self, **reports):
         return True

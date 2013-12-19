@@ -6,7 +6,7 @@ class IReporter(IPlugin):
 
     export_as = None
 
-    def __init__(self, **options):
+    def setup(self, **options):
         if 'export_as' in options:
             assert type(options['export_as']) == str
             self.run_fixers = options['export_as']
@@ -23,28 +23,16 @@ class IReporter(IPlugin):
 class IChecker(IPlugin):
     """Evaluates user activity depending on the input from the responders"""
 
-    run_fixers = None
+    def setup(self, **options):
+        if 'export_as' in options:
+            assert type(options['export_as']) == str
+            self.run_fixers = options['export_as']
+            del options['export_as']
 
-    def __init__(self, **options):
-        if 'run_fixers' in options:
-            assert type(options['run_fixers']) == list
-            self.run_fixers = options['run_fixers']
-            del options['run_fixers']
+        assert self.export_as is not None
 
         self.options = options
 
-
-    def does_run(self, fixer):
-        """
-        Evaluates whether this checker should cause running of the fixer
-        plugin passed as argument.
-
-        If no run_fixers list attribute is specified, every fixers should be 
-        run.
-        If it is, only fixers speciefied in the run_fixers list should be run.
-        """
-
-        return run_fixers is None or fixer.export_as in self.run_fixers
 
     def check(self, *reports):
         """
@@ -60,11 +48,17 @@ class IChecker(IPlugin):
 
 
 class IFixer(IPlugin):
-    def __init__(self, **options):
-        if 'export_as' in options:
-            assert type(options['export_as']) == str
-            self.run_fixers = options['export_as']
-            del options['export_as']
+
+    def setup(self, **options):
+        """
+        The triggered_by option must be passed via the framework.
+        """
+
+        assert 'triggered_by' in options
+        self.triggered_by = options['triggered_by']
+        assert type(self.triggered_by) == list
+
+        del options['triggered_by']
 
         assert self.export_as is not None
 
