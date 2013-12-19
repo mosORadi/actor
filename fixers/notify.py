@@ -7,29 +7,39 @@ class NotifyFixer(IFixer):
     """
     Simple fixer, that sends a D-Bus notification.
 
-    Accepted options:
-      - message : Text of the message sent
+    Accepted options (defaults in parentheses):
+      - headline: Headline of the notification (AcTor Alert!)
+      - message : Text of the message sent (Sample message!)
+      - app_name: Application name (AcTor)
+      - timeout : Timeout of the notification (0)
+      - app_icon: Icon of the notification ('')
     """
 
     export_as = "notify"
     last_notification = 0
 
-    def setup(self, **options):
-        super(NotifyFixer, self).setup(**options)
-        self.message = options.get('message', '')
+    def notify(self):
 
-    def notify(self, body, headline='AcTor Ready!', app_name='AcTor',
-        app_icon='', timeout=50000, actions=["one", "two"],
-        hints=dict(one="shit"), replaces_id=0):
-        _bus_name = 'org.freedesktop.Notifications'
-        _object_path = '/org/freedesktop/Notifications'
-        _interface_name = _bus_name
+        headline = self.options.get('headline', 'AcTor Alert!')
+        app_name = self.options.get('app_name', 'AcTor')
+        app_icon = self.options.get('app_icon', '')
+        timeout = self.options.get('timeout', 0)
+        message = self.options.get('message', 'Sample message!')
+
+        replaces_id = self.last_notification
+        
+
+        bus_name = 'org.freedesktop.Notifications'
+        object_path = '/org/freedesktop/Notifications'
+        interface_name = bus_name
 
         session_bus = dbus.SessionBus()
-        obj = session_bus.get_object(_bus_name, _object_path)
-        interface = dbus.Interface(obj, _interface_name)
-        interface.Notify(app_name, replaces_id, app_icon,
-                headline, body, actions, hints, timeout)
+        dbus_object = session_bus.get_object(bus_name, object_path)
+        interface = dbus.Interface(dbus_object, interface_name)
 
-    def fix(self, **data):
-        self.notify(self.message)
+        self.last_notification = interface.Notify(app_name, replaces_id, app_icon,
+                                                  headline, message, [], {},
+                                                  timeout)
+
+    def fix(self):
+        self.notify()
