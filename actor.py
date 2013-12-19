@@ -6,6 +6,7 @@ import sys
 import logging
 import time
 
+import gobject
 import dbus
 import dbus.mainloop.glib
 import yaml
@@ -129,7 +130,25 @@ class Activity(object):
 
         return activity
 
+def check_everything():
+    for activity in actor.activities:
 
+        # Generate reports
+        reports = {reporter.export_as:reporter.report()
+                   for reporter in activity.reporters}
+
+        # Determine which checkers approve the situation
+        active_checkers = [checker.export_as
+                           for checker in activity.checkers
+                           if checker.check(**reports)]
+
+        # Run all the fixers that were triggered
+        # By default fixer needs all the checkers defined to be active
+        for fixer in activity.fixers:
+             if set(fixer.triggered_by).issubset(set(active_checkers)):
+                 fixer.fix()
+
+    return True
 if __name__ == '__main__':
     stdout_handler = logging.StreamHandler(sys.stdout)
     rootLogger = logging.getLogger('yapsy')
@@ -140,23 +159,8 @@ if __name__ == '__main__':
     actor = Actor()
 
     actor.load_configuration()
+    loop = gobject.MainLoop()
+    gobject.timeout_add(2000, check_everything)
+    loop.run()
 
-    while True:
-        time.sleep(5)
 
-        for activity in actor.activities:
-
-            # Generate reports
-            reports = {reporter.export_as:reporter.report()
-                       for reporter in activity.reporters}
-
-            # Determine which checkers approve the situation
-            active_checkers = [checker.export_as
-                               for checker in activity.checkers
-                               if checker.check(**reports)]
-
-            # Run all the fixers that were triggered
-            # By default fixer needs all the checkers defined to be active
-            for fixer in activity.fixers:
-                 if set(fixer.triggered_by).issubset(set(active_checkers)):
-                     fixer.fix()
