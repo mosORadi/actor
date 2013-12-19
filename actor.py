@@ -95,8 +95,8 @@ class Activity(object):
 
                 reporter_plugin = actor.plugin_manager.getPluginByName(
                                     plugin_name,
-                                    category="Reporter").plugin_object
-                reporter = copy.deepcopy(reporter_plugin)
+                                    category="Reporter").plugin_object.__class__
+                reporter = reporter_plugin()
                 reporter.setup(**options)
                 activity.reporters.append(reporter)
 
@@ -105,8 +105,8 @@ class Activity(object):
                 options = options or {}
                 checker_plugin = actor.plugin_manager.getPluginByName(
                                     plugin_name,
-                                    category="Checker").plugin_object
-                checker = copy.deepcopy(checker_plugin)
+                                    category="Checker").plugin_object.__class__
+                checker = checker_plugin()
                 checker.setup(**options)
 
                 activity.checkers.append(checker)
@@ -121,8 +121,8 @@ class Activity(object):
 
                 fixer_plugin = actor.plugin_manager.getPluginByName(
                                     plugin_name,
-                                    category="Fixer").plugin_object
-                fixer = copy.deepcopy(fixer_plugin)
+                                    category="Fixer").plugin_object.__class__
+                fixer = fixer_plugin()
                 fixer.setup(**options)
 
                 activity.fixers.append(fixer)
