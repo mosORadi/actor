@@ -1,0 +1,9 @@
+[Core]
+Name = Lock Screen Fixer
+Module = lock_screen
+
+[Documentation]
+Author = Tomas Babej
+Version = 0.1
+Website = http://tomasbabej.me
+Description = Sends a notification to the session bus
