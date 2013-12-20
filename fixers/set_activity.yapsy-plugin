@@ -1,0 +1,9 @@
+[Core]
+Name = Set Activity Fixer 
+Module = set_activity
+
+[Documentation]
+Author = Tomas Babej
+Version = 0.1
+Website = http://tomasbabej.me
+Description = Sents a activity in Hamster
