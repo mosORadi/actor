@@ -1,0 +1,9 @@
+[Core]
+Name = Suspend Fixer
+Module = suspend
+
+[Documentation]
+Author = Tomas Babej
+Version = 0.1
+Website = http://tomasbabej.me
+Description = Suspends the workstation via the DBus
