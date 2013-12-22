@@ -9,7 +9,7 @@ class IReporter(IPlugin):
     def setup(self, **options):
         if 'export_as' in options:
             assert type(options['export_as']) == str
-            self.run_fixers = options['export_as']
+            self.export_as = options['export_as']
             del options['export_as']
 
         assert self.export_as is not None
@@ -26,7 +26,7 @@ class IChecker(IPlugin):
     def setup(self, **options):
         if 'export_as' in options:
             assert type(options['export_as']) == str
-            self.run_fixers = options['export_as']
+            self.export_as = options['export_as']
             del options['export_as']
 
         assert self.export_as is not None
