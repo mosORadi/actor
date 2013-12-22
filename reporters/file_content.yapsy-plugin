@@ -1,0 +1,9 @@
+[Core]
+Name = File Content Reporter
+Module = file_content
+
+[Documentation]
+Author = Tomas babej
+Version = 0.1
+Website = http://tomasbabej.me
+Description = Returns contents of a file
