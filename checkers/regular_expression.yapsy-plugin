@@ -1,0 +1,9 @@
+[Core]
+Name = Regular Expression Checker
+Module = regular_expression
+
+[Documentation]
+Author = Tomas babej
+Version = 0.1
+Website = http://tomasbabej.me
+Description = Returns true if any occurence of the input regular expression is found in the text
