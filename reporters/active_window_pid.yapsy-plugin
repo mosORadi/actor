@@ -1,6 +1,6 @@
 [Core]
-Name = Active Window Reporter
-Module = active_window
+Name = Active Window Pid Reporter
+Module = active_window_pid
 
 [Documentation]
 Author = Tomas babej
