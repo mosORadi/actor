@@ -16,8 +16,8 @@ class RegularExpressionChecker(IChecker):
 
     export_as = 'regular_expression'
 
-    def setup(self, **options):
-        super(RegularExpressionChecker, self).setup(**options)
+    def __init__(self, **options):
+        super(RegularExpressionChecker, self).__init__(**options)
         self.re = re.compile(self.options.get('regexp'))
 
     def check(self, **reports):

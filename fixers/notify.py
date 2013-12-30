@@ -16,7 +16,10 @@ class NotifyFixer(IFixer):
     """
 
     export_as = "notify"
-    last_notification = 0
+
+    def __init__(self, **options):
+        super(NotifyFixer, self).__init__(**options)
+        self.last_notification = 0
 
     def notify(self):
 
@@ -28,7 +31,6 @@ class NotifyFixer(IFixer):
 
         replaces_id = self.last_notification
         
-
         bus_name = 'org.freedesktop.Notifications'
         object_path = '/org/freedesktop/Notifications'
         interface_name = bus_name

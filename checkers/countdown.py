@@ -6,8 +6,9 @@ import datetime
 class CountdownChecker(IChecker):
     export_as = 'countdown'
 
-    def __init__(self):
-        super(CountdownChecker, self).__init__()
+    def __init__(self, **options):
+        super(CountdownChecker, self).__init__(**options)
+
         self.bus = dbus.SessionBus()
         self.bus.add_signal_receiver(
             self.start_countdown,
@@ -16,8 +17,6 @@ class CountdownChecker(IChecker):
 
         self.countdown_start = None
 
-    def setup(self, **options):
-        super(CountdownChecker, self).setup(**options)
         delay_seconds = self.options.get('delay', 300)
         self.delta = datetime.timedelta(0, delay_seconds, 0)
 

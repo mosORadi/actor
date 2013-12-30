@@ -7,8 +7,8 @@ class FileContentReporter(IReporter):
 
     export_as = 'file_content'
 
-    def setup(self, **options):
-        super(FileContentReporter, self).setup(**options)
+    def __init__(self, **options):
+        super(FileContentReporter, self).__init__(**options)
         self.path = self.options.get('path', '')
 
     def report(self):

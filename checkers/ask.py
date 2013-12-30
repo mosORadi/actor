@@ -16,14 +16,11 @@ class NotificationAskChecker(IChecker):
 
     export_as = "ask"
 
-    def __init__(self):
-        super(NotificationAskChecker, self).__init__()
+    def __init__(self, **options):
+        super(NotificationAskChecker, self).__init__(**options)
         self.last_notification = 0
         self.answer = ''
-        self.bus = None
 
-    def setup(self, **options):
-        super(NotificationAskChecker, self).setup(**options)
         self.bus = dbus.SessionBus()
         self.bus.add_signal_receiver(self.set_answer, path='/org/freedesktop/Notifications', signal_name='ActionInvoked')
         self.question = self.options.get('question', '')

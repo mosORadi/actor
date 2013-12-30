@@ -16,8 +16,8 @@ class CountdownTriggerSignal(dbus.service.Object):
 class CountdownTriggerFixer(IFixer):
     export_as = 'countdown'
 
-    def __init__(self):
-        super(CountdownTriggerFixer, self).__init__()
+    def __init__(self, **options):
+        super(CountdownTriggerFixer, self).__init__(**options)
         self.signal = CountdownTriggerSignal()
 
     def fix(self):

@@ -12,7 +12,7 @@ class IReporter(object):
 
     export_as = None
 
-    def setup(self, **options):
+    def __init__(self, **options):
         if 'export_as' in options:
             assert type(options['export_as']) == str
             self.export_as = options['export_as']
@@ -31,7 +31,7 @@ class IChecker(object):
 
     __metaclass__ = PluginMount
 
-    def setup(self, **options):
+    def __init__(self, **options):
         if 'export_as' in options:
             assert type(options['export_as']) == str
             self.export_as = options['export_as']
@@ -59,7 +59,7 @@ class IFixer(object):
 
     __metaclass__ = PluginMount
 
-    def setup(self, **options):
+    def __init__(self, **options):
         """
         The triggered_by option must be passed via the framework.
         """

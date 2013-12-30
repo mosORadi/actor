@@ -17,12 +17,11 @@ class SetHamsterActivityFixer(IFixer):
     object_path = '/org/gnome/Hamster'
     interface_name = bus_name
 
-    def __init__(self):
+    def __init__(self, **options):
+        super(SetHamsterActivityFixer, self).__init__(**options)
         self.bus = dbus.SessionBus()
         dbus_object = self.bus.get_object(self.bus_name, self.object_path)
         self.interface = dbus.Interface(dbus_object, self.interface_name)
-
-        super(SetHamsterActivityFixer, self).__init__()
 
     def is_already_set(self):
         facts = self.interface.GetTodaysFacts()
@@ -36,7 +35,6 @@ class SetHamsterActivityFixer(IFixer):
         return last_fact_string in self.options.get('activity', '')
 
     def set_activity(self):
-
         activity = self.options.get('activity', 'activity@Sample')
 
         if not self.is_already_set():

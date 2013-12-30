@@ -17,9 +17,10 @@ class TimeIntervalChecker(IChecker):
 
     export_as = 'time_interval'
 
-    def setup(self, **options):
+    def __init__(self, **options):
         # This saves the time in the timestamp of the following form:
         #     datetime.datetime(1900, 1, 1, 12, 23)
+        super(TimeIntervalChecker, self).__init__(**options)
         self.start = datetime.datetime.strptime(str(options['start']), "%H.%M")
         self.end = datetime.datetime.strptime(str(options['end']), "%H.%M")
 
