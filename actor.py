@@ -22,9 +22,12 @@ class Actor(object):
         self.activities = []
 
     def get_plugin(self, name, category):
-        print category.__name__
-        print name
-        return [plugin for plugin in category.plugins if plugin.__name__ == name][0]
+        plugin_candidates = [plugin for plugin in category.plugins if plugin.__name__ == name]
+
+        if plugin_candidates:
+            return plugin_candidates[0]
+        else:
+            raise ValueError("Could not find %s plugin of name: %s" % (category.__name__, name))
 
     def do_main_program(self):
         self.check_reporters()
@@ -107,7 +110,7 @@ def check_everything():
         # Generate reports
         reports = {reporter.export_as:reporter.report()
                    for reporter in activity.reporters}
-        print reports
+
         # Determine which checkers approve the situation
         active_checkers = [checker.export_as
                            for checker in activity.checkers
@@ -115,11 +118,7 @@ def check_everything():
 
         # Run all the fixers that were triggered
         # By default fixer needs all the checkers defined to be active
-        print active_checkers
-
-        print activity.checkers[1].countdown_start
         for fixer in activity.fixers:
-             print fixer.triggered_by
              if set(fixer.triggered_by).issubset(set(active_checkers)):
                  fixer.fix()
 
