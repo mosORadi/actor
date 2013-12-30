@@ -1,0 +1,9 @@
+[Core]
+Name = Countdown Checker
+Module = countdown
+
+[Documentation]
+Author = Tomas babej
+Version = 0.1
+Website = http://tomasbabej.me
+Description = Counts down the specified time amount
