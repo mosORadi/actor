@@ -1,9 +1,0 @@
-[Core]
-Name = Active Window Pid Reporter
-Module = active_window_pid
-
-[Documentation]
-Author = Tomas babej
-Version = 0.1
-Website = http://tomasbabej.me
-Description = Returns active window using wnck

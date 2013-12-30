@@ -1,9 +1,0 @@
-[Core]
-Name = Countdown Trigger Fixer
-Module = countdown
-
-[Documentation]
-Author = Tomas Babej
-Version = 0.1
-Website = http://tomasbabej.me
-Description = Sends a signal to start the countdown to the session bus

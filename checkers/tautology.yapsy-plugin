@@ -1,9 +1,0 @@
-[Core]
-Name = Tautology Checker
-Module = tautology
-
-[Documentation]
-Author = Tomas babej
-Version = 0.1
-Website = http://tomasbabej.me
-Description = Always returns true

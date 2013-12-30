@@ -1,8 +1,14 @@
-from yapsy.IPlugin import IPlugin
+class PluginMount(type):
+    def __init__(cls, name, bases, attrs):
+        if not hasattr(cls, 'plugins'):
+            cls.plugins = []
+        else:
+            cls.plugins.append(cls)
 
-
-class IReporter(IPlugin):
+class IReporter(object):
     """Reports user activity to the AcTor"""
+
+    __metaclass__ = PluginMount
 
     export_as = None
 
@@ -20,8 +26,10 @@ class IReporter(IPlugin):
         pass
 
 
-class IChecker(IPlugin):
+class IChecker(object):
     """Evaluates user activity depending on the input from the responders"""
+
+    __metaclass__ = PluginMount
 
     def setup(self, **options):
         if 'export_as' in options:
@@ -47,7 +55,9 @@ class IChecker(IPlugin):
         pass
 
 
-class IFixer(IPlugin):
+class IFixer(object):
+
+    __metaclass__ = PluginMount
 
     def setup(self, **options):
         """

@@ -1,9 +1,0 @@
-[Core]
-Name = Notification Ask Checker
-Module = ask
-
-[Documentation]
-Author = Tomas babej
-Version = 0.1
-Website = http://tomasbabej.me
-Description = Asks user notification question

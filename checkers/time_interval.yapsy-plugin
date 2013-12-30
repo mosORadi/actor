@@ -1,9 +1,0 @@
-[Core]
-Name = Time Interval Checker
-Module = time_interval
-
-[Documentation]
-Author = Tomas babej
-Version = 0.1
-Website = http://tomasbabej.me
-Description = Returns true if the actual time is in between defined interval
