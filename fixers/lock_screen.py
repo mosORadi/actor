@@ -25,5 +25,5 @@ class LockScreenFixer(IFixer):
         if not self.interface.GetActive():
             self.interface.Lock()
 
-    def fix(self):
+    def fix(self, **reports):
         self.lock()

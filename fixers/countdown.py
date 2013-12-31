@@ -20,5 +20,5 @@ class CountdownTriggerFixer(IFixer):
         super(CountdownTriggerFixer, self).__init__(**options)
         self.signal = CountdownTriggerSignal()
 
-    def fix(self):
+    def fix(self, **reports):
         self.signal.CountdownStartSignal(self.options.get('id', ''))

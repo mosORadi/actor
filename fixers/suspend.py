@@ -24,5 +24,5 @@ class SuspendFixer(IFixer):
 
         self.interface.Suspend()
 
-    def fix(self):
+    def fix(self, **reports):
         self.suspend()

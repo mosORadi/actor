@@ -42,5 +42,5 @@ class SetHamsterActivityFixer(IFixer):
             self.interface.StopTracking(0)
             self.interface.AddFact(activity, 0, 0, False)
 
-    def fix(self):
+    def fix(self, **reports):
         self.set_activity()

@@ -120,7 +120,7 @@ def check_everything():
         # By default fixer needs all the checkers defined to be active
         for fixer in activity.fixers:
              if set(fixer.triggered_by).issubset(set(active_checkers)):
-                 fixer.fix()
+                 fixer.fix(**reports)
 
     return True
 if __name__ == '__main__':

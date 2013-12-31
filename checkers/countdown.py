@@ -23,7 +23,6 @@ class CountdownChecker(IChecker):
     def start_countdown(self, countdown_id, **options):
         if self.countdown_start is None:
             self.countdown_start = datetime.datetime.now()
-            print "The signal was caught"
 
     def check(self, **reports):
         if self.countdown_start is None:

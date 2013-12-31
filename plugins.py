@@ -42,7 +42,7 @@ class IChecker(object):
         self.options = options
 
 
-    def check(self, *reports):
+    def check(self, **reports):
         """
         Returns evaluation of the situation - true or false, accorgding
         to the input from the reporters, passed to the check function,
@@ -74,7 +74,7 @@ class IFixer(object):
 
         self.options = options
 
-    def fix(self, *data):
+    def fix(self, **reports):
         """
         This function does execute the given action.
         """

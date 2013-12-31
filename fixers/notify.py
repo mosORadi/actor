@@ -43,5 +43,5 @@ class NotifyFixer(IFixer):
                                                   headline, message, [], {},
                                                   timeout)
 
-    def fix(self):
+    def fix(self, **reports):
         self.notify()
