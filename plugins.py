@@ -55,6 +55,20 @@ class IChecker(object):
         pass
 
 
+    def check_raw(self, **reports):
+        report_redirect = dict()
+
+        if 'inputs' in self.options:
+            for key, value in self.options.get('inputs').iteritems():
+                 report_redirect[key]=reports[value]
+
+        reports.update(report_redirect)
+
+        if 'negate' in self.options:
+            return not self.check(**reports)
+        else:
+            return self.check(**reports)
+
 class IFixer(object):
 
     __metaclass__ = PluginMount
@@ -80,3 +94,14 @@ class IFixer(object):
         """
 
         pass
+
+    def fix_raw(self, **reports):
+        report_redirect = dict()
+
+        if 'inputs' in self.options:
+            for key, value in self.options.get('inputs'):
+                 report_redirect[key]=reports[value]
+
+        reports.update(report_redirect)
+
+        return self.fix(**reports)

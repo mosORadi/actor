@@ -114,13 +114,13 @@ def check_everything():
         # Determine which checkers approve the situation
         active_checkers = [checker.export_as
                            for checker in activity.checkers
-                           if checker.check(**reports)]
+                           if checker.check_raw(**reports)]
 
         # Run all the fixers that were triggered
         # By default fixer needs all the checkers defined to be active
         for fixer in activity.fixers:
              if set(fixer.triggered_by).issubset(set(active_checkers)):
-                 fixer.fix(**reports)
+                 fixer.fix_raw(**reports)
 
     return True
 if __name__ == '__main__':
