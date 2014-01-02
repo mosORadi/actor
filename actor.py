@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import copy
+import collections
 import os
 import sys
 import logging
@@ -101,6 +102,19 @@ class Activity(object):
                                                 category=IFixer)
                 fixer = fixer_plugin(**options)
                 activity.fixers.append(fixer)
+
+        # Check that all reporters and checkers have unique exports
+        for plugins_by_type, type_name in [(activity.reporters, 'Reporters'),
+                                           (activity.checkers, 'Checkers')]:
+            plugin_names_list = [plugin.export_as
+                                 for plugin in plugins_by_type]
+            duplicates = [k for k, v in collections.Counter(plugin_names_list).items()
+                          if v > 1]
+            if duplicates:
+                raise ValueError("Activity %s has name clash in %s for "
+                                 "the following identifiers: %s. "
+                                 "Use the export_as option to differentiate." %
+                                 (name, type_name, duplicates))
 
         return activity
 
