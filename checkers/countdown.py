@@ -4,7 +4,16 @@ import datetime
 
 
 class CountdownChecker(IChecker):
+    """
+    Returns false unless countdown has finished. Countdown is started by
+    emitting a D-Bus CountdownStartSignal on org.freedesktop.AcTor interface.
+
+    Expected options:
+        delay - coundown duration in seconds
+    """
+
     export_as = 'countdown'
+    required_plugin_options = ['delay']
 
     def __init__(self, **options):
         super(CountdownChecker, self).__init__(**options)

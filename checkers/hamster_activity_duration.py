@@ -13,9 +13,11 @@ class HamsterActivityDailyDurationChecker(IChecker):
 
     Options:
       - limit : The activity duration limit, in minutes
+      - activity: The activity that should be measured, in the form of activity@Category
     """
 
     export_as = 'hamster_activity_duration'
+    required_plugin_options = ['limit', 'activity']
 
     def __init__(self, **options):
         super(HamsterActivityDailyDurationChecker, self).__init__(**options)

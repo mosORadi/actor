@@ -14,7 +14,17 @@ class CountdownTriggerSignal(dbus.service.Object):
         return countdown_id
 
 class CountdownTriggerFixer(IFixer):
+    """
+    Emits a D-Bus signal to start countdown on CountdownChecker with
+    the specified identifier.
+
+    Required options:
+        id - CountdownChecker identifier (as defined by export_as option 
+                                          or the plugin default value)
+    """
+
     export_as = 'countdown'
+    required_plugin_options = ['id']
 
     def __init__(self, **options):
         super(CountdownTriggerFixer, self).__init__(**options)

@@ -16,6 +16,8 @@ class NotifyFixer(IFixer):
     """
 
     export_as = "notify"
+    required_plugin_options = ['message']
+    optional_plugin_options = ['timeout', 'app_icon', 'app_name', 'headline']
 
     def __init__(self, **options):
         super(NotifyFixer, self).__init__(**options)

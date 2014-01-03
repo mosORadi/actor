@@ -6,10 +6,10 @@ class TautologyChecker(IChecker):
     Simple checker that always returns true.
 
     Expects reports:
-    None.
+        None.
 
     Options:
-    None.
+        None.
     """
 
     export_as = 'tautology'

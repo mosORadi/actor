@@ -8,7 +8,7 @@ class PluginMount(type):
 class IPlugin(object):
     __metaclass__ = PluginMount
 
-    required_framework_options = []
+    required_framework_options = ['activity_name']
     optional_framework_options = []
 
     required_plugin_options = []
@@ -30,6 +30,15 @@ class IPlugin(object):
                              "for %s in %s : %s" % (self.__class__.__name__,
                                                     options['activity_name'],
                                                     list(missing_options)))
+
+        # Make sure no ignored options are present
+        all_options_set = required_options_set.union(set(self.optional_options))
+        if not options_set.issubset(all_options_set):
+            extra_options = options_set.difference(all_options_set)
+            raise ValueError("The following options are extra "
+                             "for %s in %s : %s" % (self.__class__.__name__,
+                                                    options['activity_name'],
+                                                    list(extra_options)))
 
     def set_export_as(self, **options):
         """
@@ -74,8 +83,7 @@ class IReporter(IPlugin):
     """Reports user activity to the AcTor"""
 
     __metaclass__ = PluginMount
-
-
+    optional_framework_options = ['export_as']
     export_as = None
 
     def __init__(self, **options):
@@ -91,6 +99,7 @@ class IChecker(IPlugin):
     """Evaluates user activity depending on the input from the responders"""
 
     __metaclass__ = PluginMount
+    optional_framework_options = ['export_as', 'inputs']
 
     def __init__(self, **options):
         super(IChecker, self).__init__(**options)
@@ -120,6 +129,7 @@ class IChecker(IPlugin):
 class IFixer(IPlugin):
 
     __metaclass__ = PluginMount
+    optional_framework_options = ['triggered_by', 'inputs']
 
     def __init__(self, **options):
         """

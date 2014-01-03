@@ -12,6 +12,7 @@ class SetHamsterActivityFixer(IFixer):
     """
 
     export_as = "set_hamster_activity"
+    required_plugin_options = ['activity']
 
     bus_name = 'org.gnome.Hamster'
     object_path = '/org/gnome/Hamster'

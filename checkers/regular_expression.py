@@ -15,6 +15,7 @@ class RegularExpressionChecker(IChecker):
     """
 
     export_as = 'regular_expression'
+    required_plugin_options = ['regexp']
 
     def __init__(self, **options):
         super(RegularExpressionChecker, self).__init__(**options)

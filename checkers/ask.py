@@ -15,6 +15,8 @@ class NotificationAskChecker(IChecker):
     """
 
     export_as = "ask"
+    required_plugin_options = ['question']
+    optional_plugin_options = ['headline', 'app_name', 'app_icon', 'timeout']
 
     def __init__(self, **options):
         super(NotificationAskChecker, self).__init__(**options)

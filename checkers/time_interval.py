@@ -16,6 +16,7 @@ class TimeIntervalChecker(IChecker):
     """
 
     export_as = 'time_interval'
+    required_plugin_options = ['start', 'end']
 
     def __init__(self, **options):
         # This saves the time in the timestamp of the following form:
