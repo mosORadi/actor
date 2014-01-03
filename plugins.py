@@ -5,42 +5,96 @@ class PluginMount(type):
         else:
             cls.plugins.append(cls)
 
-class IReporter(object):
-    """Reports user activity to the AcTor"""
-
+class IPlugin(object):
     __metaclass__ = PluginMount
 
-    export_as = None
+    required_framework_options = []
+    optional_framework_options = []
+
+    required_plugin_options = []
+    optional_plugin_options = []
 
     def __init__(self, **options):
+        self.options = options
+
+        self.required_options = self.required_framework_options + self.required_plugin_options
+        self.optional_options = self.optional_framework_options + self.optional_plugin_options
+
+        # Make sure all the required framework options
+        options_set = set(self.options.keys())
+        required_options_set = set(self.required_options)
+
+        if not required_options_set.issubset(options_set):
+            missing_options = required_options_set.difference(options_set)
+            raise ValueError("The following options are missing "
+                             "for %s in %s : %s" % (self.__class__.__name__,
+                                                    options['activity_name'],
+                                                    list(missing_options)))
+
+    def set_export_as(self, **options):
+        """
+        Sets the export_as attribute if specified in options and removes it
+        from the options dictionary.
+        Makes sure that there is at least some identifier available.
+
+        Returs the updated options dictionary.
+        """
+
         if 'export_as' in options:
             assert type(options['export_as']) == str
             self.export_as = options['export_as']
             del options['export_as']
 
-        assert self.export_as is not None
-        self.options = options
+        if self.export_as is None:
+            raise ValueError(
+                "The identifier for the %s in %s is not set."
+                "Use the export_as option to specify unique identifier." %
+                (self.__class__.__name__, options['activity_name']))
+
+        return options
+
+    def get_redirected_reports(self, **reports):
+        """
+        Redirects the reports for this plugin in the following manner:
+            For any key specified in the inputs dictionary,
+        """
+
+        reports_redirected = dict()
+
+        if 'inputs' in self.options:
+            for key, value in self.options.get('inputs').iteritems():
+                 reports_redirected[key]=reports[value]
+
+        reports.update(reports_redirected)
+
+        return reports
+
+
+class IReporter(IPlugin):
+    """Reports user activity to the AcTor"""
+
+    __metaclass__ = PluginMount
+
+
+    export_as = None
+
+    def __init__(self, **options):
+        super(IReporter, self).__init__(**options)
+        self.options = self.set_export_as(**options)
 
     def report(self):
         """Returns user activity value"""
         pass
 
 
-class IChecker(object):
+class IChecker(IPlugin):
     """Evaluates user activity depending on the input from the responders"""
 
     __metaclass__ = PluginMount
 
     def __init__(self, **options):
-        if 'export_as' in options:
-            assert type(options['export_as']) == str
-            self.export_as = options['export_as']
-            del options['export_as']
-
-        assert self.export_as is not None
-
-        self.options = options
-
+        super(IChecker, self).__init__(**options)
+        self.options = self.set_export_as(**options)
 
     def check(self, **reports):
         """
@@ -56,20 +110,14 @@ class IChecker(object):
 
 
     def check_raw(self, **reports):
-        report_redirect = dict()
-
-        if 'inputs' in self.options:
-            for key, value in self.options.get('inputs').iteritems():
-                 report_redirect[key]=reports[value]
-
-        reports.update(report_redirect)
+        reports = self.get_redirected_reports(**reports)
 
         if 'negate' in self.options:
             return not self.check(**reports)
         else:
             return self.check(**reports)
 
-class IFixer(object):
+class IFixer(IPlugin):
 
     __metaclass__ = PluginMount
 
@@ -78,13 +126,13 @@ class IFixer(object):
         The triggered_by option must be passed via the framework.
         """
 
+        super(IFixer, self).__init__(**options)
+
         assert 'triggered_by' in options
         self.triggered_by = options['triggered_by']
         assert type(self.triggered_by) == list
 
         del options['triggered_by']
-
-        assert self.export_as is not None
 
         self.options = options
 
@@ -96,12 +144,5 @@ class IFixer(object):
         pass
 
     def fix_raw(self, **reports):
-        report_redirect = dict()
-
-        if 'inputs' in self.options:
-            for key, value in self.options.get('inputs'):
-                 report_redirect[key]=reports[value]
-
-        reports.update(report_redirect)
-
+        reports = self.get_redirected_reports(**reports)
         return self.fix(**reports)

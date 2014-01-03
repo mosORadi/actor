@@ -76,6 +76,7 @@ class Activity(object):
         for reporter_info in reporters_info:
             for plugin_name, options in reporter_info.iteritems():
                 options = options or {}
+                options['activity_name'] = name
 
                 reporter_plugin = actor.get_plugin(plugin_name,
                                                    category=IReporter)
@@ -85,6 +86,8 @@ class Activity(object):
         for checker_info in checkers_info:
             for plugin_name, options in checker_info.iteritems():
                 options = options or {}
+                options['activity_name'] = name
+
                 checker_plugin = actor.get_plugin(plugin_name,
                                                   category=IChecker)
                 checker = checker_plugin(**options)
@@ -95,6 +98,8 @@ class Activity(object):
         for fixer_info in fixers_info:
             for plugin_name, options in fixer_info.iteritems():
                 options = options or {}
+                options['activity_name'] = name
+
                 if 'triggered_by' not in options:
                     options['triggered_by'] = all_checker_names
 
