@@ -129,7 +129,8 @@ class IChecker(IPlugin):
 class IFixer(IPlugin):
 
     __metaclass__ = PluginMount
-    optional_framework_options = ['triggered_by', 'inputs']
+    required_framework_options = ['activity_name', 'triggered_by']
+    optional_framework_options = ['anti_triggered_by', 'inputs']
 
     def __init__(self, **options):
         """
@@ -138,13 +139,9 @@ class IFixer(IPlugin):
 
         super(IFixer, self).__init__(**options)
 
-        assert 'triggered_by' in options
         self.triggered_by = options['triggered_by']
-        assert type(self.triggered_by) == list
+        self.anti_triggered_by = options.get('anti_triggered_by', [])
 
-        del options['triggered_by']
-
-        self.options = options
 
     def fix(self, **reports):
         """

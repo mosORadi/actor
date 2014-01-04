@@ -138,7 +138,10 @@ def check_everything():
         # Run all the fixers that were triggered
         # By default fixer needs all the checkers defined to be active
         for fixer in activity.fixers:
-             if set(fixer.triggered_by).issubset(set(active_checkers)):
+             all_positive_triggers_active = set(fixer.triggered_by).issubset(set(active_checkers))
+             any_negative_trigger_active = any([checker in active_checkers
+                                                for checker in fixer.anti_triggered_by])
+             if all_positive_triggers_active and not any_negative_trigger_active:
                  fixer.fix_raw(**reports)
 
     return True
