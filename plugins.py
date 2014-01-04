@@ -99,7 +99,7 @@ class IChecker(IPlugin):
     """Evaluates user activity depending on the input from the responders"""
 
     __metaclass__ = PluginMount
-    optional_framework_options = ['export_as', 'inputs']
+    optional_framework_options = ['export_as', 'inputs', 'negate']
 
     def __init__(self, **options):
         super(IChecker, self).__init__(**options)
