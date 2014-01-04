@@ -13,6 +13,10 @@ class CountdownTriggerSignal(dbus.service.Object):
     def CountdownStartSignal(self, countdown_id):
         return countdown_id
 
+    @dbus.service.signal(dbus_interface='org.freedesktop.AcTor', signature='s')
+    def CountdownResetSignal(self, countdown_id):
+        return countdown_id
+
 class CountdownTriggerFixer(IFixer):
     """
     Emits a D-Bus signal to start countdown on CountdownChecker with
@@ -25,10 +29,16 @@ class CountdownTriggerFixer(IFixer):
 
     export_as = 'countdown'
     required_plugin_options = ['id']
+    optional_plugin_options = ['action']
 
     def __init__(self, **options):
         super(CountdownTriggerFixer, self).__init__(**options)
         self.signal = CountdownTriggerSignal()
 
     def fix(self, **reports):
-        self.signal.CountdownStartSignal(self.options.get('id', ''))
+        action = self.options.get('action', 'start')
+
+        if action == 'start':
+            self.signal.CountdownStartSignal(self.options.get('id', ''))
+        elif action == 'reset':
+            self.signal.CountdownResetSignal(self.options.get('id', ''))

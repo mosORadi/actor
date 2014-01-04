@@ -26,6 +26,11 @@ class CountdownChecker(IChecker):
             dbus_interface="org.freedesktop.AcTor",
             signal_name="CountdownStartSignal")
 
+        self.bus.add_signal_receiver(
+            self.reset_countdown,
+            dbus_interface="org.freedesktop.AcTor",
+            signal_name="CountdownResetSignal")
+
         self.countdown_start = None
 
         delay_seconds = self.options.get('delay', 300)
@@ -34,6 +39,10 @@ class CountdownChecker(IChecker):
     def start_countdown(self, countdown_id, **options):
         if self.countdown_start is None and countdown_id == self.options.get('id'):
             self.countdown_start = datetime.datetime.now()
+
+    def reset_countdown(self, countdown_id, **options):
+        if self.countdown_start is not None and countdown_id == self.options.get('id'):
+            self.countdown_start = None
 
     def check(self, **reports):
         if self.countdown_start is None:
