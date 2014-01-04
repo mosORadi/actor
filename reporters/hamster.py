@@ -32,4 +32,4 @@ class HamsterActivityReporter(IReporter):
                 self.activity = last_fact[4]    # 4 - name
 
     def report(self):
-        return self.activity
+        return self.activity or ''
