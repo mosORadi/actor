@@ -10,10 +10,12 @@ class CountdownChecker(IChecker):
 
     Expected options:
         delay - coundown duration in seconds
+        id - identifier of countdown checker, should be unique across all
+             activities
     """
 
     export_as = 'countdown'
-    required_plugin_options = ['delay']
+    required_plugin_options = ['delay', 'id']
 
     def __init__(self, **options):
         super(CountdownChecker, self).__init__(**options)
@@ -30,7 +32,7 @@ class CountdownChecker(IChecker):
         self.delta = datetime.timedelta(0, delay_seconds, 0)
 
     def start_countdown(self, countdown_id, **options):
-        if self.countdown_start is None:
+        if self.countdown_start is None and countdown_id == self.options.get('id'):
             self.countdown_start = datetime.datetime.now()
 
     def check(self, **reports):
