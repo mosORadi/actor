@@ -59,17 +59,17 @@ class Activity(object):
         definitions = [(name, details) for (name, details)
                                        in config.iteritems()]
         assert len(definitions) == 1
-
         name = definitions[0][0]
         details = definitions[0][1]
 
-        reporters_info = details.get("reporter")
-        checkers_info = details.get("checker")
-        fixers_info = details.get("fixer")
+        reporters_info = details.get("reporters")
+        checkers_info = details.get("checkers")
+        fixers_info = details.get("fixers")
+        fixergroups_info = details.get("fixergroups")
 
         assert reporters_info is not None
         assert checkers_info is not None
-        assert fixers_info is not None
+        assert fixers_info is not None or fixergroups_info is not None
 
         activity = cls()
 
@@ -95,18 +95,41 @@ class Activity(object):
 
         all_checker_names = [checker.export_as for checker in activity.checkers]
 
-        for fixer_info in fixers_info:
-            for plugin_name, options in fixer_info.iteritems():
-                options = options or {}
-                options['activity_name'] = name
+        if fixers_info is not None:
+            for fixer_info in fixers_info:
+                for plugin_name, options in fixer_info.iteritems():
+                    options = options or {}
+                    options['activity_name'] = name
 
-                if 'triggered_by' not in options:
-                    options['triggered_by'] = all_checker_names
+                    if 'triggered_by' not in options:
+                        options['triggered_by'] = all_checker_names
 
-                fixer_plugin = actor.get_plugin(plugin_name,
-                                                category=IFixer)
-                fixer = fixer_plugin(**options)
-                activity.fixers.append(fixer)
+                    fixer_plugin = actor.get_plugin(plugin_name,
+                                                    category=IFixer)
+                    fixer = fixer_plugin(**options)
+                    activity.fixers.append(fixer)
+
+        if fixergroups_info is not None:
+            for group_info in fixergroups_info:
+                for group_name, group_options in group_info.iteritems():
+
+                    if 'triggered_by' not in group_options:
+                        group_options['triggered_by'] = all_checker_names
+
+                    if 'fixers' not in group_options:
+                        raise ValueError("You have to specify fixers for %s in %s" %
+                                         (group_name, name))
+                    for fixer in group_options['fixers']:
+                        for plugin_name, options in fixer.iteritems():
+                            options = options or {}
+                            options['activity_name'] = name
+                            options.update(group_options)
+                            options.pop('fixers')
+
+                            fixer_plugin = actor.get_plugin(plugin_name,
+                                                        category=IFixer)
+                            fixer = fixer_plugin(**options)
+                            activity.fixers.append(fixer)
 
         # Check that all reporters and checkers have unique exports
         for plugins_by_type, type_name in [(activity.reporters, 'Reporters'),
