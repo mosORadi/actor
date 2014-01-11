@@ -8,10 +8,10 @@ from actor import Actor
 
 daemon_context = daemon.DaemonContext(
     working_directory='/var/lib/actor',
-    pidfile=lockfile.FileLock('/var/run/spam.pid'),
+    pidfile=lockfile.FileLock('/var/run/actor.pid'),
     )
 
 actor = Actor()
 
 with daemon_context:
-    actor.do_main_program()
+    actor.main()

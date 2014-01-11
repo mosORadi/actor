@@ -168,18 +168,22 @@ def check_everything():
                  fixer.fix_raw(**reports)
 
     return True
-if __name__ == '__main__':
+
+def main():
     stdout_handler = logging.StreamHandler(sys.stdout)
     rootLogger = logging.getLogger('yapsy')
     rootLogger.addHandler(stdout_handler)
 
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
+    global actor
     actor = Actor()
-
     actor.load_configuration()
+
     loop = gobject.MainLoop()
     gobject.timeout_add(2000, check_everything)
     loop.run()
 
 
+if __name__ == '__main__':
+    main()
