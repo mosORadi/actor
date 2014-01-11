@@ -25,6 +25,10 @@ class TimeIntervalChecker(IChecker):
         self.start = datetime.datetime.strptime(str(options['start']), "%H.%M")
         self.end = datetime.datetime.strptime(str(options['end']), "%H.%M")
 
+        # If the start of the interval is later than the end, add one day
+        if self.start > self.end:
+            self.end = self.end + datetime.timedelta(days=1)
+
     def check(self, **reports):
         time = datetime.datetime.strptime(reports['time'], "%H.%M")
         
