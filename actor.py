@@ -17,6 +17,8 @@ from reporters import *
 from checkers import *
 from fixers import *
 
+from config import CONFIG_DIR
+
 class Actor(object):
 
     def __init__(self):
@@ -34,8 +36,8 @@ class Actor(object):
         self.check_reporters()
 
     def load_configuration(self):
-        yaml_config_paths = [os.path.join("config", path)
-                             for path in os.listdir("config")
+        yaml_config_paths = [os.path.join(CONFIG_DIR, path)
+                             for path in os.listdir(CONFIG_DIR)
                              if path.endswith('.yaml')]
 
         for path in yaml_config_paths:
