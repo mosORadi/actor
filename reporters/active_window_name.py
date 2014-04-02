@@ -22,4 +22,4 @@ class ActiveWindowNameReporter(IReporter):
             if active_window:
                 name = active_window.get_name()
 
-        return name
+        return name or ''
