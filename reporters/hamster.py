@@ -29,7 +29,8 @@ class HamsterActivityReporter(IReporter):
         if today_facts:
             last_fact = today_facts[-1]
             if last_fact[2] == 0:    # 2 - end_time, set to 0 for ongoing facts
-                self.activity = last_fact[4]    # 4 - name
+                # 4 - name, 6 - category
+                self.activity = "%s@%s" % (last_fact[4], last_fact[6])
 
     def report(self):
         return str(self.activity or '')
