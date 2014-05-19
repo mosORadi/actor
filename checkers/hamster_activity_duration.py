@@ -1,7 +1,5 @@
 from plugins import IChecker
 
-import re
-
 class HamsterActivityDailyDurationChecker(IChecker):
     """
     Checks whether a time limit for a particular activity has not been
