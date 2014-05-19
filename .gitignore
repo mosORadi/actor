@@ -1,3 +1,4 @@
 *.nja
 *.pyc
 local_config.py
+config
