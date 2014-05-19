@@ -7,18 +7,23 @@ class DailyZimJournalReporter(FileContentReporter):
     export_as = "daily_zim_journal"
 
     required_plugin_options = ["journal_root_path", "path"]
-    optional_plugin_options = []
+    optional_plugin_options = ["day_shift"]
 
     def __init__(self, **options):
+        self.options = options
         super(DailyZimJournalReporter, self).__init__(path=self.get_path(options['journal_root_path']), **options)
 
     def get_path(self, journal_root_path):
-        today = datetime.date.today()
+
+        day_shift = self.options.get("day_shift", "0")
+        delta = datetime.timedelta(days=int(day_shift))
+
+        day = datetime.date.today() + delta
         path = "%s/%s/%s/%s.txt" % (
                    journal_root_path,
-                   today.year,
-                   today.strftime('%m'),
-                   today.strftime('%d')
+                   day.year,
+                   day.strftime('%m'),
+                   day.strftime('%d')
                )
         return path
 
