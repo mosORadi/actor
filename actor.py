@@ -25,12 +25,14 @@ class Actor(object):
         self.activities = []
 
     def get_plugin(self, name, category):
-        plugin_candidates = [plugin for plugin in category.plugins if plugin.__name__ == name]
+        plugin_candidates = [plugin for plugin in category.plugins
+                             if plugin.__name__ == name]
 
         if plugin_candidates:
             return plugin_candidates[0]
         else:
-            raise ValueError("Could not find %s plugin of name: %s" % (category.__name__, name))
+            raise ValueError("Could not find %s plugin of name: %s"
+                              % (category.__name__, name))
 
     def do_main_program(self):
         self.check_reporters()
@@ -119,8 +121,10 @@ class Activity(object):
                         group_options['triggered_by'] = all_checker_names
 
                     if 'fixers' not in group_options:
-                        raise ValueError("You have to specify fixers for %s in %s" %
+                        raise ValueError("You have to specify fixers "
+                                         "for %s in %s" %
                                          (group_name, name))
+
                     for fixer in group_options['fixers']:
                         for plugin_name, options in fixer.iteritems():
                             options = options or {}
@@ -138,8 +142,10 @@ class Activity(object):
                                            (activity.checkers, 'Checkers')]:
             plugin_names_list = [plugin.export_as
                                  for plugin in plugins_by_type]
-            duplicates = [k for k, v in collections.Counter(plugin_names_list).items()
+            duplicates = [k for k, v
+                          in collections.Counter(plugin_names_list).items()
                           if v > 1]
+
             if duplicates:
                 raise ValueError("Activity %s has name clash in %s for "
                                  "the following identifiers: %s. "
