@@ -67,6 +67,40 @@ class Actor(object):
 
             return content_hash == SLEEP_HASH
 
+    def check_everything(self):
+        if self.check_sleep_file():
+            rootLogger.warning('Sleep file exists, skipping.')
+            return True
+
+        for activity in self.activities:
+
+            # Generate reports
+            reports = {reporter.export_as: reporter.report()
+                       for reporter in activity.reporters}
+
+            print reports
+
+            # Determine which checkers approve the situation
+            active_checkers = [checker.export_as
+                               for checker in activity.checkers
+                               if checker.check_raw(**reports)]
+
+            print active_checkers
+
+            # Run all the fixers that were triggered
+            # By default fixer needs all the checkers defined to be active
+            for fixer in activity.fixers:
+                all_triggers_active = (set(fixer.triggered_by)
+                                       .issubset(set(active_checkers)))
+                any_antitrigger_active = any([checker in active_checkers
+                                              for checker
+                                              in fixer.anti_triggered_by])
+
+                if all_triggers_active and not any_antitrigger_active:
+                    fixer.fix_raw(**reports)
+
+        return True
+
 
 class Activity(object):
 
@@ -171,33 +205,8 @@ class Activity(object):
 
         return activity
 
-def check_everything():
-    for activity in actor.activities:
-
-        # Generate reports
-        reports = {reporter.export_as:reporter.report()
-                   for reporter in activity.reporters}
-
-        # Determine which checkers approve the situation
-        active_checkers = [checker.export_as
-                           for checker in activity.checkers
-                           if checker.check_raw(**reports)]
-
-        # Run all the fixers that were triggered
-        # By default fixer needs all the checkers defined to be active
-        for fixer in activity.fixers:
-             all_positive_triggers_active = set(fixer.triggered_by).issubset(set(active_checkers))
-             any_negative_trigger_active = any([checker in active_checkers
-                                                for checker in fixer.anti_triggered_by])
-             if all_positive_triggers_active and not any_negative_trigger_active:
-                 fixer.fix_raw(**reports)
-
-    return True
 
 def main():
-    stdout_handler = logging.StreamHandler(sys.stdout)
-    rootLogger = logging.getLogger('yapsy')
-    rootLogger.addHandler(stdout_handler)
 
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
@@ -206,7 +215,7 @@ def main():
     actor.load_configuration()
 
     loop = gobject.MainLoop()
-    gobject.timeout_add(2000, check_everything)
+    gobject.timeout_add(2000, actor.check_everything)
     loop.run()
 
 
