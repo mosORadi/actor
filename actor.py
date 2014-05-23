@@ -6,6 +6,7 @@ import os
 import sys
 import logging
 import time
+import hashlib
 
 import gobject
 import dbus
@@ -17,7 +18,9 @@ from reporters import *
 from checkers import *
 from fixers import *
 
-from config import CONFIG_DIR
+from config import CONFIG_DIR, HOME_DIR
+from local_config import SLEEP_HASH
+
 
 class Actor(object):
 
@@ -49,6 +52,20 @@ class Actor(object):
                 for config in activity_definitions:
                     activity = Activity.from_yaml(config)
                     self.activities.append(activity)
+
+    def check_sleep_file(self):
+        """
+        You can create one sleep file in your home directory.
+        It immediately suspends AcTor.
+        """
+
+        sleep_file_path = os.path.join(HOME_DIR, 'actor-sleep')
+        if os.path.exists(sleep_file_path):
+            with open(sleep_file_path, 'r') as f:
+                content = f.readlines()[0].strip()
+                content_hash = hashlib.sha1(content).hexdigest()
+
+            return content_hash == SLEEP_HASH
 
 
 class Activity(object):
