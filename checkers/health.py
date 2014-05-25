@@ -43,5 +43,5 @@ class HealthChecker(IChecker):
         self.health_remaining = self.health_remaining - 1
 
     def check(self, **reports):
-        print "Remaining! : %s" % str(self.health_remaining)
+        self.debug("Remaining! : %s" % str(self.health_remaining))
         return self.health_remaining < 0

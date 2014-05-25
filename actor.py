@@ -92,25 +92,30 @@ class Actor(object):
 
     def check_everything(self):
         if self.check_sleep_file():
-            rootLogger.warning('Sleep file exists, skipping.')
+            logging.warning('Sleep file exists, skipping.')
             return True
 
         for activity in self.activities:
+            logging.debug("%s: Checking activity %s" % (activity.name,
+                                                        activity.name))
+            logging.debug("")
 
             # Generate reports
             reports = {reporter.export_as: reporter.report()
                        for reporter in activity.reporters}
 
-            logging.debug("Reports:")
+            logging.debug("%s: Reports:" % activity.name)
             for k,v in reports.iteritems():
-                logging.debug("%s : %s" % (k, v))
+                logging.debug("%s:     %s : %s" % (activity.name, k, v))
+            logging.debug("")
 
             # Determine which checkers approve the situation
             active_checkers = [checker.export_as
                                for checker in activity.checkers
                                if checker.check_raw(**reports)]
 
-            logging.debug("Active checkers: %s" % ','.join(active_checkers))
+            logging.debug("%s: Active checkers: %s" % (activity.name,
+                                                       ','.join(active_checkers)))
 
             # Run all the fixers that were triggered
             # By default fixer needs all the checkers defined to be active
