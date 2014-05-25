@@ -129,10 +129,11 @@ class Actor(object):
 
 class Activity(object):
 
-    def __init__(self):
+    def __init__(self, name):
         self.reporters = []
         self.checkers = []
         self.fixers = []
+        self.name = name
 
     @classmethod
     def from_yaml(cls, config, actor):
@@ -151,12 +152,12 @@ class Activity(object):
         assert checkers_info is not None
         assert fixers_info is not None or fixergroups_info is not None
 
-        activity = cls()
+        activity = cls(name=name)
 
         for reporter_info in reporters_info:
             for plugin_name, options in reporter_info.iteritems():
                 options = options or {}
-                options['activity_name'] = name
+                options['activity_name'] = activity.name
 
                 reporter_plugin = actor.get_plugin(plugin_name,
                                                    category=IReporter)
@@ -166,7 +167,7 @@ class Activity(object):
         for checker_info in checkers_info:
             for plugin_name, options in checker_info.iteritems():
                 options = options or {}
-                options['activity_name'] = name
+                options['activity_name'] = activity.name
 
                 checker_plugin = actor.get_plugin(plugin_name,
                                                   category=IChecker)
@@ -179,7 +180,7 @@ class Activity(object):
             for fixer_info in fixers_info:
                 for plugin_name, options in fixer_info.iteritems():
                     options = options or {}
-                    options['activity_name'] = name
+                    options['activity_name'] = activity.name
 
                     if 'triggered_by' not in options:
                         options['triggered_by'] = all_checker_names
@@ -199,12 +200,12 @@ class Activity(object):
                     if 'fixers' not in group_options:
                         raise ValueError("You have to specify fixers "
                                          "for %s in %s" %
-                                         (group_name, name))
+                                         (group_name, activity.name))
 
                     for fixer in group_options['fixers']:
                         for plugin_name, options in fixer.iteritems():
                             options = options or {}
-                            options['activity_name'] = name
+                            options['activity_name'] = activity.name
                             options.update(group_options)
                             options.pop('fixers')
 
@@ -226,6 +227,6 @@ class Activity(object):
                 raise ValueError("Activity %s has name clash in %s for "
                                  "the following identifiers: %s. "
                                  "Use the export_as option to differentiate." %
-                                 (name, type_name, duplicates))
+                                 (activity.name, type_name, duplicates))
 
         return activity
