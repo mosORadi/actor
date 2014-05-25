@@ -26,14 +26,17 @@ class SetHamsterActivityFixer(IFixer):
 
     def is_already_set(self):
         facts = self.interface.GetTodaysFacts()
-        last_fact = facts[-1] if facts else None
 
-        last_fact_string = "%s@%s" % (last_fact[4], last_fact[6])
+        if facts:
+            last_fact = facts[-1] if facts else None
+            last_fact_string = "%s@%s" % (last_fact[4], last_fact[6])
 
-        # We use substring search here to support setting activity of the form
-        # activity@Project, description
-        # since we generate only activity@Project
-        return last_fact_string in self.options.get('activity', '')
+            # We use substring search here to support setting activity
+            # of the form activity@Project, description
+            # since we generate only activity@Project
+            return last_fact_string in self.options.get('activity', '')
+        else:
+            return False
 
     def set_activity(self):
         activity = self.options.get('activity', 'activity@Sample')
