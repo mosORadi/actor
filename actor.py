@@ -50,7 +50,7 @@ class Actor(object):
                 activity_definitions = yaml.load(f)
 
                 for config in activity_definitions:
-                    activity = Activity.from_yaml(config)
+                    activity = Activity.from_yaml(config, self)
                     self.activities.append(activity)
 
     def check_sleep_file(self):
@@ -110,7 +110,7 @@ class Activity(object):
         self.fixers = []
 
     @classmethod
-    def from_yaml(cls, config):
+    def from_yaml(cls, config, actor):
         definitions = [(name, details) for (name, details)
                                        in config.iteritems()]
         assert len(definitions) == 1
