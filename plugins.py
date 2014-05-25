@@ -1,3 +1,5 @@
+import logging
+
 class PluginMount(type):
     def __init__(cls, name, bases, attrs):
         if not hasattr(cls, 'plugins'):
@@ -39,6 +41,26 @@ class IPlugin(object):
                              "for %s in %s : %s" % (self.__class__.__name__,
                                                     options['activity_name'],
                                                     list(extra_options)))
+
+    def log(self, log_func, message):
+        log_func("%s : %s: %s" % (self.options['activity_name'],
+                                  self.__class__.__name__,
+                                  message))
+
+    def debug(self, message):
+        self.log(logging.debug, message)
+
+    def info(self, message):
+        self.log(logging.info, message)
+
+    def warning(self, message):
+        self.log(logging.warning, message)
+
+    def error(self, message):
+        self.log(logging.error, message)
+
+    def critical(self, message):
+        self.log(logging.critical, message)
 
     def set_export_as(self, **options):
         """
