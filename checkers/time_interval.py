@@ -31,5 +31,7 @@ class TimeIntervalChecker(IChecker):
 
     def check(self, **reports):
         time = datetime.datetime.strptime(reports['time'], "%H.%M")
-        
-        return self.start <= time and time < self.end
+        time_shifted = time + datetime.timedelta(days=1)
+
+        return ((self.start <= time and time < self.end) or
+                (self.start <= time_shifted and time_shifted < self.end))
