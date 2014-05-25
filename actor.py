@@ -27,6 +27,15 @@ class Actor(object):
     def __init__(self):
         self.activities = []
 
+    def main(self):
+        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+        self.load_configuration()
+
+        loop = gobject.MainLoop()
+        gobject.timeout_add(2000, self.check_everything)
+        loop.run()
+
     def get_plugin(self, name, category):
         plugin_candidates = [plugin for plugin in category.plugins
                              if plugin.__name__ == name]
@@ -204,20 +213,3 @@ class Activity(object):
                                  (name, type_name, duplicates))
 
         return activity
-
-
-def main():
-
-    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-
-    global actor
-    actor = Actor()
-    actor.load_configuration()
-
-    loop = gobject.MainLoop()
-    gobject.timeout_add(2000, actor.check_everything)
-    loop.run()
-
-
-if __name__ == '__main__':
-    main()
