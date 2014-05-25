@@ -9,8 +9,8 @@ class ActorDaemon(object):
 
     def __init__(self):
         self.stdin_path = '/dev/null'
-        self.stdout_path = os.path.join(config.HOME_DIR, 'actor-output')
-        self.stderr_path = os.path.join(config.HOME_DIR, 'actor-errors')
+        self.stdout_path = '/dev/tty'
+        self.stderr_path = '/dev/tty'
         self.pidfile_path = os.path.join(config.HOME_DIR, 'actor.pid')
         self.pidfile_timeout = 5
 
