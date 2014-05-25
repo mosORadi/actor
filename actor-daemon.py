@@ -1,17 +1,27 @@
-#import os
-#import grp
-#import signal
-import daemon
-import lockfile
+#!/usr/bin/python
 
-from actor import Actor
+import config
+import os
 
-daemon_context = daemon.DaemonContext(
-    working_directory='/var/lib/actor',
-    pidfile=lockfile.FileLock('/var/run/actor.pid'),
-    )
+from daemon import runner
 
-actor = Actor()
+class ActorDaemon(object):
 
-with daemon_context:
-    actor.main()
+    def __init__(self):
+        self.stdin_path = '/dev/null'
+        self.stdout_path = os.path.join(config.HOME_DIR, 'actor-output')
+        self.stderr_path = os.path.join(config.HOME_DIR, 'actor-errors')
+        self.pidfile_path = os.path.join(config.HOME_DIR, 'actor.pid')
+        self.pidfile_timeout = 5
+
+    def run(self):
+        # Since Actor can connect from plugins to sockets,
+        # we need to do the import inside the DaemonContext
+        from actor import Actor
+        actor = Actor()
+        actor.main()
+
+app = ActorDaemon()
+daemon_runner = runner.DaemonRunner(app)
+daemon_runner.do_action()
+
