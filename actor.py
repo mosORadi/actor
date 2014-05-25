@@ -28,13 +28,30 @@ class Actor(object):
         self.activities = []
 
     def main(self):
+        # Setup Actor logging
+        logging.basicConfig(filename=os.path.join(HOME_DIR, 'actor.log'),
+                            format='%(asctime)s: %(levelname)s: %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S %p',
+                            level=logging.DEBUG)
+
+        # Forward all exceptions to the log
+        sys.excepthook = self.log_exception
+
+        # Start dbus mainloop
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
+        # Load the Actor configuration
         self.load_configuration()
 
+        # Start the main loop
         loop = gobject.MainLoop()
         gobject.timeout_add(2000, self.check_everything)
         loop.run()
+
+    def log_exception(self, exception_type, value, traceback):
+        logging.error("Exception: %s" % exception_type)
+        logging.error("Value: %s" % value)
+        logging.error("Traceback: %s" % traceback)
 
     def get_plugin(self, name, category):
         plugin_candidates = [plugin for plugin in category.plugins
@@ -45,9 +62,6 @@ class Actor(object):
         else:
             raise ValueError("Could not find %s plugin of name: %s"
                               % (category.__name__, name))
-
-    def do_main_program(self):
-        self.check_reporters()
 
     def load_configuration(self):
         yaml_config_paths = [os.path.join(CONFIG_DIR, path)
@@ -87,14 +101,16 @@ class Actor(object):
             reports = {reporter.export_as: reporter.report()
                        for reporter in activity.reporters}
 
-            print reports
+            logging.debug("Reports:")
+            for k,v in reports.iteritems():
+                logging.debug("%s : %s" % (k, v))
 
             # Determine which checkers approve the situation
             active_checkers = [checker.export_as
                                for checker in activity.checkers
                                if checker.check_raw(**reports)]
 
-            print active_checkers
+            logging.debug("Active checkers: %s" % ','.join(active_checkers))
 
             # Run all the fixers that were triggered
             # By default fixer needs all the checkers defined to be active
