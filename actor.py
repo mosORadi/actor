@@ -7,6 +7,7 @@ import sys
 import logging
 import time
 import hashlib
+import traceback
 
 import gobject
 import dbus
@@ -48,7 +49,7 @@ class Actor(object):
         gobject.timeout_add(2000, self.check_everything)
         loop.run()
 
-    def log_exception(self, exception_type, value, traceback):
+    def log_exception(self, exception_type, value, tb):
         logging.error("Exception: %s" % exception_type)
         logging.error("Value: %s" % value)
         logging.error("Traceback: %s" % traceback.format_exc())
