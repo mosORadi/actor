@@ -6,10 +6,13 @@ class ActiveWindowProcessNameReporter(ActiveWindowPidReporter):
 
     def report(self):
         pid = super(ActiveWindowProcessNameReporter, self).report()
-        try:
-            with open('/proc/%d/cmdline' % pid, 'r') as f:
-                name = f.read()
-        except IOError:
-            name = ''
+        name = None
 
-        return name
+        if pid is not None:
+            try:
+                with open('/proc/%d/cmdline' % pid, 'r') as f:
+                    name = f.read()
+            except IOError:
+                pass
+
+        return name or ''
