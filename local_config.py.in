@@ -1,3 +1,11 @@
+# Any process that shares the user session you are accessing. This is
+# here to provide a workaround so that actor can connect to your
+# dbus session bus, it reads the environment variable of DBUS
+# session bus from environment of the desktop process configured here.
+# For KDE users, good desktop process plasma-desktop.
+
+DESKTOP_PROCESS = "plasma-desktop"
+
 # To set the correct Sleep hash, do the following
 
 # 1.) Make up a sleep phrase. This is a sentence you need to write
