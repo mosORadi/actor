@@ -1,0 +1,21 @@
+# Copy this to .config/systemd/user/actor.service
+
+# Change the filesystem paths to reflect your home
+# directory and the actor location
+
+# Enable with systemctl --user enable actor.service
+# Start with systemctl --user start actor.service
+[Unit]
+Description=Activity Monitor Daemon
+After=graphical.target
+
+[Service]
+Type=forking
+Environment=DISPLAY=:0
+ExecStart=/your/path/to/actor/actor-daemon.py start
+PIDFile=/home/yourusername/actor.pid
+Restart=always
+RestartSec=8s
+
+[Install]
+WantedBy=default.target
