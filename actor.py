@@ -8,6 +8,7 @@ import logging
 import time
 import hashlib
 import traceback
+import re
 
 import gobject
 import dbus
@@ -111,23 +112,18 @@ class Actor(object):
             logging.debug("")
 
             # Determine which checkers approve the situation
-            active_checkers = [checker.export_as
-                               for checker in activity.checkers
-                               if checker.check_raw(**reports)]
+            checker_state = {checker.export_as: checker.check_raw(**reports)
+                             for checker in activity.checkers}
 
-            logging.debug("%s: Active checkers: %s" % (activity.name,
-                                                       ','.join(active_checkers)))
+            logging.debug("%s: Active checkers: %s" % (
+                 activity.name,
+                 ','.join([c for c, s in checker_state.iteritems() if s])
+            ))
 
             # Run all the fixers that were triggered
             # By default fixer needs all the checkers defined to be active
             for fixer in activity.fixers:
-                all_triggers_active = (set(fixer.triggered_by)
-                                       .issubset(set(active_checkers)))
-                any_antitrigger_active = any([checker in active_checkers
-                                              for checker
-                                              in fixer.anti_triggered_by])
-
-                if all_triggers_active and not any_antitrigger_active:
+                if eval(fixer.options['triggered_by']):
                     fixer.fix_raw(**reports)
 
         return True
@@ -189,7 +185,10 @@ class Activity(object):
                     options['activity_name'] = activity.name
 
                     if 'triggered_by' not in options:
-                        options['triggered_by'] = all_checker_names
+                        # Since we're using formulas now, we need to construct
+                        # formula which is valid only if all checkers are true
+                        all_active_formula = ' and '.join(all_checker_names)
+                        options['triggered_by'] = all_active_formula
 
                     fixer_plugin = actor.get_plugin(plugin_name,
                                                     category=IFixer)
@@ -201,7 +200,10 @@ class Activity(object):
                 for group_name, group_options in group_info.iteritems():
 
                     if 'triggered_by' not in group_options:
-                        group_options['triggered_by'] = all_checker_names
+                        # Since we're using formulas now, we need to construct
+                        # formula which is valid only if all checkers are true
+                        all_active_formula = ' and '.join(all_checker_names)
+                        group_options['triggered_by'] = all_active_formula
 
                     if 'fixers' not in group_options:
                         raise ValueError("You have to specify fixers "
@@ -234,5 +236,24 @@ class Activity(object):
                                  "the following identifiers: %s. "
                                  "Use the export_as option to differentiate." %
                                  (activity.name, type_name, duplicates))
+
+        # Check that all checkers and fixers have valid triggers
+        token_regex = "(?<![a-z_])(?!and |or |not )(?P<token>[a-z_]+)(?=[ )]|$)"
+
+
+        for fixer in activity.fixers:
+            trigger = fixer.options['triggered_by']
+
+            references = set(re.findall(token_regex, trigger))
+            checkers_set = set(all_checker_names)
+
+            # Check if any reference is not a checker name
+            if references - checkers_set:
+                raise ValueError("The following references are "
+                                 "not checker names: %s" %
+                                 ', '.join(references - checkers_set))
+
+            trigger = re.sub(token_regex, "checker_state.get('\g<token>')", trigger)
+            fixer.options['triggered_by'] = trigger
 
         return activity
