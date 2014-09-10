@@ -152,7 +152,7 @@ class IFixer(IPlugin):
 
     __metaclass__ = PluginMount
     required_framework_options = ['activity_name', 'triggered_by']
-    optional_framework_options = ['anti_triggered_by', 'inputs']
+    optional_framework_options = ['inputs']
 
     def __init__(self, **options):
         """
@@ -162,8 +162,6 @@ class IFixer(IPlugin):
         super(IFixer, self).__init__(**options)
 
         self.triggered_by = options['triggered_by']
-        self.anti_triggered_by = options.get('anti_triggered_by', [])
-
 
     def fix(self, **reports):
         """
