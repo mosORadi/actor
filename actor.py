@@ -238,7 +238,7 @@ class Activity(object):
                                  (activity.name, type_name, duplicates))
 
         # Check that all checkers and fixers have valid triggers
-        token_regex = "(?<![a-z_])(?!and |or |not )(?P<token>[a-z_]+)(?=[ )]|$)"
+        token_regex = "(?<![a-z_0-9])(?!and |or |not )(?P<token>[a-z_0-9]+)(?=[ )]|$)"
 
 
         for fixer in activity.fixers:
