@@ -1,6 +1,8 @@
 AcTor
 -----
 
+![AcTor](https://raw.githubusercontent.com/tbabej/actor/master/actor-logo.png  "Activity moniTor daemon")
+
 AcTor, or Activity Monitor Daemon, is a extremely pluggable deamon that
 monitors activity on your computer and executes user-defined actions 
 depending on the input.
@@ -46,3 +48,9 @@ plugs the output to the only specified checker (TimeIntervalChecker)
 and if this checker evaluates to true, the only fixer specified
 (LockScreenFixer) is run. Say goodbye to your computer from 9.30
 to 10.00. It's time for a little exercise!
+
+
+Attribution
+-----------
+
+The AcTor logo is based on icons from thenounproject, that were released under public domain.
