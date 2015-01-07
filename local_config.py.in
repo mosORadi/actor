@@ -21,6 +21,9 @@ DESKTOP_PROCESS = "plasma-desktop"
 
 # 3.) Hardcode the hash printed here.
 
+# 4.) Remove the ~/actor-sleep file so that you have to retype the
+#     secret phrase again.
+
 SLEEP_HASH = 'your-sleep-hashphrase-sha1-hash'
 
 import os
