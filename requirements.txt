@@ -1,2 +1,2 @@
-pygobject
+# pygobject, install via package manager
 PyYAML
