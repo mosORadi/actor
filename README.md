@@ -1,5 +1,8 @@
 AcTor
 -----
+[![Travis build status](https://travis-ci.org/tbabej/actor.svg?branch=master)](https://travis-ci.org/tbabej/actor)
+[![Coverage Status](https://coveralls.io/repos/tbabej/actor/badge.svg?branch=master)](https://coveralls.io/r/tbabej/actor?branch=master)
+[![Code Health](https://landscape.io/github/tbabej/actor/master/landscape.svg?style=flat)](https://landscape.io/github/tbabej/actor/master)
 
 ![AcTor](https://raw.githubusercontent.com/tbabej/actor/master/actor-logo.png  "Activity moniTor daemon")
 
