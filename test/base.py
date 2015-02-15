@@ -11,16 +11,24 @@ class PluginTestCase(TestCase):
         super(PluginTestCase, self).__init__(*args, **kwargs)
 
     def setUp(self):
+        # Update settings from the parent class instance
+        parent_options = getattr(self.__class__, 'options', dict())
+        self.options.update(parent_options)
+
+        # Load the plugin
         module_name = '{0}s.{1}'.format(self.plugin_type, self.module_name)
         module = importlib.import_module(module_name)
         plugin_class = getattr(module, self.class_name)
         self.plugin = plugin_class(activity_name="test", **self.options)
 
+
 class ReporterTestCase(PluginTestCase):
     plugin_type = 'reporter'
 
+
 class CheckerTestCase(PluginTestCase):
     plugin_type = 'checker'
+
 
 class FixerTestCase(PluginTestCase):
     plugin_type = 'fixer'
