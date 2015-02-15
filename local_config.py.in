@@ -27,6 +27,7 @@ DESKTOP_PROCESS = "plasma-desktop"
 SLEEP_HASH = 'your-sleep-hashphrase-sha1-hash'
 
 import os
+import hashlib
 
 def generate_hash():
     HOME_DIR = os.path.expanduser("~")
@@ -35,3 +36,4 @@ def generate_hash():
         with open(sleep_file_path, 'r') as f:
             content = f.readlines()[0].strip()
             content_hash = hashlib.sha1(content).hexdigest()
+            return content_hash
