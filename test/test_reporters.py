@@ -1,6 +1,9 @@
 from datetime import datetime
 import tempfile
+import os
+import dbus.mainloop.glib
 from test.base import ReporterTestCase
+from util import run
 
 
 class TimeReporterTest(ReporterTestCase):
@@ -63,3 +66,38 @@ class FileContentReporterTest(ReporterTestCase):
         assert "aaa" in file_content
         assert "bbb" in file_content
         assert "ccc" in file_content
+
+
+class HamsterActivityReporterTest(ReporterTestCase):
+    class_name = 'HamsterActivityReporter'
+    module_name = 'hamster'
+
+    def setUp(self):
+        run(['killall', 'hamster-service'])
+        hamster_db_file = os.path.expanduser("~/.local/share/hamster-applet/hamster.db")
+
+        if os.path.isfile(hamster_db_file):
+            os.rename(hamster_db_file, hamster_db_file + "-backup-actor-tests")
+
+        run(['hamster', 'start', "something@Home"])
+        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+        super(HamsterActivityReporterTest, self).setUp()
+
+    def tearDown(self):
+        run(['killall', 'hamster-service'])
+
+        if os.path.isfile(hamster_db_file):
+            hamster_db_file = os.path.expanduser("~/.local/share/hamster-applet/hamster.db")
+
+        os.rename(hamster_db_file + "-backup-actor-tests", hamster_db_file)
+        run(['hamster', 'current'])
+
+    def test_correct_activity(self):
+        assert self.plugin.report() == "something@Home"
+
+        run(['hamster', 'start', 'other@Home'])
+
+        # We need to update the activity manually, since tests
+        # do not listen to the DBUS signals
+        self.plugin.get_current_activity()
+        assert self.plugin.report() == "other@Home"
