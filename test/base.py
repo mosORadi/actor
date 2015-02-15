@@ -2,10 +2,13 @@ import importlib
 from unittest import TestCase
 
 class PluginTestCase(TestCase):
-    plugin_type = None
-    module_name = None
     class_name = None
-    options = {}
+    module_name = None
+    plugin_type = None
+
+    def __init__(self, *args, **kwargs):
+        self.options = {}
+        super(PluginTestCase, self).__init__(*args, **kwargs)
 
     def setUp(self):
         module_name = '{0}s.{1}'.format(self.plugin_type, self.module_name)
