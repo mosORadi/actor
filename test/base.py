@@ -18,8 +18,11 @@ class PluginTestCase(TestCase):
         # Load the plugin
         module_name = '{0}s.{1}'.format(self.plugin_type, self.module_name)
         module = importlib.import_module(module_name)
-        plugin_class = getattr(module, self.class_name)
-        self.plugin = plugin_class(activity_name="test", **self.options)
+        self.plugin_class = getattr(module, self.class_name)
+        self.initialize(self.options)
+
+    def initialize(self, options):
+        self.plugin = self.plugin_class(activity_name="test", **options)
 
 
 class ReporterTestCase(PluginTestCase):
