@@ -9,6 +9,7 @@ import time
 import hashlib
 import traceback
 import re
+import importlib
 
 import gobject
 import dbus
@@ -16,9 +17,6 @@ import dbus.mainloop.glib
 import yaml
 
 from plugins import IReporter, IChecker, IFixer
-from reporters import *
-from checkers import *
-from fixers import *
 
 from config import CONFIG_DIR, HOME_DIR
 from local_config import SLEEP_HASH
@@ -42,6 +40,9 @@ class Actor(object):
         # Start dbus mainloop
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
+        # Load the plugins
+        self.import_plugins()
+
         # Load the Actor configuration
         self.load_configuration()
 
@@ -54,6 +55,23 @@ class Actor(object):
         logging.error("Exception: %s" % exception_type)
         logging.error("Value: %s" % value)
         logging.error("Traceback: %s" % traceback.format_exc())
+
+    def import_plugins(self):
+        import reporters, checkers, fixers
+        categories = [reporters, checkers, fixers]
+
+        for category in categories:
+            for module in category.__all__:
+                try:
+                    module_id = "{0}.{1}".format(category.__name__, module)
+                    importlib.import_module(module_id)
+                    logging.debug(module_id + " loaded successfully.")
+                except Exception, e:
+                    logging.warning("The {0} {1} module could not be loaded. "
+                                    "Increase verbosity level to see more "
+                                    "information."
+                                    .format(module, category.__name__[:-1]))
+                    logging.info(str(e))
 
     def get_plugin(self, name, category):
         plugin_candidates = [plugin for plugin in category.plugins
