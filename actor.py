@@ -275,3 +275,7 @@ class Activity(object):
             fixer.options['triggered_by'] = trigger
 
         return activity
+
+if __name__ == "__main__":
+    actor = Actor()
+    actor.main()
