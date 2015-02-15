@@ -33,6 +33,11 @@ class ActorDaemon(object):
         # we need to do the import inside the DaemonContext
         from actor import Actor
         actor = Actor()
+
+        # Forward all exceptions to the log
+        sys.excepthook = actor.log_exception
+
+        # Run the AcTor!
         actor.main()
 
 

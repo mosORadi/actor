@@ -34,9 +34,6 @@ class Actor(object):
                             datefmt='%m/%d/%Y %I:%M:%S %p',
                             level=logging.DEBUG)
 
-        # Forward all exceptions to the log
-        sys.excepthook = self.log_exception
-
         # Start dbus mainloop
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
