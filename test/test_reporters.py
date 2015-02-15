@@ -15,6 +15,19 @@ class TimeReporterTest(ReporterTestCase):
         assert time == datetime.now().strftime("%H.%M")
 
 
+class WeekdayReporterTest(ReporterTestCase):
+    class_name = 'WeekdayReporter'
+    module_name = 'weekday'
+
+    def test_weekday_reporter(self):
+        weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        output, _, _ = run(['date', '+%w'])
+        system_day = weekdays[int(output.strip())]
+
+        day = self.plugin.report()
+        assert day == system_day
+
+
 class ActiveWindowNameReporterTest(ReporterTestCase):
     class_name = 'ActiveWindowNameReporter'
     module_name = 'active_window_name'
