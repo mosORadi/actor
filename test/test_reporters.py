@@ -74,10 +74,10 @@ class HamsterActivityReporterTest(ReporterTestCase):
 
     def setUp(self):
         run(['killall', 'hamster-service'])
-        hamster_db_file = os.path.expanduser("~/.local/share/hamster-applet/hamster.db")
+        self.hamster_db_file = os.path.expanduser("~/.local/share/hamster-applet/hamster.db")
 
-        if os.path.isfile(hamster_db_file):
-            os.rename(hamster_db_file, hamster_db_file + "-backup-actor-tests")
+        if os.path.isfile(self.hamster_db_file):
+            os.rename(self.hamster_db_file, self.hamster_db_file + "-backup-actor-tests")
 
         run(['hamster', 'start', "something@Home"])
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
@@ -86,10 +86,9 @@ class HamsterActivityReporterTest(ReporterTestCase):
     def tearDown(self):
         run(['killall', 'hamster-service'])
 
-        if os.path.isfile(hamster_db_file):
-            hamster_db_file = os.path.expanduser("~/.local/share/hamster-applet/hamster.db")
+        if os.path.isfile(self.hamster_db_file + "-backup-actor-tests"):
+            os.rename(self.hamster_db_file + "-backup-actor-tests", self.hamster_db_file)
 
-        os.rename(hamster_db_file + "-backup-actor-tests", hamster_db_file)
         run(['hamster', 'current'])
 
     def test_correct_activity(self):
