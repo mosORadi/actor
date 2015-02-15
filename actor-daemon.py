@@ -37,6 +37,8 @@ class ActorDaemon(object):
         # Forward all exceptions to the log
         sys.excepthook = actor.log_exception
 
+        actor.setup_logging(deamon_mode=True)
+
         # Run the AcTor!
         actor.main()
 

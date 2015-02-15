@@ -28,12 +28,6 @@ class Actor(object):
         self.activities = []
 
     def main(self):
-        # Setup Actor logging
-        logging.basicConfig(filename=os.path.join(HOME_DIR, 'actor.log'),
-                            format='%(asctime)s: %(levelname)s: %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S %p',
-                            level=logging.DEBUG)
-
         # Start dbus mainloop
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
@@ -46,7 +40,19 @@ class Actor(object):
         # Start the main loop
         loop = gobject.MainLoop()
         gobject.timeout_add(2000, self.check_everything)
+        logging.info("AcTor started.")
         loop.run()
+
+    def setup_logging(self, daemon_mode=False, level=logging.WARNING):
+        # Setup Actor logging
+        config = dict(format='%(asctime)s: %(levelname)s: %(message)s',
+                      datefmt='%m/%d/%Y %I:%M:%S %p',
+                      level=level)
+
+        if daemon_mode:
+            config.update(dict(filename=os.path.join(HOME_DIR, 'actor.log')))
+
+        logging.basicConfig(**config)
 
     def log_exception(self, exception_type, value, tb):
         logging.error("Exception: %s" % exception_type)
@@ -275,4 +281,5 @@ class Activity(object):
 
 if __name__ == "__main__":
     actor = Actor()
+    actor.setup_logging()
     actor.main()
