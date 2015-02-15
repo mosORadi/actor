@@ -11,8 +11,8 @@ class TimeIntervalChecker(IChecker):
       - time - Current time in the format %H.%M
 
     Options:
-      - start : The start of the interval, H:M format
-      - end : The end of the interval, H:M format
+      - start : The start of the interval, H.M format
+      - end : The end of the interval, H.M format
     """
 
     export_as = 'time_interval'
