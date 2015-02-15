@@ -121,7 +121,7 @@ class IChecker(IPlugin):
     """Evaluates user activity depending on the input from the responders"""
 
     __metaclass__ = PluginMount
-    optional_framework_options = ['export_as', 'inputs', 'negate']
+    optional_framework_options = ['export_as', 'inputs']
 
     def __init__(self, **options):
         super(IChecker, self).__init__(**options)
@@ -139,14 +139,6 @@ class IChecker(IPlugin):
         """
         pass
 
-
-    def check_raw(self, **reports):
-        reports = self.get_redirected_reports(**reports)
-
-        if 'negate' in self.options:
-            return not self.check(**reports)
-        else:
-            return self.check(**reports)
 
 class IFixer(IPlugin):
 
