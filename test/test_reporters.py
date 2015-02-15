@@ -1,4 +1,5 @@
 from datetime import datetime
+import tempfile
 from test.base import ReporterTestCase
 
 
@@ -34,6 +35,31 @@ class ActiveWindowProcessNameReporterTest(ReporterTestCase):
     class_name = 'ActiveWindowProcessNameReporter'
     module_name = 'active_window_process_name'
 
-    def test_active_window_pid_reporter(self):
-        window_name = self.plugin.report()
-        assert type(window_name) == str
+    def test_active_window_process_name_reporter(self):
+        process_name = self.plugin.report()
+        assert type(process_name) == str
+        assert len(process_name) > 0
+
+
+class FileContentReporterTest(ReporterTestCase):
+    class_name = 'FileContentReporter'
+    module_name = 'file_content'
+
+    def setUp(self):
+        self.tempfile = tempfile.NamedTemporaryFile()
+        self.options.update({'path': self.tempfile.name})
+
+        self.tempfile.write("aaa\n")
+        self.tempfile.write("bbb\n")
+        self.tempfile.write("ccc\n")
+        self.tempfile.flush()
+
+        super(FileContentReporterTest, self).setUp()
+
+    def test_file_content_reporter(self):
+        file_content = self.plugin.report()
+        assert type(file_content) == str
+        assert len(file_content) > 0
+        assert "aaa" in file_content
+        assert "bbb" in file_content
+        assert "ccc" in file_content
