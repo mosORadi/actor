@@ -1,12 +1,13 @@
 language: python
 python:
-  - "2.6"
   - "2.7"
 install:
   - pip install coveralls
   - pip install pytest pytest-cov
-  - sudo apt-get install python-gi
+  - sudo apt-get install python-gi python-gobject python-dbus python-wnck libwnck-3-0 libwnck22
   - pip install -r requirements.txt
+virtualenv:
+    system_site_packages: true
 script:
   - py.test --cov . --cov-report term-missing
 after_script:
