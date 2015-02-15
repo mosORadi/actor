@@ -28,3 +28,12 @@ class ActiveWindowPidReporterTest(ReporterTestCase):
     def test_active_window_pid_reporter(self):
         pid = self.plugin.report()
         assert type(pid) == int
+
+
+class ActiveWindowProcessNameReporterTest(ReporterTestCase):
+    class_name = 'ActiveWindowProcessNameReporter'
+    module_name = 'active_window_process_name'
+
+    def test_active_window_pid_reporter(self):
+        window_name = self.plugin.report()
+        assert type(window_name) == str
