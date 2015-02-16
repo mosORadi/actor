@@ -2,8 +2,10 @@ language: python
 python:
   - "2.7"
 before_install:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+  - sleep 2
+  - gedit &
 install:
   - pip install coveralls
   - pip install pytest pytest-cov
