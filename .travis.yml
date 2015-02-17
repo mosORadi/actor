@@ -2,15 +2,30 @@ language: python
 python:
   - "2.7"
 before_install:
+  # Setup virtual framebuffer
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - sleep 2
-  - gedit &
+  # Setup mutter WM
+  - sudo apt-get --fix-missing install mutter
+  - dbus-launch mutter &
+  - sleep 3
 install:
+  # Install AcTor dependencies
+  - sudo apt-get --fix-missing install python-gi python-gobject python-dbus python-wnck libwnck-3-0
+  - pip install -r requirements.txt
+  # Install Hamster time tracker
+  - sudo add-apt-repository ppa:dylanmccall/hamster-time-tracker-git-stable -y
+  - sudo apt-get update
+  # Install testing dependencies
+  - sudo apt-get --fix-missing install hamster-time-tracker gedit gcalctool xdotool
   - pip install coveralls
   - pip install pytest pytest-cov
-  - sudo apt-get install python-gi python-gobject python-dbus python-wnck libwnck-3-0 libwnck22
-  - pip install -r requirements.txt
+  # Give the window manager some exercise
+  - gedit &
+  - for window in `xdotool search --name gedit`; do xdotool windowactivate $window || :; done
+  - sleep 1
+  - for window in `xdotool search --name gedit`; do xdotool windowkill $window || :; done
+  - sleep 1
 virtualenv:
     system_site_packages: true
 script:
