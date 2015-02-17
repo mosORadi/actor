@@ -19,9 +19,9 @@ class PluginTestCase(TestCase):
         module_name = '{0}s.{1}'.format(self.plugin_type, self.module_name)
         module = importlib.import_module(module_name)
         self.plugin_class = getattr(module, self.class_name)
-        self.initialize(self.options)
+        self.initialize(**self.options)
 
-    def initialize(self, options):
+    def initialize(self, **options):
         self.plugin = self.plugin_class(activity_name="test", **options)
 
 

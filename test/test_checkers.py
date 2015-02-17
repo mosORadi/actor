@@ -35,7 +35,7 @@ class TimeIntervalCheckerTest(CheckerTestCase):
         assert self.plugin.check(time='17.00') == False
 
     def test_time_interval_checker_overnight(self):
-        self.initialize({"start": "18.00", "end": "05.00"})
+        self.initialize(start="18.00", end="05.00")
         assert self.plugin.check(time='17.00') == False
         assert self.plugin.check(time='18.00') == True
         assert self.plugin.check(time='18.50') == True
