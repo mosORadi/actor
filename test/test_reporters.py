@@ -1,9 +1,12 @@
-from datetime import datetime
+import subprocess
 import tempfile
 import os
 import dbus.mainloop.glib
+
+from datetime import datetime
 from test.base import ReporterTestCase
 from util import run
+from time import sleep
 
 
 class TimeReporterTest(ReporterTestCase):
@@ -28,34 +31,125 @@ class WeekdayReporterTest(ReporterTestCase):
         assert day == system_day
 
 
-class ActiveWindowNameReporterTest(ReporterTestCase):
+class ActiveWindowReporterTest(ReporterTestCase):
+
+    def setUp(self):
+        super(ActiveWindowReporterTest, self).setUp()
+        self.close('gedit')
+        self.close('Calculator')
+        sleep(0.5)
+        subprocess.Popen(['gedit'])
+        subprocess.Popen(['gnome-calculator'])
+        sleep(0.5)
+
+    def tearDown(self):
+        self.close('gedit')
+        self.close('Calculator')
+        sleep(0.5)
+
+    def activate(self, title_part):
+        output = run(['xdotool', 'search', '--name', title_part])[0]
+        window_ids = output.strip().splitlines()
+        for window_id in window_ids:
+            errors = run(['xdotool', 'windowactivate', window_id])[1]
+        sleep(0.5)
+
+    def close(self, title_part):
+        output = run(['xdotool', 'search', '--name', title_part])[0]
+        window_ids = output.strip().splitlines()
+        for window_id in window_ids:
+            errors = run(['xdotool', 'windowkill', window_id])[1]
+        sleep(0.5)
+
+class ActiveWindowNameReporterTest(ActiveWindowReporterTest):
     class_name = 'ActiveWindowNameReporter'
     module_name = 'active_window_name'
 
     def test_active_window_name_reporter(self):
+        self.activate('gedit')
         window = self.plugin.report()
         assert type(window) == str
-        assert len(window) > 0
+        assert 'gedit' in window
 
+    def test_active_window_name_reporter_changing(self):
+        self.activate('gedit')
+        window = self.plugin.report()
+        assert type(window) == str
+        assert 'gedit' in window
 
-class ActiveWindowPidReporterTest(ReporterTestCase):
+        self.activate('Calculator')
+        window = self.plugin.report()
+        assert type(window) == str
+        assert 'Calculator' in window
+
+        self.activate('gedit')
+        window = self.plugin.report()
+        assert type(window) == str
+        assert 'gedit' in window
+
+class ActiveWindowPidReporterTest(ActiveWindowReporterTest):
     class_name = 'ActiveWindowPidReporter'
     module_name = 'active_window_pid'
 
+    def get_window_pid(self, title_part):
+        self.activate(title_part)
+        output = run(['xdotool', 'getwindowfocus', 'getwindowpid'])[0]
+        xdopid = int(output.strip())
+        return xdopid
+
+    def setUp(self):
+        super(ActiveWindowPidReporterTest, self).setUp()
+        self.gedit_pid = self.get_window_pid('gedit')
+        self.calc_pid = self.get_window_pid('Calculator')
+
     def test_active_window_pid_reporter(self):
+        self.activate('gedit')
         pid = self.plugin.report()
         assert type(pid) == int
+        assert pid == self.gedit_pid
+
+    def test_active_window_pid_reporter_changing(self):
+        self.activate('gedit')
+        pid = self.plugin.report()
+        assert type(pid) == int
+        assert pid == self.gedit_pid
+
+        self.activate('Calculator')
+        pid = self.plugin.report()
+        assert type(pid) == int
+        assert pid == self.calc_pid
+
+        self.activate('gedit')
+        pid = self.plugin.report()
+        assert type(pid) == int
+        assert pid == self.gedit_pid
 
 
-class ActiveWindowProcessNameReporterTest(ReporterTestCase):
+class ActiveWindowProcessNameReporterTest(ActiveWindowReporterTest):
     class_name = 'ActiveWindowProcessNameReporter'
     module_name = 'active_window_process_name'
 
-    def test_active_window_process_name_reporter(self):
-        process_name = self.plugin.report()
-        assert type(process_name) == str
-        assert len(process_name) > 0
+    def test_active_process_name_reporter(self):
+        self.activate('gedit')
+        process = self.plugin.report()
+        assert type(process) == str
+        assert 'gedit' in process
 
+    def test_active_process_name_reporter_changing(self):
+        self.activate('gedit')
+        process = self.plugin.report()
+        assert type(process) == str
+        assert 'gedit' in process
+
+        self.activate('Calculator')
+        process = self.plugin.report()
+        assert type(process) == str
+        assert 'gnome-calculator' in process
+
+        self.activate('gedit')
+        process = self.plugin.report()
+        assert type(process) == str
+        assert 'gedit' in process
 
 class FileContentReporterTest(ReporterTestCase):
     class_name = 'FileContentReporter'
@@ -93,6 +187,7 @@ class HamsterActivityReporterTest(ReporterTestCase):
             os.rename(self.hamster_db_file, self.hamster_db_file + "-backup-actor-tests")
 
         run(['hamster', 'start', "something@Home"])
+        sleep(1)
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
         super(HamsterActivityReporterTest, self).setUp()
 
