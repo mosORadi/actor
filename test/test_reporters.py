@@ -80,7 +80,8 @@ class ActiveWindowNameReporterTest(ActiveWindowReporterTest):
         self.activate('Calculator')
         window = self.plugin.report()
         assert type(window) == str
-        assert 'Calculator' in window
+        # The title depends on the package version
+        assert 'Calculator' in window or 'gnome-calculator' in window
 
         self.activate('gedit')
         window = self.plugin.report()
