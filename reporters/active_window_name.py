@@ -11,10 +11,11 @@ class ActiveWindowNameReporter(IReporter):
     def report(self):
         name = None
 
-        screen = wnck.screen_get_default()
-        screen.force_update()
         while gtk.events_pending():
             gtk.main_iteration()
+
+        screen = wnck.screen_get_default()
+        screen.force_update()
 
         if screen:
             active_window = screen.get_active_window()

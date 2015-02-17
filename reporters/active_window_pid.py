@@ -13,11 +13,12 @@ class ActiveWindowPidReporter(IReporter):
     def get_using_wnck(self):
         pid = None
 
+        while gtk.events_pending():
+            gtk.main_iteration(False)
+
         screen = wnck.screen_get_default()
         screen.force_update()
 
-        while gtk.events_pending():
-            gtk.main_iteration(False)
 
         if screen:
             active_window = screen.get_active_window()

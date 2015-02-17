@@ -1,5 +1,6 @@
 from active_window_pid import ActiveWindowPidReporter
 
+
 class ActiveWindowProcessNameReporter(ActiveWindowPidReporter):
 
     export_as = 'active_window_process_name'
