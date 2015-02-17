@@ -7,6 +7,7 @@ from datetime import datetime
 from test.base import ReporterTestCase
 from util import run
 from time import sleep
+from tasklib.task import TaskWarrior, Task
 
 
 class TimeReporterTest(ReporterTestCase):
@@ -209,3 +210,40 @@ class HamsterActivityReporterTest(ReporterTestCase):
         # do not listen to the DBUS signals
         self.plugin.get_current_activity()
         assert self.plugin.report() == "other@Home"
+
+
+class TaskDescriptionReporterTest(ReporterTestCase):
+    class_name = 'TaskDescriptionReporter'
+    module_name = 'taskwarrior'
+
+    def setUp(self):
+        self.data = tempfile.mkdtemp()
+        self.warrior = TaskWarrior(data_location=self.data)
+        super(TaskDescriptionReporterTest, self).setUp()
+
+    def initialize(self, **options):
+        warrior_options = {'data_location': self.data}
+
+        if not 'warrior_options' in options:
+            options['warrior_options'] = warrior_options
+        else:
+            options['warrior_options'].update(warrior_options)
+
+        self.plugin = self.plugin_class(
+                activity_name="test",
+                **options
+            )
+
+    def test_empty_tasklist(self):
+        assert self.plugin.report() == ''
+
+    def test_correct_description(self):
+        Task(self.warrior, description="test").save()
+        assert self.plugin.report() == "test"
+
+    def test_filtered_description(self):
+        self.initialize(filter=dict(project="work"))
+        Task(self.warrior, project="work", description="work task1").save()
+        Task(self.warrior, project="home", description="home task1").save()
+
+        assert self.plugin.report() == "work task1"
