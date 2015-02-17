@@ -1,6 +1,7 @@
 import dbus
 
 from plugins import IFixer
+from util import run
 
 
 class SuspendFixer(IFixer):
@@ -10,6 +11,7 @@ class SuspendFixer(IFixer):
 
     export_as = "suspend"
     interface = None
+    optional_plugin_options = ["enforced"]
 
     def suspend(self):
 
@@ -24,5 +26,11 @@ class SuspendFixer(IFixer):
 
         self.interface.Suspend()
 
+    def suspend_forced(self):
+        run(['sudo', 'pm-suspend'])
+
     def fix(self, **reports):
-        self.suspend()
+        if self.options.get('enforced'):
+            self.susupend_forced()
+        else:
+            self.suspend()
