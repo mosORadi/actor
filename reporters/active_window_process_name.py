@@ -8,10 +8,21 @@ class ActiveWindowProcessNameReporter(ActiveWindowPidReporter):
         pid = super(ActiveWindowProcessNameReporter, self).report()
         name = None
 
-        if pid is not None:
+        if pid is None:
+            return ''
+
+        # First try to read the cmdline
+        try:
+            with open('/proc/%d/cmdline' % pid, 'r') as f:
+                name = f.read().strip()
+        except IOError:
+            pass
+
+        # Fallback to comm
+        if name is None:
             try:
-                with open('/proc/%d/cmdline' % pid, 'r') as f:
-                    name = f.read()
+                with open('/proc/%d/comm' % pid, 'r') as f:
+                    name = f.read().strip()
             except IOError:
                 pass
 
