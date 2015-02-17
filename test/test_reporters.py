@@ -212,14 +212,13 @@ class HamsterActivityReporterTest(ReporterTestCase):
         assert self.plugin.report() == "other@Home"
 
 
-class TaskDescriptionReporterTest(ReporterTestCase):
-    class_name = 'TaskDescriptionReporter'
+class TaskTestBase(object):
     module_name = 'taskwarrior'
 
     def setUp(self):
         self.data = tempfile.mkdtemp()
         self.warrior = TaskWarrior(data_location=self.data)
-        super(TaskDescriptionReporterTest, self).setUp()
+        super(TaskTestBase, self).setUp()
 
     def initialize(self, **options):
         warrior_options = {'data_location': self.data}
@@ -234,6 +233,10 @@ class TaskDescriptionReporterTest(ReporterTestCase):
                 **options
             )
 
+
+class TaskDescriptionReporterTest(TaskTestBase, ReporterTestCase):
+    class_name = 'TaskDescriptionReporter'
+
     def test_empty_tasklist(self):
         assert self.plugin.report() == ''
 
@@ -247,3 +250,21 @@ class TaskDescriptionReporterTest(ReporterTestCase):
         Task(self.warrior, project="home", description="home task1").save()
 
         assert self.plugin.report() == "work task1"
+
+
+class TaskCountReporterTest(TaskTestBase, ReporterTestCase):
+    class_name = 'TaskCountReporter'
+
+    def test_empty_tasklist(self):
+        assert self.plugin.report() == 0
+
+    def test_correct_description(self):
+        Task(self.warrior, description="test").save()
+        assert self.plugin.report() == 1
+
+    def test_filtered_description(self):
+        self.initialize(filter=dict(project="work"))
+        Task(self.warrior, project="work", description="work task1").save()
+        Task(self.warrior, project="home", description="home task1").save()
+
+        assert self.plugin.report() == 1

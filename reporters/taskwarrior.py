@@ -4,7 +4,7 @@ from tasklib.task import TaskWarrior
 
 class TaskDescriptionReporter(IReporter):
 
-    export_as = 'tasks'
+    export_as = 'task_description'
     optional_plugin_options = ['filter', 'warrior_options']
 
     def __init__(self, **options):
@@ -19,3 +19,11 @@ class TaskDescriptionReporter(IReporter):
 
     def report(self):
         return ';'.join([str(t['description']) for t in self.get_tasks()])
+
+
+class TaskCountReporter(TaskDescriptionReporter):
+
+    export_as = 'task_count'
+
+    def report(self):
+        return len(self.get_tasks())
