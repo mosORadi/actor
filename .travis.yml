@@ -11,11 +11,24 @@ before_install:
   - sleep 3
 install:
   # Install AcTor dependencies
-  - sudo apt-get --fix-missing install python-gi python-gobject python-dbus python-wnck libwnck-3-0 task
+  - sudo apt-get --fix-missing install python-gi python-gobject python-dbus python-wnck libwnck-3-0
   - pip install -r requirements.txt
   # Install Hamster time tracker
   - sudo add-apt-repository ppa:dylanmccall/hamster-time-tracker-git-stable -y
   - sudo apt-get update
+  # Install TaskWarrior
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq build-essential cmake uuid-dev g++-4.8
+  - git clone https://git.tasktools.org/scm/tm/task.git
+  - pushd task
+  - git checkout v2.4.1
+  - git clean -dfx
+  - cmake .
+  - make
+  - sudo make install
+  - popd
+  - rm -rf task
   # Install testing dependencies
   - sudo apt-get --fix-missing install hamster-time-tracker gedit gcalctool xdotool
   - pip install coveralls
