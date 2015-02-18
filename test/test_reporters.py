@@ -21,7 +21,7 @@ class TimeReporterTest(ReporterTestCase):
 
 class WeekdayReporterTest(ReporterTestCase):
     class_name = 'WeekdayReporter'
-    module_name = 'weekday'
+    module_name = 'time'
 
     def test_weekday_reporter(self):
         weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -64,7 +64,7 @@ class ActiveWindowReporterTest(ReporterTestCase):
 
 class ActiveWindowNameReporterTest(ActiveWindowReporterTest):
     class_name = 'ActiveWindowNameReporter'
-    module_name = 'active_window_name'
+    module_name = 'active_window'
 
     def test_active_window_name_reporter(self):
         self.activate('gedit')
@@ -91,7 +91,7 @@ class ActiveWindowNameReporterTest(ActiveWindowReporterTest):
 
 class ActiveWindowPidReporterTest(ActiveWindowReporterTest):
     class_name = 'ActiveWindowPidReporter'
-    module_name = 'active_window_pid'
+    module_name = 'active_window'
 
     def get_window_pid(self, title_part):
         self.activate(title_part)
@@ -129,7 +129,7 @@ class ActiveWindowPidReporterTest(ActiveWindowReporterTest):
 
 class ActiveWindowProcessNameReporterTest(ActiveWindowReporterTest):
     class_name = 'ActiveWindowProcessNameReporter'
-    module_name = 'active_window_process_name'
+    module_name = 'active_window'
 
     def test_active_process_name_reporter(self):
         self.activate('gedit')
