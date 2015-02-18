@@ -7,7 +7,7 @@ class DBusSignalReporter(IReporter):
     export_as = 'signal'
 
     def __init__(self, **options):
-        super(IReporter, self).__init__(**options)
+        super(DBusSignalReporter, self).__init__(**options)
         self.bus = dbus.SystemBus()
         self.bus.add_signal_receiver(
             self.save_signal,
