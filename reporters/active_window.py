@@ -6,26 +6,37 @@ from util import run
 from plugins import IReporter
 
 
-class ActiveWindowPidReporter(IReporter):
+class ActiveWindowNameReporter(IReporter):
 
-    export_as = 'active_window_pid'
+    export_as = 'active_window_name'
 
-    def get_using_wnck(self):
-        pid = None
+    def get_active_window(self):
 
         while gtk.events_pending():
-            gtk.main_iteration(False)
+            gtk.main_iteration()
 
         screen = wnck.screen_get_default()
         screen.force_update()
 
-
         if screen:
-            active_window = screen.get_active_window()
-            if active_window:
-                pid = active_window.get_pid()
+            return screen.get_active_window()
 
-        return int(pid)
+    def report(self):
+        window = self.get_active_window()
+
+        if window:
+            return window.get_name()
+
+
+class ActiveWindowPidReporter(ActiveWindowNameReporter):
+
+    export_as = 'active_window_pid'
+
+    def get_using_wnck(self):
+        window = self.get_active_window()
+
+        if window:
+            return window.get_pid()
 
     def get_using_xprop(self):
         output = run(['xprop', '-root'])[0]
@@ -53,7 +64,7 @@ class ActiveWindowPidReporter(IReporter):
         try:
             psutil.Process(pid)
             return True
-        except:
+        except Exception:
             return False
 
     def report(self):
@@ -63,3 +74,28 @@ class ActiveWindowPidReporter(IReporter):
             pid = self.get_using_xprop()
 
         return pid
+
+
+class ActiveWindowProcessNameReporter(ActiveWindowPidReporter):
+
+    export_as = 'active_window_process_name'
+
+    def report(self):
+        pid = super(ActiveWindowProcessNameReporter, self).report()
+
+        if pid is None:
+            return None
+
+        # First try to read the cmdline
+        try:
+            with open('/proc/%d/cmdline' % pid, 'r') as f:
+                return f.read().strip()
+        except IOError:
+            pass
+
+        # Fallback to comm
+        try:
+            with open('/proc/%d/comm' % pid, 'r') as f:
+                return f.read().strip()
+        except IOError:
+            pass
