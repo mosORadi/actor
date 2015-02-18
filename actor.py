@@ -1,11 +1,8 @@
 #!/usr/bin/python
 
-import copy
 import collections
 import os
-import sys
 import logging
-import time
 import hashlib
 import traceback
 import re
