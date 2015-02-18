@@ -52,9 +52,9 @@ class Actor(object):
         logging.basicConfig(**config)
 
     def log_exception(self, exception_type, value, tb):
-        logging.error("Exception: %s" % exception_type)
-        logging.error("Value: %s" % value)
-        logging.error("Traceback: %s" % traceback.format_exc())
+        logging.error("Exception: %s", exception_type)
+        logging.error("Value: %s", value)
+        logging.error("Traceback: %s", traceback.format_exc())
 
     def import_plugins(self):
         import reporters, checkers, fixers
