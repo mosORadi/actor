@@ -285,5 +285,5 @@ class Activity(object):
 
 if __name__ == "__main__":
     actor = Actor()
-    actor.setup_logging()
+    actor.setup_logging(level=logging.DEBUG)
     actor.main()
