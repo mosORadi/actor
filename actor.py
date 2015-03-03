@@ -84,9 +84,16 @@ class Actor(object):
                               % (category.__name__, name))
 
     def load_configuration(self):
+        # Create the config directory, if it does not exist
+        if not os.path.exists(CONFIG_DIR):
+            os.mkdir(CONFIG_DIR)
+
         yaml_config_paths = [os.path.join(CONFIG_DIR, path)
                              for path in os.listdir(CONFIG_DIR)
                              if path.endswith('.yaml')]
+
+        if not yaml_config_paths:
+            logging.warning("No YAML activity configuration available")
 
         for path in yaml_config_paths:
             with open(path, "r") as f:
