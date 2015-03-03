@@ -139,6 +139,10 @@ class IChecker(IPlugin):
         """
         pass
 
+    def check_raw(self, **reports):
+        redirected_reports = self.get_redirected_reports(**reports)
+        return self.check(**redirected_reports)
+
 
 class IFixer(IPlugin):
 

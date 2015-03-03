@@ -137,7 +137,7 @@ class Actor(object):
             logging.debug("")
 
             # Determine which checkers approve the situation
-            checker_state = {checker.export_as: checker.check(**reports)
+            checker_state = {checker.export_as: checker.check_raw(**reports)
                              for checker in activity.checkers}
 
             logging.debug("%s: Active checkers: %s" % (
