@@ -22,4 +22,4 @@ class RegularExpressionChecker(IChecker):
         self.re = re.compile(self.options.get('regexp'))
 
     def check(self, **reports):
-        return bool(re.search(self.re, reports['string']))
+        return bool(re.search(self.re, reports['string'] or ''))
