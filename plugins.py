@@ -8,7 +8,6 @@ class PluginMount(type):
             cls.plugins.append(cls)
 
 class IPlugin(object):
-    __metaclass__ = PluginMount
 
     required_framework_options = ['activity_name']
     optional_framework_options = []
@@ -115,6 +114,15 @@ class IReporter(IPlugin):
     def report(self):
         """Returns user activity value"""
         pass
+
+    def report_safe(self):
+        try:
+            return self.report()
+        except Exception as e:
+            # TODO: Log the failure
+            self.warning("Generation of the report failed: %s" % str(e))
+            return None
+
 
 
 class IChecker(IPlugin):
