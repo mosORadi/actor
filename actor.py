@@ -97,11 +97,9 @@ class Actor(object):
 
         for path in yaml_config_paths:
             with open(path, "r") as f:
-                activity_definitions = yaml.load(f)
-
-                for config in activity_definitions:
-                    activity = Activity.from_yaml(config, self)
-                    self.activities.append(activity)
+                definition = yaml.load(f)
+                activity = Activity.from_yaml(definition, self)
+                self.activities.append(activity)
 
     def check_sleep_file(self):
         """
@@ -138,88 +136,78 @@ class Activity(object):
 
     @classmethod
     def from_yaml(cls, config, actor):
-        definitions = [(name, details) for (name, details)
-                                       in config.iteritems()]
-        assert len(definitions) == 1
-        name = definitions[0][0]
-        details = definitions[0][1]
+        name = config['name']
 
-        reporters_info = details.get("reporters")
-        checkers_info = details.get("checkers")
-        fixers_info = details.get("fixers")
-        fixergroups_info = details.get("fixergroups")
+        reporters_info = config.get("reporters")
+        checkers_info = config.get("checkers")
+        fixers_info = config.get("fixers", {})
+        fixergroups_info = config.get("fixergroups", {})
 
         assert reporters_info is not None
         assert checkers_info is not None
-        assert fixers_info is not None or fixergroups_info is not None
+        assert fixers_info or fixergroups_info
 
         activity = cls(name=name)
 
-        for reporter_info in reporters_info:
-            for plugin_name, options in reporter_info.iteritems():
-                options = options or {}
-                options['activity_name'] = activity.name
+        for plugin_name, options in reporters_info.iteritems():
+            options = options or {}
+            options['activity_name'] = activity.name
 
-                reporter_plugin = actor.get_plugin(plugin_name,
-                                                   category=IReporter)
-                reporter = reporter_plugin(**options)
-                activity.reporters.append(reporter)
+            reporter_plugin = actor.get_plugin(plugin_name,
+                                               category=IReporter)
+            reporter = reporter_plugin(**options)
+            activity.reporters.append(reporter)
 
-        for checker_info in checkers_info:
-            for plugin_name, options in checker_info.iteritems():
-                options = options or {}
-                options['activity_name'] = activity.name
+        for plugin_name, options in checkers_info.iteritems():
+            options = options or {}
+            options['activity_name'] = activity.name
 
-                checker_plugin = actor.get_plugin(plugin_name,
-                                                  category=IChecker)
-                checker = checker_plugin(**options)
-                activity.checkers.append(checker)
+            checker_plugin = actor.get_plugin(plugin_name,
+                                              category=IChecker)
+            checker = checker_plugin(**options)
+            activity.checkers.append(checker)
 
         all_checker_names = [checker.export_as for checker in activity.checkers]
 
-        if fixers_info is not None:
-            for fixer_info in fixers_info:
-                for plugin_name, options in fixer_info.iteritems():
+        for plugin_name, options in fixers_info.iteritems():
+            options = options or {}
+            options['activity_name'] = activity.name
+
+            if 'triggered_by' not in options:
+                # Since we're using formulas now, we need to construct
+                # formula which is valid only if all checkers are true
+                all_active_formula = ' and '.join(all_checker_names)
+                options['triggered_by'] = all_active_formula
+
+            fixer_plugin = actor.get_plugin(plugin_name,
+                                            category=IFixer)
+            fixer = fixer_plugin(**options)
+            activity.fixers.append(fixer)
+
+        for group_name, group_options in fixergroups_info.iteritems():
+
+            if 'triggered_by' not in group_options:
+                # Since we're using formulas now, we need to construct
+                # formula which is valid only if all checkers are true
+                all_active_formula = ' and '.join(all_checker_names)
+                group_options['triggered_by'] = all_active_formula
+
+            if 'fixers' not in group_options:
+                raise ValueError("You have to specify fixers "
+                                 "for %s in %s" %
+                                 (group_name, activity.name))
+
+            for fixer in group_options['fixers']:
+                for plugin_name, options in fixer.iteritems():
                     options = options or {}
                     options['activity_name'] = activity.name
-
-                    if 'triggered_by' not in options:
-                        # Since we're using formulas now, we need to construct
-                        # formula which is valid only if all checkers are true
-                        all_active_formula = ' and '.join(all_checker_names)
-                        options['triggered_by'] = all_active_formula
+                    options.update(group_options)
+                    options.pop('fixers')
 
                     fixer_plugin = actor.get_plugin(plugin_name,
-                                                    category=IFixer)
+                                                category=IFixer)
                     fixer = fixer_plugin(**options)
                     activity.fixers.append(fixer)
-
-        if fixergroups_info is not None:
-            for group_info in fixergroups_info:
-                for group_name, group_options in group_info.iteritems():
-
-                    if 'triggered_by' not in group_options:
-                        # Since we're using formulas now, we need to construct
-                        # formula which is valid only if all checkers are true
-                        all_active_formula = ' and '.join(all_checker_names)
-                        group_options['triggered_by'] = all_active_formula
-
-                    if 'fixers' not in group_options:
-                        raise ValueError("You have to specify fixers "
-                                         "for %s in %s" %
-                                         (group_name, activity.name))
-
-                    for fixer in group_options['fixers']:
-                        for plugin_name, options in fixer.iteritems():
-                            options = options or {}
-                            options['activity_name'] = activity.name
-                            options.update(group_options)
-                            options.pop('fixers')
-
-                            fixer_plugin = actor.get_plugin(plugin_name,
-                                                        category=IFixer)
-                            fixer = fixer_plugin(**options)
-                            activity.fixers.append(fixer)
 
         # Check that all reporters and checkers have unique exports
         for plugins_by_type, type_name in [(activity.reporters, 'Reporters'),
