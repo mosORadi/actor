@@ -9,7 +9,7 @@ class PluginMount(type):
 
 class IPlugin(object):
 
-    required_framework_options = ['activity_name']
+    required_framework_options = ['rule_name']
     optional_framework_options = []
 
     required_plugin_options = []
@@ -29,7 +29,7 @@ class IPlugin(object):
             missing_options = required_options_set.difference(options_set)
             raise ValueError("The following options are missing "
                              "for %s in %s : %s" % (self.__class__.__name__,
-                                                    options['activity_name'],
+                                                    options['rule_name'],
                                                     list(missing_options)))
 
         # Make sure no ignored options are present
@@ -38,11 +38,11 @@ class IPlugin(object):
             extra_options = options_set.difference(all_options_set)
             raise ValueError("The following options are extra "
                              "for %s in %s : %s" % (self.__class__.__name__,
-                                                    options['activity_name'],
+                                                    options['rule_name'],
                                                     list(extra_options)))
 
     def log(self, log_func, message):
-        log_func("%s : %s: %s" % (self.options['activity_name'],
+        log_func("%s : %s: %s" % (self.options['rule_name'],
                                   self.__class__.__name__,
                                   message))
 
@@ -79,7 +79,7 @@ class IPlugin(object):
             raise ValueError(
                 "The identifier for the %s in %s is not set."
                 "Use the export_as option to specify unique identifier." %
-                (self.__class__.__name__, options['activity_name']))
+                (self.__class__.__name__, options['rule_name']))
 
         return options
 
@@ -155,7 +155,7 @@ class IChecker(IPlugin):
 class IFixer(IPlugin):
 
     __metaclass__ = PluginMount
-    required_framework_options = ['activity_name', 'triggered_by']
+    required_framework_options = ['rule_name', 'triggered_by']
     optional_framework_options = ['inputs']
 
     def __init__(self, **options):

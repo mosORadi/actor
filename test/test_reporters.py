@@ -229,7 +229,7 @@ class TaskTestBase(object):
             options['warrior_options'].update(warrior_options)
 
         self.plugin = self.plugin_class(
-                activity_name="test",
+                rule_name="test",
                 **options
             )
 

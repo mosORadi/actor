@@ -22,7 +22,7 @@ class PluginTestCase(TestCase):
         self.initialize(**self.options)
 
     def initialize(self, **options):
-        self.plugin = self.plugin_class(activity_name="test", **options)
+        self.plugin = self.plugin_class(rule_name="test", **options)
 
 
 class ReporterTestCase(PluginTestCase):

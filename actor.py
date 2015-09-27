@@ -22,7 +22,7 @@ from local_config import SLEEP_HASH
 class Actor(object):
 
     def __init__(self):
-        self.activities = []
+        self.rules = []
 
     def main(self):
         # Start dbus mainloop
@@ -93,11 +93,12 @@ class Actor(object):
                              if path.endswith('.yaml')]
 
         if not yaml_config_paths:
-            logging.warning("No YAML activity configuration available")
+            logging.warning("No YAML configuration available")
 
+        # Load the declarative YAML rules
         for path in yaml_config_paths:
-            activity = Activity.from_file(path, self)
-            self.activities.append(activity)
+            rule = DeclarativeRule.from_file(path, self)
+            self.rules.append(rule)
 
     def check_sleep_file(self):
         """
@@ -118,13 +119,13 @@ class Actor(object):
             logging.warning('Sleep file exists, skipping.')
             return True
 
-        for activity in self.activities:
-            activity.run()
+        for rule in self.rules:
+            rule.run()
 
         return True
 
 
-class Activity(object):
+class DeclarativeRule(object):
 
     def __init__(self, name):
         self.reporters = []
@@ -137,7 +138,7 @@ class Activity(object):
         with open(path, "r") as f:
             definition = yaml.load(f)
 
-        # If the file does not specify name for the activity,
+        # If the file does not specify name for the rule,
         # use filename
         if 'name' not in definition:
             definition['name'] = os.path.basename(path)
@@ -157,31 +158,31 @@ class Activity(object):
         assert checkers_info is not None
         assert fixers_info or fixergroups_info
 
-        activity = cls(name=name)
+        rule = cls(name=name)
 
         for plugin_name, options in reporters_info.iteritems():
             options = options or {}
-            options['activity_name'] = activity.name
+            options['rule_name'] = rule.name
 
             reporter_plugin = actor.get_plugin(plugin_name,
                                                category=IReporter)
             reporter = reporter_plugin(**options)
-            activity.reporters.append(reporter)
+            rule.reporters.append(reporter)
 
         for plugin_name, options in checkers_info.iteritems():
             options = options or {}
-            options['activity_name'] = activity.name
+            options['rule_name'] = rule.name
 
             checker_plugin = actor.get_plugin(plugin_name,
                                               category=IChecker)
             checker = checker_plugin(**options)
-            activity.checkers.append(checker)
+            rule.checkers.append(checker)
 
-        all_checker_names = [checker.export_as for checker in activity.checkers]
+        all_checker_names = [checker.export_as for checker in rule.checkers]
 
         for plugin_name, options in fixers_info.iteritems():
             options = options or {}
-            options['activity_name'] = activity.name
+            options['rule_name'] = rule.name
 
             if 'triggered_by' not in options:
                 # Since we're using formulas now, we need to construct
@@ -192,7 +193,7 @@ class Activity(object):
             fixer_plugin = actor.get_plugin(plugin_name,
                                             category=IFixer)
             fixer = fixer_plugin(**options)
-            activity.fixers.append(fixer)
+            rule.fixers.append(fixer)
 
         for group_name, group_options in fixergroups_info.iteritems():
 
@@ -205,23 +206,23 @@ class Activity(object):
             if 'fixers' not in group_options:
                 raise ValueError("You have to specify fixers "
                                  "for %s in %s" %
-                                 (group_name, activity.name))
+                                 (group_name, rule.name))
 
             for fixer in group_options['fixers']:
                 for plugin_name, options in fixer.iteritems():
                     options = options or {}
-                    options['activity_name'] = activity.name
+                    options['rule_name'] = rule.name
                     options.update(group_options)
                     options.pop('fixers')
 
                     fixer_plugin = actor.get_plugin(plugin_name,
                                                 category=IFixer)
                     fixer = fixer_plugin(**options)
-                    activity.fixers.append(fixer)
+                    rule.fixers.append(fixer)
 
         # Check that all reporters and checkers have unique exports
-        for plugins_by_type, type_name in [(activity.reporters, 'Reporters'),
-                                           (activity.checkers, 'Checkers')]:
+        for plugins_by_type, type_name in [(rule.reporters, 'Reporters'),
+                                           (rule.checkers, 'Checkers')]:
             plugin_names_list = [plugin.export_as
                                  for plugin in plugins_by_type]
             duplicates = [k for k, v
@@ -229,16 +230,16 @@ class Activity(object):
                           if v > 1]
 
             if duplicates:
-                raise ValueError("Activity %s has name clash in %s for "
+                raise ValueError("DeclarativeRule %s has name clash in %s for "
                                  "the following identifiers: %s. "
                                  "Use the export_as option to differentiate." %
-                                 (activity.name, type_name, duplicates))
+                                 (rule.name, type_name, duplicates))
 
         # Check that all checkers and fixers have valid triggers
         token_regex = "(?<![a-z_0-9])(?!and |or |not )(?P<token>[a-z_0-9]+)(?=[ )]|$)"
 
 
-        for fixer in activity.fixers:
+        for fixer in rule.fixers:
             trigger = fixer.options['triggered_by']
 
             references = set(re.findall(token_regex, trigger))
@@ -253,11 +254,11 @@ class Activity(object):
             trigger = re.sub(token_regex, "checker_state.get('\g<token>')", trigger)
             fixer.options['triggered_by'] = trigger
 
-        return activity
+        return rule
 
     def run(self):
-        logging.debug("%s: Checking activity %s" % (self.name,
-                                                    self.name))
+        logging.debug("%s: Checking rule %s" % (self.name,
+                                                self.name))
         logging.debug("")
 
         # Generate reports
