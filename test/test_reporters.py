@@ -7,7 +7,7 @@ from datetime import datetime
 from test.base import ReporterTestCase
 from util import run
 from time import sleep
-from tasklib.task import TaskWarrior, Task
+from tasklib import TaskWarrior, Task
 
 
 class TimeReporterTest(ReporterTestCase):
@@ -234,8 +234,8 @@ class TaskTestBase(object):
             )
 
 
-class TaskDescriptionReporterTest(TaskTestBase, ReporterTestCase):
-    class_name = 'TaskDescriptionReporter'
+class TaskWarriorReporterTest(TaskTestBase, ReporterTestCase):
+    class_name = 'TaskWarriorReporter'
 
     def test_empty_tasklist(self):
         assert self.plugin.report() == ''
