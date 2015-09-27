@@ -96,10 +96,8 @@ class Actor(object):
             logging.warning("No YAML activity configuration available")
 
         for path in yaml_config_paths:
-            with open(path, "r") as f:
-                definition = yaml.load(f)
-                activity = Activity.from_yaml(definition, self)
-                self.activities.append(activity)
+            activity = Activity.from_file(path, self)
+            self.activities.append(activity)
 
     def check_sleep_file(self):
         """
@@ -135,9 +133,21 @@ class Activity(object):
         self.name = name
 
     @classmethod
-    def from_yaml(cls, config, actor):
-        name = config['name']
+    def from_file(cls, path, actor):
+        with open(path, "r") as f:
+            definition = yaml.load(f)
 
+        # If the file does not specify name for the activity,
+        # use filename
+        if 'name' not in definition:
+            definition['name'] = os.path.basename(path)
+
+        return cls.from_yaml(definition, actor)
+
+    @classmethod
+    def from_yaml(cls, config, actor):
+
+        name = config.get("name")
         reporters_info = config.get("reporters")
         checkers_info = config.get("checkers")
         fixers_info = config.get("fixers", {})
