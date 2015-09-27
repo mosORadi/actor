@@ -1,27 +1,38 @@
 from plugins import IReporter
-from tasklib.task import TaskWarrior
+from tasklib import TaskWarrior
 
 
-class TaskDescriptionReporter(IReporter):
+class TaskWarriorReporter(IReporter):
 
-    export_as = 'task_description'
-    optional_plugin_options = ['filter', 'warrior_options']
+    export_as = 'tasks'
+    optional_plugin_options = ['filter', 'rawfilter', 'warrior_options']
 
     def __init__(self, **options):
-        super(TaskDescriptionReporter, self).__init__(**options)
+        super(TaskWarriorReporter, self).__init__(**options)
         self.task_filter = self.options.get('filter', dict())
-
+        self.raw_filter = self.options.get('rawfilter', [])
         warrior_options = self.options.get('warrior_options', dict())
         self.warrior = TaskWarrior(**warrior_options)
 
     def get_tasks(self):
-        return self.warrior.tasks.filter(**self.task_filter)
+        return self.warrior.tasks.filter(*self.raw_filter, **self.task_filter)
 
     def report(self):
         return ';'.join([str(t['description']) for t in self.get_tasks()])
 
 
-class TaskCountReporter(TaskDescriptionReporter):
+class TasksCompletedReporter(TaskWarriorReporter):
+
+    export_as = 'tasks_completed'
+
+    def get_tasks(self):
+        return self.warrior.tasks.completed().filter(
+                *self.raw_filter,
+                **self.task_filter
+        )
+
+
+class TaskCountReporter(TaskWarriorReporter):
 
     export_as = 'task_count'
 
