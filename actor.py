@@ -123,33 +123,7 @@ class Actor(object):
             return True
 
         for activity in self.activities:
-            logging.debug("%s: Checking activity %s" % (activity.name,
-                                                        activity.name))
-            logging.debug("")
-
-            # Generate reports
-            reports = {reporter.export_as: reporter.report()
-                       for reporter in activity.reporters}
-
-            logging.debug("%s: Reports:" % activity.name)
-            for k,v in reports.iteritems():
-                logging.debug("%s:     %s : %s" % (activity.name, k, v))
-            logging.debug("")
-
-            # Determine which checkers approve the situation
-            checker_state = {checker.export_as: checker.check_raw(**reports)
-                             for checker in activity.checkers}
-
-            logging.debug("%s: Active checkers: %s" % (
-                 activity.name,
-                 ','.join([c for c, s in checker_state.iteritems() if s])
-            ))
-
-            # Run all the fixers that were triggered
-            # By default fixer needs all the checkers defined to be active
-            for fixer in activity.fixers:
-                if eval(fixer.options['triggered_by']):
-                    fixer.fix_raw(**reports)
+            activity.run()
 
         return True
 
@@ -282,6 +256,35 @@ class Activity(object):
             fixer.options['triggered_by'] = trigger
 
         return activity
+
+    def run(self):
+        logging.debug("%s: Checking activity %s" % (self.name,
+                                                    self.name))
+        logging.debug("")
+
+        # Generate reports
+        reports = {reporter.export_as: reporter.report()
+                   for reporter in self.reporters}
+
+        logging.debug("%s: Reports:" % self.name)
+        for k,v in reports.iteritems():
+            logging.debug("%s:     %s : %s" % (self.name, k, v))
+        logging.debug("")
+
+        # Determine which checkers approve the situation
+        checker_state = {checker.export_as: checker.check_raw(**reports)
+                         for checker in self.checkers}
+
+        logging.debug("%s: Active checkers: %s" % (
+             self.name,
+             ','.join([c for c, s in checker_state.iteritems() if s])
+        ))
+
+        # Run all the fixers that were triggered
+        # By default fixer needs all the checkers defined to be active
+        for fixer in self.fixers:
+            if eval(fixer.options['triggered_by']):
+                fixer.fix_raw(**reports)
 
 if __name__ == "__main__":
     actor = Actor()
