@@ -173,13 +173,3 @@ class Fixer(Plugin):
     def fix_raw(self, **reports):
         reports = self.get_redirected_reports(**reports)
         return self.fix(**reports)
-
-
-class PythonRule(object):
-    """Performs custom python rule"""
-
-    __metaclass__ = PluginMount
-
-    def run(self):
-        """Evaluates custom python rule"""
-        pass
