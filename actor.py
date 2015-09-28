@@ -7,13 +7,14 @@ import hashlib
 import traceback
 import re
 import importlib
+import imp
 
 import gobject
 import dbus
 import dbus.mainloop.glib
 import yaml
 
-from plugins import Reporter, Checker, Fixer
+from plugins import Reporter, Checker, Fixer, PythonRule
 
 from config import CONFIG_DIR, HOME_DIR
 from local_config import SLEEP_HASH
@@ -88,17 +89,30 @@ class Actor(object):
         if not os.path.exists(CONFIG_DIR):
             os.mkdir(CONFIG_DIR)
 
+        # Load the declarative YAML rules
         yaml_config_paths = [os.path.join(CONFIG_DIR, path)
                              for path in os.listdir(CONFIG_DIR)
                              if path.endswith('.yaml')]
 
-        if not yaml_config_paths:
-            logging.warning("No YAML configuration available")
-
-        # Load the declarative YAML rules
         for path in yaml_config_paths:
             rule = DeclarativeRule.from_file(path, self)
             self.rules.append(rule)
+
+        # Load the python rules files. They will be automatically
+        # added to the PythonRule pluginmount.
+        python_rules = [os.path.join(CONFIG_DIR, path)
+                        for path in os.listdir(CONFIG_DIR)
+                        if path.endswith('.py')]
+
+        for path in python_rules:
+            module_id = os.path.basename(path)
+            imp.load_source(module_id, path)
+
+        for rule_class in PythonRule.plugins:
+            self.rules.append(rule_class())
+
+        if not yaml_config_paths and not python_rules:
+            logging.warning("No YAML or Python rules available")
 
     def check_sleep_file(self):
         """
