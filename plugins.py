@@ -9,7 +9,7 @@ class PluginMount(type):
 
 class Plugin(object):
 
-    required_framework_options = ['rule_name']
+    required_framework_options = []
     optional_framework_options = []
 
     required_plugin_options = []
@@ -28,23 +28,19 @@ class Plugin(object):
         if not required_options_set.issubset(options_set):
             missing_options = required_options_set.difference(options_set)
             raise ValueError("The following options are missing "
-                             "for %s in %s : %s" % (self.__class__.__name__,
-                                                    options['rule_name'],
-                                                    list(missing_options)))
+                             "for %s: %s" % (self.__class__.__name__,
+                                             list(missing_options)))
 
         # Make sure no ignored options are present
         all_options_set = required_options_set.union(set(self.optional_options))
         if not options_set.issubset(all_options_set):
             extra_options = options_set.difference(all_options_set)
             raise ValueError("The following options are extra "
-                             "for %s in %s : %s" % (self.__class__.__name__,
-                                                    options['rule_name'],
-                                                    list(extra_options)))
+                             "for %s: %s" % (self.__class__.__name__,
+                                             list(extra_options)))
 
     def log(self, log_func, message):
-        log_func("%s : %s: %s" % (self.options['rule_name'],
-                                  self.__class__.__name__,
-                                  message))
+        log_func("%s: %s" % (self.__class__.__name__, message))
 
     def debug(self, message):
         self.log(logging.debug, message)
@@ -77,9 +73,9 @@ class Plugin(object):
 
         if self.export_as is None:
             raise ValueError(
-                "The identifier for the %s in %s is not set."
-                "Use the export_as option to specify unique identifier." %
-                (self.__class__.__name__, options['rule_name']))
+                "The identifier for the %s is not set."
+                "Use the export_as option to specify unique identifier."
+                % self.__class__.__name__)
 
         return options
 
@@ -155,7 +151,7 @@ class Checker(Plugin):
 class Fixer(Plugin):
 
     __metaclass__ = PluginMount
-    required_framework_options = ['rule_name', 'triggered_by']
+    required_framework_options = ['triggered_by']
     optional_framework_options = ['inputs']
 
     def __init__(self, **options):

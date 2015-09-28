@@ -176,8 +176,6 @@ class DeclarativeRule(object):
 
         for plugin_name, options in reporters_info.iteritems():
             options = options or {}
-            options['rule_name'] = rule.name
-
             reporter_plugin = actor.get_plugin(plugin_name,
                                                category=Reporter)
             reporter = reporter_plugin(**options)
@@ -185,8 +183,6 @@ class DeclarativeRule(object):
 
         for plugin_name, options in checkers_info.iteritems():
             options = options or {}
-            options['rule_name'] = rule.name
-
             checker_plugin = actor.get_plugin(plugin_name,
                                               category=Checker)
             checker = checker_plugin(**options)
@@ -196,7 +192,6 @@ class DeclarativeRule(object):
 
         for plugin_name, options in fixers_info.iteritems():
             options = options or {}
-            options['rule_name'] = rule.name
 
             if 'triggered_by' not in options:
                 # Since we're using formulas now, we need to construct
@@ -225,7 +220,6 @@ class DeclarativeRule(object):
             for fixer in group_options['fixers']:
                 for plugin_name, options in fixer.iteritems():
                     options = options or {}
-                    options['rule_name'] = rule.name
                     options.update(group_options)
                     options.pop('fixers')
 
