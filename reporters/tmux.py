@@ -1,10 +1,10 @@
-from plugins import IReporter
+from plugins import Reporter
 from util import run
 
 from psutil import Process
 
 
-class TmuxActiveSessionNameReporter(IReporter):
+class TmuxActiveSessionNameReporter(Reporter):
 
     export_as = 'tmux_active_sessions'
 

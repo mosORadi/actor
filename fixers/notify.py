@@ -1,9 +1,9 @@
 import dbus
 
-from plugins import IFixer
+from plugins import Fixer
 
 
-class NotifyFixer(IFixer):
+class NotifyFixer(Fixer):
     """
     Simple fixer, that sends a D-Bus notification.
 

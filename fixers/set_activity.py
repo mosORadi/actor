@@ -1,9 +1,9 @@
 import dbus
 
-from plugins import IFixer
+from plugins import Fixer
 
 
-class SetHamsterActivityFixer(IFixer):
+class SetHamsterActivityFixer(Fixer):
     """
     Simple fixer, that sets current activity in Hamster.
 

@@ -1,8 +1,8 @@
-from plugins import IFixer
+from plugins import Fixer
 from util import run
 
 
-class TmuxDetachFixer(IFixer):
+class TmuxDetachFixer(Fixer):
     """
     Detaches the active tmux session.
     """

@@ -1,8 +1,8 @@
-from plugins import IChecker
+from plugins import Checker
 
 import re
 
-class RegularExpressionChecker(IChecker):
+class RegularExpressionChecker(Checker):
     """
     Evaluates whether the input contains at least one
     occurence of the pattern searched for.

@@ -1,9 +1,9 @@
-from plugins import IChecker
+from plugins import Checker
 import dbus
 import datetime
 
 
-class HealthChecker(IChecker):
+class HealthChecker(Checker):
     """
     Returns false unless the checker has no health left. Damage is taken by
     receiving D-Bus HealthDecreseSignal on org.freedesktop.AcTor interface.

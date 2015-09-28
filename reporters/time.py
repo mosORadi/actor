@@ -1,8 +1,8 @@
 import datetime
-from plugins import IReporter
+from plugins import Reporter
 
 
-class TimeReporter(IReporter):
+class TimeReporter(Reporter):
 
     export_as = 'time'
 
@@ -11,7 +11,7 @@ class TimeReporter(IReporter):
         return time.strftime("%H.%M")
 
 
-class WeekdayReporter(IReporter):
+class WeekdayReporter(Reporter):
 
     export_as = 'weekday'
 

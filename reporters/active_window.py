@@ -3,10 +3,10 @@ import gtk
 import psutil
 from util import run
 
-from plugins import IReporter
+from plugins import Reporter
 
 
-class ActiveWindowNameReporter(IReporter):
+class ActiveWindowNameReporter(Reporter):
 
     export_as = 'active_window_name'
 

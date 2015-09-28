@@ -1,8 +1,8 @@
-from plugins import IReporter
+from plugins import Reporter
 from tasklib import TaskWarrior
 
 
-class TaskWarriorReporter(IReporter):
+class TaskWarriorReporter(Reporter):
 
     export_as = 'tasks'
     optional_plugin_options = ['filter', 'rawfilter', 'warrior_options']

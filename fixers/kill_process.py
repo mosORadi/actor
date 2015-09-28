@@ -1,10 +1,10 @@
 import os
 import signal
 
-from plugins import IFixer
+from plugins import Fixer
 
 
-class KillProcessFixer(IFixer):
+class KillProcessFixer(Fixer):
     """
     Simple fixer that kills a given PID.
     """

@@ -1,6 +1,6 @@
-from plugins import IChecker
+from plugins import Checker
 
-class HamsterActivityDailyDurationChecker(IChecker):
+class HamsterActivityDailyDurationChecker(Checker):
     """
     Checks whether a time limit for a particular activity has not been
     exceeded.
@@ -33,7 +33,7 @@ class HamsterActivityDailyDurationChecker(IChecker):
         return duration > self.limit
 
 
-class HamsterCategoryDailyDurationChecker(IChecker):
+class HamsterCategoryDailyDurationChecker(Checker):
     """
     Checks whether a time limit for a particular activity has not been
     exceeded.

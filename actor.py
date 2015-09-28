@@ -13,7 +13,7 @@ import dbus
 import dbus.mainloop.glib
 import yaml
 
-from plugins import IReporter, IChecker, IFixer
+from plugins import Reporter, Checker, Fixer
 
 from config import CONFIG_DIR, HOME_DIR
 from local_config import SLEEP_HASH
@@ -165,7 +165,7 @@ class DeclarativeRule(object):
             options['rule_name'] = rule.name
 
             reporter_plugin = actor.get_plugin(plugin_name,
-                                               category=IReporter)
+                                               category=Reporter)
             reporter = reporter_plugin(**options)
             rule.reporters.append(reporter)
 
@@ -174,7 +174,7 @@ class DeclarativeRule(object):
             options['rule_name'] = rule.name
 
             checker_plugin = actor.get_plugin(plugin_name,
-                                              category=IChecker)
+                                              category=Checker)
             checker = checker_plugin(**options)
             rule.checkers.append(checker)
 
@@ -191,7 +191,7 @@ class DeclarativeRule(object):
                 options['triggered_by'] = all_active_formula
 
             fixer_plugin = actor.get_plugin(plugin_name,
-                                            category=IFixer)
+                                            category=Fixer)
             fixer = fixer_plugin(**options)
             rule.fixers.append(fixer)
 
@@ -216,7 +216,7 @@ class DeclarativeRule(object):
                     options.pop('fixers')
 
                     fixer_plugin = actor.get_plugin(plugin_name,
-                                                category=IFixer)
+                                                category=Fixer)
                     fixer = fixer_plugin(**options)
                     rule.fixers.append(fixer)
 

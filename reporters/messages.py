@@ -1,8 +1,8 @@
-from plugins import IReporter
+from plugins import Reporter
 import dbus
 
 
-class MessagesReporter(IReporter):
+class MessagesReporter(Reporter):
     """
     Returns a list of raw sender names of users you have unread
     IM messages from.

@@ -1,4 +1,4 @@
-from plugins import IFixer
+from plugins import Fixer
 import dbus
 import dbus.service
 
@@ -13,7 +13,7 @@ class HealthDecreaseSignal(dbus.service.Object):
     def HealthDecreaseSignal(self, countdown_id):
         return countdown_id
 
-class HealthDecreaseFixer(IFixer):
+class HealthDecreaseFixer(Fixer):
     """
     Emits a D-Bus signal to decrease health on HealthChecker with
     the specified identifier.

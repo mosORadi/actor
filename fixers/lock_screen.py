@@ -1,9 +1,9 @@
 import dbus
 
-from plugins import IFixer
+from plugins import Fixer
 
 
-class LockScreenFixer(IFixer):
+class LockScreenFixer(Fixer):
     """
     Simple fixer that locks your screen.
     """

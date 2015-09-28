@@ -1,10 +1,10 @@
 import dbus
 
-from plugins import IFixer
+from plugins import Fixer
 from util import run
 
 
-class SuspendFixer(IFixer):
+class SuspendFixer(Fixer):
     """
     Simple fixer that suspends your workstation.
     """
@@ -39,7 +39,7 @@ class SuspendFixer(IFixer):
 import datetime
 
 
-class SuspendUntilFixer(IFixer):
+class SuspendUntilFixer(Fixer):
     """
     Simple fixer that suspends your workstation,
     until specified time, in %H.%M format.

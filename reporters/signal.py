@@ -1,8 +1,8 @@
-from plugins import IReporter
+from plugins import Reporter
 import dbus
 
 
-class DBusSignalReporter(IReporter):
+class DBusSignalReporter(Reporter):
     signal = None
     export_as = 'signal'
 

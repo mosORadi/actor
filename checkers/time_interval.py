@@ -1,8 +1,8 @@
-from plugins import IChecker
+from plugins import Checker
 
 import datetime
 
-class TimeIntervalChecker(IChecker):
+class TimeIntervalChecker(Checker):
     """
     Checks whether the reported timestamp is in the defined interval.
     (interval computed as <a,b) - start inclusive, end exclusive)

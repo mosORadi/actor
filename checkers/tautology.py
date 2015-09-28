@@ -1,7 +1,7 @@
-from plugins import IChecker
+from plugins import Checker
 
 
-class TautologyChecker(IChecker):
+class TautologyChecker(Checker):
     """
     Simple checker that always returns true.
 

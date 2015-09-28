@@ -1,9 +1,9 @@
-from plugins import IChecker
+from plugins import Checker
 import dbus
 import datetime
 
 
-class CountdownChecker(IChecker):
+class CountdownChecker(Checker):
     """
     Returns false unless countdown has finished. Countdown is started by
     emitting a D-Bus CountdownStartSignal on org.freedesktop.AcTor interface.

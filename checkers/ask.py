@@ -1,8 +1,8 @@
 import dbus
 
-from plugins import IChecker
+from plugins import Checker
 
-class NotificationAskChecker(IChecker):
+class NotificationAskChecker(Checker):
     """
     Simple checker, that sends a D-Bus notification to ask user yes/no question.
 

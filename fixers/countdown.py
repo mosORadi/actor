@@ -1,4 +1,4 @@
-from plugins import IFixer
+from plugins import Fixer
 import dbus
 import dbus.service
 
@@ -17,7 +17,7 @@ class CountdownTriggerSignal(dbus.service.Object):
     def CountdownResetSignal(self, countdown_id):
         return countdown_id
 
-class CountdownTriggerFixer(IFixer):
+class CountdownTriggerFixer(Fixer):
     """
     Emits a D-Bus signal to start countdown on CountdownChecker with
     the specified identifier.

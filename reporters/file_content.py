@@ -1,9 +1,9 @@
 import os
 
-from plugins import IReporter
+from plugins import Reporter
 
 
-class FileContentReporter(IReporter):
+class FileContentReporter(Reporter):
 
     export_as = 'file_content'
 

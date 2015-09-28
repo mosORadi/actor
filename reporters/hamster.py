@@ -1,8 +1,8 @@
-from plugins import IReporter
+from plugins import Reporter
 import dbus
 
 
-class HamsterActivityReporter(IReporter):
+class HamsterActivityReporter(Reporter):
     activity = None
 
     export_as = 'hamster'
@@ -36,7 +36,7 @@ class HamsterActivityReporter(IReporter):
         return str(self.activity or '')
 
 
-class HamsterActivityDailyDurationReporter(IReporter):
+class HamsterActivityDailyDurationReporter(Reporter):
     export_as = 'hamster_activity_daily_duration'
 
     def __init__(self, **options):

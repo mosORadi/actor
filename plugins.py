@@ -7,7 +7,7 @@ class PluginMount(type):
         else:
             cls.plugins.append(cls)
 
-class IPlugin(object):
+class Plugin(object):
 
     required_framework_options = ['rule_name']
     optional_framework_options = []
@@ -100,7 +100,7 @@ class IPlugin(object):
         return reports
 
 
-class IReporter(IPlugin):
+class Reporter(Plugin):
     """Reports user activity to the AcTor"""
 
     __metaclass__ = PluginMount
@@ -108,7 +108,7 @@ class IReporter(IPlugin):
     export_as = None
 
     def __init__(self, **options):
-        super(IReporter, self).__init__(**options)
+        super(Reporter, self).__init__(**options)
         self.options = self.set_export_as(**options)
 
     def report(self):
@@ -125,14 +125,14 @@ class IReporter(IPlugin):
 
 
 
-class IChecker(IPlugin):
+class Checker(Plugin):
     """Evaluates user activity depending on the input from the responders"""
 
     __metaclass__ = PluginMount
     optional_framework_options = ['export_as', 'inputs']
 
     def __init__(self, **options):
-        super(IChecker, self).__init__(**options)
+        super(Checker, self).__init__(**options)
         self.options = self.set_export_as(**options)
 
     def check(self, **reports):
@@ -152,7 +152,7 @@ class IChecker(IPlugin):
         return self.check(**redirected_reports)
 
 
-class IFixer(IPlugin):
+class Fixer(Plugin):
 
     __metaclass__ = PluginMount
     required_framework_options = ['rule_name', 'triggered_by']
@@ -163,7 +163,7 @@ class IFixer(IPlugin):
         The triggered_by option must be passed via the framework.
         """
 
-        super(IFixer, self).__init__(**options)
+        super(Fixer, self).__init__(**options)
 
         self.triggered_by = options['triggered_by']
 
