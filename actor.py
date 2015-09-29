@@ -19,7 +19,9 @@ from config import CONFIG_DIR, HOME_DIR
 from local_config import SLEEP_HASH
 
 
-class PluginDict(object):
+class HashableDict(dict):
+    def __hash__(self):
+        return hash(frozenset(self))
 
     def __init__(self, pluginmount, context, evaluate=False):
         self.name = pluginmount.__name__
