@@ -23,35 +23,50 @@ class HashableDict(dict):
     def __hash__(self):
         return hash(frozenset(self))
 
-    def __init__(self, pluginmount, context, evaluate=False):
-        self.name = pluginmount.__name__
-        self.context = context
-        self.evaluate = evaluate
-        self.values = {}
 
-    @property
-    def plugins(self):
-        return {
-            plugin_class.__name__: plugin_class
-            for plugin_class in pluginmount.plugins
+class PluginCache(object):
+
+    def __init__(self, mount, context):
+        self.mount = mount
+        self.context = context
+        self.cache = {}
+        self.plugins = {
+            plugin_class.identifier: plugin_class
+            for plugin_class in self.mount.plugins
         }
 
-    def __getitem__(self, name):
-        if name not in self.plugins:
-            raise ValueError("Could not find %s plugin of name: %s"
-                              % (self.name, name))
+    def get(self, identifier, *args, **kwargs):
+        plugin_class = self.get_plugin(identifier)
 
-        if self.evaluate:
-            if name not in self.values:
-                self.values[name] = self.plugins[name].evaluate()
-
-            return self.values[name]
+        # If it is stateless and has no side-effects, it can be cached
+        if plugin_class.stateless and not plugin_class.side_effects:
+            return self.get_from_cache(identifier, *args, **kwargs)
         else:
-            return self.plugins[name]
+            pass
+            # TODO: Raise an error, such things ought to be accessed
+            #       via a factory
 
+    def get_plugin(self, identifier):
+        try:
+            return self.plugins[identifier]
+        except KeyError:
+            pass
+            # TODO: Raise an error, no such plugin available
+
+    def get_from_cache(self, identifier, *args, **kwargs):
+        # Note: Only for stateless and no side-effects
+
+        key = (identifier, *args, HashableDict(**kwargs))
+        value = self.cache.get(key)
+
+        if value is None:
+            plugin_instance = self.get_plugin(identifier)(self.context)
+            self.cache[key] = value = plugin_instance.evaluate(*args, **kwargs)
+
+        return value
 
     def clear(self):
-        self.values.clear()
+        self.cache.clear()
 
 
 class Context(object):
@@ -61,9 +76,9 @@ class Context(object):
         self.activity = None
         self.flow = None
 
-        self.reporters = PluginDict(Reporter, self, evaluate=True)
-        self.checkers = PluginDict(Checker, self)
-        self.fixers = PluginDict(Fixer, self)
+        self.reporters = PluginCache(Reporter, self)
+        self.checkers = PluginCache(Checker, self)
+        self.fixers = PluginCache(Fixer, self)
 
 
 class Actor(object):
