@@ -195,7 +195,7 @@ class Actor(object):
             imp.load_source(module_id, path)
 
         for rule_class in PythonRule.plugins:
-            self.rules.append(rule_class())
+            self.rules.append(rule_class(self.context))
 
         if not python_rules:
             logging.warning("No Python rules available")
