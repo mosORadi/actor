@@ -169,6 +169,9 @@ class Actor(object):
             logging.warning('Sleep file exists, skipping.')
             return True
 
+        # Clear the cached report values
+        self.context.reporters.clear()
+
         for rule in self.rules:
             rule.run(self.context)
 
