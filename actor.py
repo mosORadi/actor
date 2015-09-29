@@ -134,15 +134,6 @@ class Actor(object):
         if not os.path.exists(CONFIG_DIR):
             os.mkdir(CONFIG_DIR)
 
-        # Load the declarative YAML rules
-        yaml_config_paths = [os.path.join(CONFIG_DIR, path)
-                             for path in os.listdir(CONFIG_DIR)
-                             if path.endswith('.yaml')]
-
-        for path in yaml_config_paths:
-            rule = DeclarativeRule.from_file(path, self)
-            self.rules.append(rule)
-
         # Load the python rules files. They will be automatically
         # added to the PythonRule pluginmount.
         python_rules = [os.path.join(CONFIG_DIR, path)
@@ -157,7 +148,7 @@ class Actor(object):
             self.rules.append(rule_class())
 
         if not yaml_config_paths and not python_rules:
-            logging.warning("No YAML or Python rules available")
+            logging.warning("No Python rules available")
 
     def check_sleep_file(self):
         """
