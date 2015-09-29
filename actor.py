@@ -69,6 +69,35 @@ class PluginCache(object):
         self.cache.clear()
 
 
+class PluginFactory(object):
+
+    def __init__(self, mount, context):
+        self.mount = mount
+        self.context = context
+        self.plugins = {
+            plugin_class.identifier: plugin_class
+            for plugin_class in self.mount.plugins
+        }
+
+    def get(self, identifier, *args, **kwargs):
+        plugin_class = self.get_plugin(identifier)
+
+        # If it is stateless and has no side-effects, it can be cached
+        if not plugin_class.stateless or plugin_class.side_effects:
+            return self.get_plugin(identifier)(self.context, *args, **kwargs)
+        else:
+            pass
+            # TODO: Raise an error, such things ought to be accessed
+            #       via a factory
+
+    def get_plugin(self, identifier):
+        try:
+            return self.plugins[identifier]
+        except KeyError:
+            pass
+            # TODO: Raise an error, no such plugin available
+
+
 class Context(object):
 
     def __init__(self):
@@ -79,6 +108,10 @@ class Context(object):
         self.reporters = PluginCache(Reporter, self)
         self.checkers = PluginCache(Checker, self)
         self.fixers = PluginCache(Fixer, self)
+
+        self.reporter_factory = PluginFactory(Reporter, self)
+        self.checker_factory = PluginFactory(Checker, self)
+        self.fixer_factory = PluginFactory(Fixer, self)
 
 
 class Actor(object):
