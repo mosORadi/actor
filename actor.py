@@ -13,7 +13,7 @@ import dbus
 import dbus.mainloop.glib
 
 from plugins import Reporter, Checker, Fixer
-from rules import DeclarativeRule, PythonRule
+from rules import PythonRule
 
 from config import CONFIG_DIR, HOME_DIR
 from local_config import SLEEP_HASH
@@ -147,7 +147,7 @@ class Actor(object):
         for rule_class in PythonRule.plugins:
             self.rules.append(rule_class())
 
-        if not yaml_config_paths and not python_rules:
+        if not python_rules:
             logging.warning("No Python rules available")
 
     def check_sleep_file(self):
@@ -170,7 +170,7 @@ class Actor(object):
             return True
 
         for rule in self.rules:
-            rule.run()
+            rule.run(self.context)
 
         return True
 

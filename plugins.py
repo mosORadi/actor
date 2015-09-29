@@ -9,35 +9,8 @@ class PluginMount(type):
 
 class Plugin(object):
 
-    required_framework_options = []
-    optional_framework_options = []
-
-    required_plugin_options = []
-    optional_plugin_options = []
-
-    def __init__(self, **options):
-        self.options = options
-
-        self.required_options = self.required_framework_options + self.required_plugin_options
-        self.optional_options = self.optional_framework_options + self.optional_plugin_options
-
-        # Make sure all the required framework options
-        options_set = set(self.options.keys())
-        required_options_set = set(self.required_options)
-
-        if not required_options_set.issubset(options_set):
-            missing_options = required_options_set.difference(options_set)
-            raise ValueError("The following options are missing "
-                             "for %s: %s" % (self.__class__.__name__,
-                                             list(missing_options)))
-
-        # Make sure no ignored options are present
-        all_options_set = required_options_set.union(set(self.optional_options))
-        if not options_set.issubset(all_options_set):
-            extra_options = options_set.difference(all_options_set)
-            raise ValueError("The following options are extra "
-                             "for %s: %s" % (self.__class__.__name__,
-                                             list(extra_options)))
+    def __init__(self, context):
+        self.context = context
 
     def log(self, log_func, message):
         log_func("%s: %s" % (self.__class__.__name__, message))
@@ -57,55 +30,17 @@ class Plugin(object):
     def critical(self, message):
         self.log(logging.critical, message)
 
-    def set_export_as(self, **options):
-        """
-        Sets the export_as attribute if specified in options and removes it
-        from the options dictionary.
-        Makes sure that there is at least some identifier available.
-
-        Returs the updated options dictionary.
-        """
-
-        if 'export_as' in options:
-            assert type(options['export_as']) == str
-            self.export_as = options['export_as']
-            del options['export_as']
-
-        if self.export_as is None:
-            raise ValueError(
-                "The identifier for the %s is not set."
-                "Use the export_as option to specify unique identifier."
-                % self.__class__.__name__)
-
-        return options
-
-    def get_redirected_reports(self, **reports):
-        """
-        Redirects the reports for this plugin in the following manner:
-            For any key specified in the inputs dictionary,
-        """
-
-        reports_redirected = dict()
-
-        if 'inputs' in self.options:
-            for key, value in self.options.get('inputs').iteritems():
-                 reports_redirected[key]=reports[value]
-
-        reports.update(reports_redirected)
-
-        return reports
-
 
 class Reporter(Plugin):
     """Reports user activity to the AcTor"""
 
     __metaclass__ = PluginMount
-    optional_framework_options = ['export_as']
-    export_as = None
 
-    def __init__(self, **options):
-        super(Reporter, self).__init__(**options)
-        self.options = self.set_export_as(**options)
+    def __init__(self, context, **options):
+        super(Reporter, self).__init__(context)
+
+    def evaluate(self):
+        return self.report_safe()
 
     def report(self):
         """Returns user activity value"""
@@ -120,18 +55,15 @@ class Reporter(Plugin):
             return None
 
 
-
 class Checker(Plugin):
     """Evaluates user activity depending on the input from the responders"""
 
     __metaclass__ = PluginMount
-    optional_framework_options = ['export_as', 'inputs']
 
-    def __init__(self, **options):
-        super(Checker, self).__init__(**options)
-        self.options = self.set_export_as(**options)
+    def __init__(self, context, **options):
+        super(Checker, self).__init__(context)
 
-    def check(self, **reports):
+    def check(self, **kwargs):
         """
         Returns evaluation of the situation - true or false, accorgding
         to the input from the reporters, passed to the check function,
@@ -143,33 +75,21 @@ class Checker(Plugin):
         """
         pass
 
-    def check_raw(self, **reports):
-        redirected_reports = self.get_redirected_reports(**reports)
-        return self.check(**redirected_reports)
-
 
 class Fixer(Plugin):
 
     __metaclass__ = PluginMount
-    required_framework_options = ['triggered_by']
-    optional_framework_options = ['inputs']
 
-    def __init__(self, **options):
+    def __init__(self, context):
         """
         The triggered_by option must be passed via the framework.
         """
 
-        super(Fixer, self).__init__(**options)
+        super(Fixer, self).__init__(context)
 
-        self.triggered_by = options['triggered_by']
-
-    def fix(self, **reports):
+    def fix(self):
         """
         This function does execute the given action.
         """
 
         pass
-
-    def fix_raw(self, **reports):
-        reports = self.get_redirected_reports(**reports)
-        return self.fix(**reports)
