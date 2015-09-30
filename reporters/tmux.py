@@ -5,10 +5,13 @@ from psutil import Process
 
 
 class TmuxActiveSessionNameReporter(Reporter):
+    """
+    Returns a list of the names of the active sessions.
+    """
 
     identifier = 'tmux_active_sessions'
 
-    def get_active_sessions(self):
+    def run(self):
         output = run(['tmux',
                       'list-sessions',
                       '-F', '#{session_attached} #{session_name}'])[0]
@@ -18,15 +21,15 @@ class TmuxActiveSessionNameReporter(Reporter):
 
         return active_sessions
 
-    def report(self, **reports):
-        return ';'.join(self.get_active_sessions())
-
 
 class TmuxActiveWindowNameReporter(TmuxActiveSessionNameReporter):
+    """
+    Returns a list of the names of the active windows.
+    """
 
     identifier = 'tmux_active_windows'
 
-    def get_active_windows(self, **reports):
+    def run(self):
         active_sessions = self.get_active_sessions()
         active_windows = []
 
@@ -43,23 +46,13 @@ class TmuxActiveWindowNameReporter(TmuxActiveSessionNameReporter):
 
         return active_windows
 
-    def report(self, **reports):
-        return ';'.join(self.get_active_windows())
-
 
 class TmuxActivePanePIDsReporter(TmuxActiveSessionNameReporter):
+    """
+    Returns a list of pids of the processes in the active panes.
+    """
 
     identifier = 'tmux_active_panes_pids'
-
-    def get_all_processes_in_active_panes(self):
-        processes = []
-
-        for pid in self.get_active_panes():
-            process = Process(pid)
-            processes.append(process)
-            processes = processes + list(process.children())
-
-        return processes
 
     def get_active_panes(self, **reports):
         active_sessions = self.get_active_sessions()
@@ -78,15 +71,24 @@ class TmuxActivePanePIDsReporter(TmuxActiveSessionNameReporter):
 
         return active_panes
 
-    def report(self, **reports):
-        return ';'.join([str(p.pid)
-            for p in self.get_all_processes_in_active_panes()])
+    def run(self):
+        processes = []
+
+        for pid in self.get_active_panes():
+            process = Process(pid)
+            processes.append(process)
+            processes = processes + list(process.children())
+
+        return [p.pid for p in processes]
 
 
-class TmuxActivePaneProcessNames(TmuxActivePanePIDsReporter):
+class TmuxActivePaneProcessNames(Reporter):
+    """
+    Returns the list of names of the commands running in active panes.
+    """
 
     identifier = 'tmux_active_panes_process_names'
 
-    def report(self, **reports):
-        return ';'.join([' '.join(p.cmdline())
-            for p in self.get_all_processes_in_active_panes()])
+    def run(self):
+        return [' '.join(Process(pid).cmdline())
+                for pid in self.context.report('tmux_active_panes_pids')]
