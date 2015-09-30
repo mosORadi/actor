@@ -14,7 +14,7 @@ class HamsterActivityDailyDurationChecker(Checker):
       - activity: The activity that should be measured, in the form of activity@Category
     """
 
-    export_as = 'hamster_activity_duration'
+    identifier = 'hamster_activity_duration'
     required_plugin_options = ['limit', 'activity']
 
     def __init__(self, **options):
@@ -47,7 +47,7 @@ class HamsterCategoryDailyDurationChecker(Checker):
       - category: The activity that should be measured, in the form of 'Category'
     """
 
-    export_as = 'hamster_category_duration'
+    identifier = 'hamster_category_duration'
     required_plugin_options = ['limit', 'category']
 
     def __init__(self, **options):

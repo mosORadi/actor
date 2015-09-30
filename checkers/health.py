@@ -16,7 +16,7 @@ class HealthChecker(Checker):
              activities
     """
 
-    export_as = 'health'
+    identifier = 'health'
     required_plugin_options = ['health_amount', 'id']
 
     def __init__(self, **options):

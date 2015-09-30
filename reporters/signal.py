@@ -4,10 +4,10 @@ import dbus
 
 class DBusSignalReporter(Reporter):
     signal = None
-    export_as = 'signal'
+    identifier = 'signal'
 
-    def __init__(self, **options):
-        super(DBusSignalReporter, self).__init__(**options)
+    def __init__(self, context):
+        super(DBusSignalReporter, self).__init__(context)
         self.bus = dbus.SystemBus()
         self.bus.add_signal_receiver(
             self.save_signal,

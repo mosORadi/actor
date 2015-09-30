@@ -9,7 +9,7 @@ class KillProcessFixer(Fixer):
     Simple fixer that kills a given PID.
     """
 
-    export_as = "kill_process"
+    identifier = "kill_process"
     interface = None
 
     def kill(self, pid):

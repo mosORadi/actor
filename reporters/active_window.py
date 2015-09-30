@@ -8,7 +8,7 @@ from plugins import Reporter
 
 class ActiveWindowNameReporter(Reporter):
 
-    export_as = 'active_window_name'
+    identifier = 'active_window_name'
 
     def get_active_window(self):
 
@@ -30,7 +30,7 @@ class ActiveWindowNameReporter(Reporter):
 
 class ActiveWindowPidReporter(ActiveWindowNameReporter):
 
-    export_as = 'active_window_pid'
+    identifier = 'active_window_pid'
 
     def get_using_wnck(self):
         window = self.get_active_window()
@@ -78,7 +78,7 @@ class ActiveWindowPidReporter(ActiveWindowNameReporter):
 
 class ActiveWindowProcessNameReporter(ActiveWindowPidReporter):
 
-    export_as = 'active_window_process_name'
+    identifier = 'active_window_process_name'
 
     def report(self):
         pid = super(ActiveWindowProcessNameReporter, self).report()

@@ -5,8 +5,7 @@ from plugins import Reporter
 
 class FileContentReporter(Reporter):
 
-    export_as = 'file_content'
-
+    identifier = 'file_content'
     required_plugin_options = ['path']
 
     def __init__(self, **options):

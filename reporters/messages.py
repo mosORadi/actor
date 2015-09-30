@@ -8,10 +8,10 @@ class MessagesReporter(Reporter):
     IM messages from.
     """
 
-    export_as = 'messages'
+    identifier = 'messages'
 
-    def __init__(self, **options):
-        super(MessagesReporter, self).__init__(**options)
+    def __init__(self, context):
+        super(MessagesReporter, self).__init__(context)
 
         try:
             self.bus = dbus.SessionBus()

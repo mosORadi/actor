@@ -6,7 +6,7 @@ from psutil import Process
 
 class TmuxActiveSessionNameReporter(Reporter):
 
-    export_as = 'tmux_active_sessions'
+    identifier = 'tmux_active_sessions'
 
     def get_active_sessions(self):
         output = run(['tmux',
@@ -24,7 +24,7 @@ class TmuxActiveSessionNameReporter(Reporter):
 
 class TmuxActiveWindowNameReporter(TmuxActiveSessionNameReporter):
 
-    export_as = 'tmux_active_windows'
+    identifier = 'tmux_active_windows'
 
     def get_active_windows(self, **reports):
         active_sessions = self.get_active_sessions()
@@ -49,7 +49,7 @@ class TmuxActiveWindowNameReporter(TmuxActiveSessionNameReporter):
 
 class TmuxActivePanePIDsReporter(TmuxActiveSessionNameReporter):
 
-    export_as = 'tmux_active_panes_pids'
+    identifier = 'tmux_active_panes_pids'
 
     def get_all_processes_in_active_panes(self):
         processes = []
@@ -85,7 +85,7 @@ class TmuxActivePanePIDsReporter(TmuxActiveSessionNameReporter):
 
 class TmuxActivePaneProcessNames(TmuxActivePanePIDsReporter):
 
-    export_as = 'tmux_active_panes_process_names'
+    identifier = 'tmux_active_panes_process_names'
 
     def report(self, **reports):
         return ';'.join([' '.join(p.cmdline())

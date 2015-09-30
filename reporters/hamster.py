@@ -5,10 +5,11 @@ import dbus
 class HamsterActivityReporter(Reporter):
     activity = None
 
-    export_as = 'hamster'
+    identifier = 'hamster'
 
-    def __init__(self, **options):
-        super(HamsterActivityReporter, self).__init__(**options)
+    def __init__(self, context):
+        super(HamsterActivityReporter, self).__init__(context)
+
         self.bus = dbus.SessionBus()
         self.bus.add_signal_receiver(
             self.get_current_activity,
@@ -37,10 +38,11 @@ class HamsterActivityReporter(Reporter):
 
 
 class HamsterActivityDailyDurationReporter(Reporter):
-    export_as = 'hamster_activity_daily_duration'
+    identifier = 'hamster_activity_daily_duration'
 
-    def __init__(self, **options):
-        super(HamsterActivityDailyDurationReporter, self).__init__(**options)
+    def __init__(self, context):
+        super(HamsterActivityDailyDurationReporter, self).__init__(context)
+
         self.bus = dbus.SessionBus()
         proxy = dbus.SessionBus().get_object(
             "org.gnome.Hamster", "/org/gnome/Hamster")

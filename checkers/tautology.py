@@ -12,7 +12,7 @@ class TautologyChecker(Checker):
         None.
     """
 
-    export_as = 'tautology'
+    identifier = 'tautology'
 
     def check(self, **reports):
         return True

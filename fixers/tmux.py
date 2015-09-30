@@ -7,7 +7,7 @@ class TmuxDetachFixer(Fixer):
     Detaches the active tmux session.
     """
 
-    export_as = "tmux_detach"
+    identifier = "tmux_detach"
 
     def fix(self, **reports):
         run(['tmux', 'detach-client'])

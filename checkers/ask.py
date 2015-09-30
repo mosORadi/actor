@@ -14,7 +14,7 @@ class NotificationAskChecker(Checker):
       - app_icon: Icon of the notification ('')
     """
 
-    export_as = "ask"
+    identifier = "ask"
     required_plugin_options = ['question']
     optional_plugin_options = ['headline', 'app_name', 'app_icon', 'timeout']
 

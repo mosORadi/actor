@@ -14,7 +14,7 @@ class CountdownChecker(Checker):
              activities
     """
 
-    export_as = 'countdown'
+    identifier = 'countdown'
     required_plugin_options = ['delay', 'id']
 
     def __init__(self, **options):

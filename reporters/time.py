@@ -4,7 +4,7 @@ from plugins import Reporter
 
 class TimeReporter(Reporter):
 
-    export_as = 'time'
+    identifier = 'time'
 
     def report(self):
         time = datetime.datetime.now()
@@ -13,7 +13,7 @@ class TimeReporter(Reporter):
 
 class WeekdayReporter(Reporter):
 
-    export_as = 'weekday'
+    identifier = 'weekday'
 
     def report(self):
         day = datetime.datetime.now().strftime("%w")

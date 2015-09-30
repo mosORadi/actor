@@ -14,7 +14,7 @@ class RegularExpressionChecker(Checker):
       - regexp : The string containing the regular expression
     """
 
-    export_as = 'regular_expression'
+    identifier = 'regular_expression'
     required_plugin_options = ['regexp']
 
     def __init__(self, **options):

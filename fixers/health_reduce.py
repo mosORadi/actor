@@ -22,7 +22,7 @@ class HealthDecreaseFixer(Fixer):
         id - HealthChecker identifier
     """
 
-    export_as = 'health_decrease'
+    identifier = 'health_decrease'
     required_plugin_options = ['id']
 
     def __init__(self, **options):

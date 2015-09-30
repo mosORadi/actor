@@ -9,7 +9,7 @@ class SuspendFixer(Fixer):
     Simple fixer that suspends your workstation.
     """
 
-    export_as = "suspend"
+    identifier = "suspend"
     interface = None
     optional_plugin_options = ["enforced"]
 
@@ -45,7 +45,7 @@ class SuspendUntilFixer(Fixer):
     until specified time, in %H.%M format.
     """
 
-    export_as = "suspend_until"
+    identifier = "suspend_until"
     required_plugin_options = ["until"]
 
     def fix(self, **reports):

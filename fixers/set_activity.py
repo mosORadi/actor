@@ -11,7 +11,7 @@ class SetHamsterActivityFixer(Fixer):
       - activity: Activity string as put in the Hamster (activity@Sample)
     """
 
-    export_as = "set_hamster_activity"
+    identifier = "set_hamster_activity"
     required_plugin_options = ['activity']
 
     bus_name = 'org.gnome.Hamster'

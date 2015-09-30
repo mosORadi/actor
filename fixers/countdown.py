@@ -23,11 +23,11 @@ class CountdownTriggerFixer(Fixer):
     the specified identifier.
 
     Required options:
-        id - CountdownChecker identifier (as defined by export_as option 
+        id - CountdownChecker identifier (as defined by identifier option 
                                           or the plugin default value)
     """
 
-    export_as = 'countdown'
+    identifier = 'countdown'
     required_plugin_options = ['id']
     optional_plugin_options = ['action']
 

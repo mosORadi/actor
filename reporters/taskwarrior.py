@@ -4,7 +4,7 @@ from tasklib import TaskWarrior
 
 class TaskWarriorReporter(Reporter):
 
-    export_as = 'tasks'
+    identifier = 'tasks'
     optional_plugin_options = ['filter', 'rawfilter', 'warrior_options']
 
     def __init__(self, **options):
@@ -23,7 +23,7 @@ class TaskWarriorReporter(Reporter):
 
 class TasksCompletedReporter(TaskWarriorReporter):
 
-    export_as = 'tasks_completed'
+    identifier = 'tasks_completed'
 
     def get_tasks(self):
         return self.warrior.tasks.completed().filter(
@@ -34,7 +34,7 @@ class TasksCompletedReporter(TaskWarriorReporter):
 
 class TaskCountReporter(TaskWarriorReporter):
 
-    export_as = 'task_count'
+    identifier = 'task_count'
 
     def report(self):
         return len(self.get_tasks())

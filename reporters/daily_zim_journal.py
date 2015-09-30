@@ -4,7 +4,7 @@ from file_content import FileContentReporter
 
 class DailyZimJournalReporter(FileContentReporter):
 
-    export_as = "daily_zim_journal"
+    identifier = "daily_zim_journal"
 
     required_plugin_options = ["journal_root_path", "path"]
     optional_plugin_options = ["day_shift"]

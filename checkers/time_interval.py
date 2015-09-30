@@ -15,7 +15,7 @@ class TimeIntervalChecker(Checker):
       - end : The end of the interval, H.M format
     """
 
-    export_as = 'time_interval'
+    identifier = 'time_interval'
     required_plugin_options = ['start', 'end']
 
     def __init__(self, **options):

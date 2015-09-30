@@ -8,7 +8,7 @@ class LockScreenFixer(Fixer):
     Simple fixer that locks your screen.
     """
 
-    export_as = "lock_screen"
+    identifier = "lock_screen"
     interface = None
 
     def lock(self):

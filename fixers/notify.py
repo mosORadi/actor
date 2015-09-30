@@ -15,7 +15,7 @@ class NotifyFixer(Fixer):
       - app_icon: Icon of the notification ('')
     """
 
-    export_as = "notify"
+    identifier = "notify"
     required_plugin_options = ['message']
     optional_plugin_options = ['timeout', 'app_icon', 'app_name', 'headline']
 
