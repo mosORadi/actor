@@ -3,9 +3,14 @@ import dbus
 
 
 class HamsterActivityReporter(Reporter):
-    activity = None
+    """
+    Reports the current activity, as set in Hamster Time Tracker.
 
-    identifier = 'hamster'
+    Returns the current activity name in the format 'activity@category',
+    or None if no activity was detected.
+    """
+
+    identifier = 'hamster_activity'
 
     def __init__(self, context):
         super(HamsterActivityReporter, self).__init__(context)
@@ -20,10 +25,9 @@ class HamsterActivityReporter(Reporter):
             "org.gnome.Hamster", "/org/gnome/Hamster")
         self.hamster = dbus.Interface(proxy, dbus_interface='org.gnome.Hamster')
 
-        # Initialize the activity value
-        self.get_current_activity()
+    def run(self):
+        activity = None
 
-    def get_current_activity(self):
         today_facts = self.hamster.GetTodaysFacts()
 
         # See to_dbus_fact method in src/hamster-service
@@ -31,13 +35,19 @@ class HamsterActivityReporter(Reporter):
             last_fact = today_facts[-1]
             if last_fact[2] == 0:    # 2 - end_time, set to 0 for ongoing facts
                 # 4 - name, 6 - category
-                self.activity = "%s@%s" % (last_fact[4], last_fact[6])
+                activity = "%s@%s" % (last_fact[4], last_fact[6])
 
-    def report(self):
-        return str(self.activity or '')
+        return activity
 
 
 class HamsterActivityDailyDurationReporter(Reporter):
+    """
+    Reports the cummulative time spent in a particular given activity,
+    as tracked by Hamster Time Tracker.
+
+    Returns the total time in minutes as float.
+    """
+
     identifier = 'hamster_activity_daily_duration'
 
     def __init__(self, context):
@@ -49,8 +59,8 @@ class HamsterActivityDailyDurationReporter(Reporter):
         self.hamster = dbus.Interface(proxy, dbus_interface='org.gnome.Hamster')
 
 
-    def get_activity_duration(self):
-        totals = {}
+    def run(self, activity=None):
+        totals = dict()
 
         for fact in self.hamster.GetTodaysFacts():
             # 4 - name
@@ -59,11 +69,11 @@ class HamsterActivityDailyDurationReporter(Reporter):
             key = "%s@%s" % (fact[4], fact[6])
 
             if key in totals:
-                totals[key] =+ fact[9]
+                totals[key] =+ fact[9] / 60.0
             else:
-                totals[key] = fact[9]
+                totals[key] = fact[9] / 60.0
 
-        return totals
-
-    def report(self):
-        return self.get_activity_duration()
+        if activity is not None:
+            return totals.get(activity, 0.0)
+        else:
+            return totals
