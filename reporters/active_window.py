@@ -7,10 +7,18 @@ from plugins import Reporter
 
 
 class ActiveWindowNameReporter(Reporter):
+    """
+    Returns a string containing the title of the active window.
+
+    If no active window could be detected, returns None.
+    """
 
     identifier = 'active_window_name'
 
     def get_active_window(self):
+        """
+        Returns the active window object.
+        """
 
         while gtk.events_pending():
             gtk.main_iteration()
@@ -21,7 +29,7 @@ class ActiveWindowNameReporter(Reporter):
         if screen:
             return screen.get_active_window()
 
-    def report(self):
+    def run(self):
         window = self.get_active_window()
 
         if window:
@@ -29,16 +37,33 @@ class ActiveWindowNameReporter(Reporter):
 
 
 class ActiveWindowPidReporter(ActiveWindowNameReporter):
+    """
+    Returns the PID of the process the active window belongs to.
+
+    If no active window could be detected, returns None.
+    """
 
     identifier = 'active_window_pid'
 
-    def get_using_wnck(self):
+    def get_pid_using_wnck(self):
+        """
+        Obtains the PID of the active window using wnck bindings.
+
+        Returns None if active window could not be detected.
+        """
+
         window = self.get_active_window()
 
         if window:
             return window.get_pid()
 
-    def get_using_xprop(self):
+    def get_pid_using_xprop(self):
+        """
+        Obtains the PID of the active window using xprop utility, if available.
+
+        Returns None if active window could not be detected.
+        """
+
         output = run(['xprop', '-root'])[0]
 
         if output is None:
@@ -61,27 +86,43 @@ class ActiveWindowPidReporter(ActiveWindowNameReporter):
                 return int(candidate_lines[0].split()[-1])
 
     def verify_pid(self, pid):
+        """
+        Verifies if a PID belongs to any active process.
+        """
+
         try:
             psutil.Process(pid)
             return True
         except Exception:
             return False
 
-    def report(self):
-        pid = self.get_using_wnck()
+    def run(self):
+        """
+        Obtains the active window PID using wnck, with fallback to xprop.
+        """
+
+        pid = self.get_pid_using_wnck()
 
         if not self.verify_pid(pid):
-            pid = self.get_using_xprop()
+            pid = self.get_pid_using_xprop()
 
         return pid
 
 
 class ActiveWindowProcessNameReporter(ActiveWindowPidReporter):
+    """
+    Returns the command name of the process the active window belongs to.
+
+    Uses information from the /proc/<pid>/cmdline, with fallback to
+    /proc/<pid>/comm.
+
+    If no active window could be detected, returns None.
+    """
 
     identifier = 'active_window_process_name'
 
-    def report(self):
-        pid = super(ActiveWindowProcessNameReporter, self).report()
+    def run(self):
+        pid = super(ActiveWindowProcessNameReporter, self).run()
 
         if pid is None:
             return None
