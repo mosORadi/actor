@@ -31,65 +31,40 @@ class Plugin(object):
         self.log(logging.critical, message)
 
 
-class Reporter(Plugin):
-    """Reports user activity to the AcTor"""
+class Worker(Plugin):
+    """
+    A base class for Reporter, Checker and Fixer.
+    """
+
+    stateless = True
+    side_effects = False
+
+    def evaluate(self, *args, **kwargs):
+        # TODO: Wrap in exception handling
+        return self.run(*args, **kwargs)
+
+
+class Reporter(Worker):
+    """
+    Reports user activity to the AcTor.
+    """
 
     __metaclass__ = PluginMount
 
-    def __init__(self, context, **options):
-        super(Reporter, self).__init__(context)
 
-    def evaluate(self):
-        return self.report_safe()
-
-    def report(self):
-        """Returns user activity value"""
-        pass
-
-    def report_safe(self):
-        try:
-            return self.report()
-        except Exception as e:
-            # TODO: Log the failure
-            self.warning("Generation of the report failed: %s" % str(e))
-            return None
-
-
-class Checker(Plugin):
-    """Evaluates user activity depending on the input from the responders"""
+class Checker(Worker):
+    """
+    Evaluates user activity depending on the input from the responders.
+    """
 
     __metaclass__ = PluginMount
 
-    def __init__(self, context, **options):
-        super(Checker, self).__init__(context)
 
-    def check(self, **kwargs):
-        """
-        Returns evaluation of the situation - true or false, accorgding
-        to the input from the reporters, passed to the check function,
-        and custom logic of Checker itself.
+class Fixer(Worker):
+    """
+    Performs a custom action on the machine.
+    """
 
-        This function should return a dictionary, with mandatory key result
-        which holds the value of the check itself, and any optional keys that
-        are then passed to the fixer.
-        """
-        pass
-
-
-class Fixer(Plugin):
+    side_effects = True
 
     __metaclass__ = PluginMount
-
-    def __init__(self, context):
-        """
-        The triggered_by option must be passed via the framework.
-        """
-
-        super(Fixer, self).__init__(context)
-
-    def fix(self):
-        """
-        This function does execute the given action.
-        """
-
-        pass
