@@ -1,18 +1,10 @@
-import collections
-import logging
-import re
-import yaml
-
-from plugins import PluginMount, Reporter, Checker, Fixer
+from plugins import PluginMount, Plugin
 
 
-class PythonRule(object):
+class PythonRule(Plugin):
     """Performs custom python rule"""
 
     __metaclass__ = PluginMount
-
-    def __init__(self, context):
-        self.context = context
 
     def report(self, identifier, *args, **kwargs):
         return self.context.reporters.get(identifier, *args, **kwargs)
