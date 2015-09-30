@@ -24,7 +24,7 @@ class MessagesReporter(Reporter):
         except dbus.exceptions.DBusException:
             self.pidgin = None
 
-    def get_message_senders(self):
+    def run(self):
         if not self.pidgin:
             return []
 
@@ -33,6 +33,3 @@ class MessagesReporter(Reporter):
                  for m in messages]
 
         return names
-
-    def report(self):
-        return ', '.join(self.get_message_senders())
