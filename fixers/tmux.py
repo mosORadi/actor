@@ -9,5 +9,5 @@ class TmuxDetachFixer(Fixer):
 
     identifier = "tmux_detach"
 
-    def fix(self, **reports):
+    def run(self):
         run(['tmux', 'detach-client'])
