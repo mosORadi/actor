@@ -12,6 +12,7 @@ class Plugin(object):
     def __init__(self, context):
         self.context = context
 
+    # Logging-related helpers
     def log(self, log_func, message):
         log_func("%s: %s" % (self.__class__.__name__, message))
 
@@ -29,6 +30,16 @@ class Plugin(object):
 
     def critical(self, message):
         self.log(logging.critical, message)
+
+    # Convenience function for accessing worker modules
+    def report(self, identifier, *args, **kwargs):
+        return self.context.reporters.get(identifier, *args, **kwargs)
+
+    def check(self, identifier, *args, **kwargs):
+        return self.context.checkers.get(identifier, *args, **kwargs)
+
+    def fix(self, identifier, *args, **kwargs):
+        return self.context.fixers.get(identifier, *args, **kwargs)
 
 
 class Worker(Plugin):
