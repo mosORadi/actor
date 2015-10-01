@@ -190,7 +190,7 @@ class Actor(object):
                         if path.endswith('.py')]
 
         for path in python_rules:
-            module_id = os.path.basename(path)
+            module_id = os.path.basename(path.rstrip('.py'))
             imp.load_source(module_id, path)
 
         for rule_class in PythonRule.plugins:
