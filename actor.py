@@ -55,7 +55,7 @@ class PluginCache(object):
     def get_from_cache(self, identifier, *args, **kwargs):
         # Note: Only for stateless and no side-effects
 
-        key = (identifier, *args, HashableDict(**kwargs))
+        key = (identifier, args, HashableDict(**kwargs))
         value = self.cache.get(key)
 
         if value is None:
