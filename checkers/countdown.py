@@ -11,8 +11,8 @@ class CountdownChecker(Checker):
     identifier = 'countdown'
     stateless = False
 
-    def __init__(self, delay):
-        super(CountdownChecker, self).__init__(**options)
+    def __init__(self, context, delay):
+        super(CountdownChecker, self).__init__(context)
 
         self.countdown_start = None
         self.delta = datetime.timedelta(seconds=delay)
