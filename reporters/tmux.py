@@ -54,7 +54,7 @@ class TmuxActivePanePIDsReporter(TmuxActiveSessionNameReporter):
 
     identifier = 'tmux_active_panes_pids'
 
-    def get_active_panes(self, **reports):
+    def get_active_panes(self):
         active_sessions = self.get_active_sessions()
         active_panes = []
 
@@ -91,4 +91,4 @@ class TmuxActivePaneProcessNames(Reporter):
 
     def run(self):
         return [' '.join(Process(pid).cmdline())
-                for pid in self.context.report('tmux_active_panes_pids')]
+                for pid in self.report('tmux_active_panes_pids')]
