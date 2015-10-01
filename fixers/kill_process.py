@@ -10,12 +10,11 @@ class KillProcessFixer(Fixer):
     """
 
     identifier = "kill_process"
-    interface = None
 
     def kill(self, pid):
         os.kill(pid, signal.SIGKILL)
 
-    def fix(self, **reports):
-        if reports.get('pid'):
-            pid = int(reports.get('pid'))
+    def run(self, pid):
+        if pid is not None:
+            pid = int(pid)
             self.kill(pid)
