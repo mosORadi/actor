@@ -12,39 +12,28 @@ class SetHamsterActivityFixer(Fixer):
     """
 
     identifier = "set_hamster_activity"
-    required_plugin_options = ['activity']
 
     bus_name = 'org.gnome.Hamster'
     object_path = '/org/gnome/Hamster'
     interface_name = bus_name
 
-    def __init__(self, **options):
-        super(SetHamsterActivityFixer, self).__init__(**options)
+    def __init__(self, context):
+        super(SetHamsterActivityFixer, self).__init__(context)
+
         self.bus = dbus.SessionBus()
         dbus_object = self.bus.get_object(self.bus_name, self.object_path)
         self.interface = dbus.Interface(dbus_object, self.interface_name)
 
-    def is_already_set(self):
-        facts = self.interface.GetTodaysFacts()
+    def run(self, activity):
+        # First, let's detect the current activity to not
+        # redefine the same activity over and over
+        current_activity = self.report('hamster_activity') or ''
 
-        if facts:
-            last_fact = facts[-1] if facts else None
-            last_fact_string = "%s@%s" % (last_fact[4], last_fact[6])
+        # We use substring search here to support setting activity
+        # of the form activity@Project, description
+        # since we generate only activity@Project
+        if current_activity not in activity:
 
-            # We use substring search here to support setting activity
-            # of the form activity@Project, description
-            # since we generate only activity@Project
-            return last_fact_string in self.options.get('activity', '')
-        else:
-            return False
-
-    def set_activity(self):
-        activity = self.options.get('activity', 'activity@Sample')
-
-        if not self.is_already_set():
             # Zero stands for now
             self.interface.StopTracking(0)
             self.interface.AddFact(activity, 0, 0, False)
-
-    def fix(self, **reports):
-        self.set_activity()
