@@ -1,50 +1,33 @@
 from plugins import Checker
-import dbus
 import datetime
 
 
 class CountdownChecker(Checker):
     """
     Returns false unless countdown has finished. Countdown is started by
-    emitting a D-Bus CountdownStartSignal on org.freedesktop.AcTor interface.
-
-    Expected options:
-        delay - coundown duration in seconds
-        id - identifier of countdown checker, should be unique across all
-             activities
+    calling start method.
     """
 
     identifier = 'countdown'
-    required_plugin_options = ['delay', 'id']
+    stateless = False
 
-    def __init__(self, **options):
+    def __init__(self, delay):
         super(CountdownChecker, self).__init__(**options)
 
-        self.bus = dbus.SessionBus()
-        self.bus.add_signal_receiver(
-            self.start_countdown,
-            dbus_interface="org.freedesktop.AcTor",
-            signal_name="CountdownStartSignal")
-
-        self.bus.add_signal_receiver(
-            self.reset_countdown,
-            dbus_interface="org.freedesktop.AcTor",
-            signal_name="CountdownResetSignal")
-
         self.countdown_start = None
+        self.delta = datetime.timedelta(seconds=delay)
 
-        delay_seconds = self.options.get('delay', 300)
-        self.delta = datetime.timedelta(0, delay_seconds, 0)
-
-    def start_countdown(self, countdown_id, **options):
-        if self.countdown_start is None and countdown_id == self.options.get('id'):
+    def start(self):
+        if self.countdown_start is None:
             self.countdown_start = datetime.datetime.now()
 
-    def reset_countdown(self, countdown_id, **options):
-        if self.countdown_start is not None and countdown_id == self.options.get('id'):
-            self.countdown_start = None
+    def reset(self, delay=None):
+        self.countdown_start = None
 
-    def check(self, **reports):
+        if delay:
+            self.delta = datetime.timedelta(seconds=delay)
+
+    def run(self):
         if self.countdown_start is None:
             return False
         else:
