@@ -222,7 +222,7 @@ class Actor(object):
         self.context.reporters.clear()
 
         for rule in self.rules:
-            rule.run(self.context)
+            rule.run()
 
         return True
 
