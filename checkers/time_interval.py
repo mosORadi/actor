@@ -1,37 +1,39 @@
-from plugins import Checker
-
 import datetime
+
+from plugins import Checker
 
 class TimeIntervalChecker(Checker):
     """
-    Checks whether the reported timestamp is in the defined interval.
+    Checks whether the current time is in the defined interval.
     (interval computed as <a,b) - start inclusive, end exclusive)
 
-    Expects reports:
-      - time - Current time in the format %H.%M
-
-    Options:
-      - start : The start of the interval, H.M format
-      - end : The end of the interval, H.M format
+    The start and end points are to be specified by datetime.time object
+    or string of '%H.%M' form.
     """
 
     identifier = 'time_interval'
-    required_plugin_options = ['start', 'end']
 
-    def __init__(self, **options):
-        # This saves the time in the timestamp of the following form:
-        #     datetime.datetime(1900, 1, 1, 12, 23)
-        super(TimeIntervalChecker, self).__init__(**options)
-        self.start = datetime.datetime.strptime(str(options['start']), "%H.%M")
-        self.end = datetime.datetime.strptime(str(options['end']), "%H.%M")
+    def convert_from_input(timestamp):
+        """
+        Takes timestamp (either "%H.%M" string or datetime.time object)
+        and converts it to datetime.datetime object valid for today.
+        """
+
+        if type(timestamp) is str:
+            return datetime.datetime.strptime(timestamp, "%H.%M")
+        else:
+            return datetime.datetime.combine(datetime.date.today(), timestamp)
+
+    def run(self, start, end):
+        start = self.convert_from_string(end)
+        end = sef.convert_from_string(end)
 
         # If the start of the interval is later than the end, add one day
-        if self.start > self.end:
-            self.end = self.end + datetime.timedelta(days=1)
+        if start > end:
+            end = end + datetime.timedelta(days=1)
 
-    def check(self, **reports):
-        time = datetime.datetime.strptime(reports['time'], "%H.%M")
+        time = self.report('time')
         time_shifted = time + datetime.timedelta(days=1)
 
-        return ((self.start <= time and time < self.end) or
-                (self.start <= time_shifted and time_shifted < self.end))
+        return any(start <= time and time < end,
+                   start <= time_shifted and time_shifted < end)
