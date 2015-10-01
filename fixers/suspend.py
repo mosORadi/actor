@@ -1,7 +1,8 @@
+import datetime
 import dbus
 
 from plugins import Fixer
-from util import run
+from util import run, convert_timestamp
 
 
 class SuspendFixer(Fixer):
@@ -10,51 +11,40 @@ class SuspendFixer(Fixer):
     """
 
     identifier = "suspend"
-    interface = None
-    optional_plugin_options = ["enforced"]
 
-    def suspend(self):
+    def __init__(self, context):
+        super(SuspendFixer, self).__init__(context)
 
-        if not self.interface:
-            bus_name = 'org.freedesktop.PowerManagement'
-            object_path = '/org/freedesktop/PowerManagement'
-            interface_name = bus_name
+        bus_name = 'org.freedesktop.PowerManagement'
+        object_path = '/org/freedesktop/PowerManagement'
+        interface_name = bus_name
 
-            session_bus = dbus.SessionBus()
-            dbus_object = session_bus.get_object(bus_name, object_path)
-            self.interface = dbus.Interface(dbus_object, interface_name)
+        session_bus = dbus.SessionBus()
+        dbus_object = session_bus.get_object(bus_name, object_path)
+        self.interface = dbus.Interface(dbus_object, interface_name)
 
-        self.interface.Suspend()
-
-    def suspend_forced(self):
-        run(['sudo', 'pm-suspend'])
-
-    def fix(self, **reports):
-        if self.options.get('enforced'):
-            self.suspend_forced()
+    def run(self, enforced=False):
+        if enforced:
+            run(['sudo', 'pm-suspend'])
         else:
-            self.suspend()
-
-
-import datetime
+            self.interface.Suspend()
 
 
 class SuspendUntilFixer(Fixer):
     """
-    Simple fixer that suspends your workstation,
-    until specified time, in %H.%M format.
+    Simple fixer that suspends your workstation, until specified time, given
+    in %H.%M format or as a datetime.time object.
+
+    Uses rtcwake command.
     """
 
     identifier = "suspend_until"
-    required_plugin_options = ["until"]
 
-    def fix(self, **reports):
-        until_old = datetime.datetime.strptime(str(self.options['until']), "%H.%M")
-        until = datetime.datetime.combine(datetime.date.today(), until_old.time())
+    def run(self, until):
+        until = convert_timestamp(until)
 
         if datetime.datetime.now() > until:
             until = until + datetime.timedelta(1)
 
         seconds_until = int((until - datetime.datetime.now()).total_seconds())
-        print seconds_until
         run(['sudo', 'rtcwake', '-u', '-m', 'mem', '-s', seconds_until])
