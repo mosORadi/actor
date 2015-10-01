@@ -1,4 +1,3 @@
-import abc
 import dbus
 import logging
 
@@ -10,8 +9,6 @@ class PluginMount(type):
             cls.plugins.append(cls)
 
 class Plugin(object):
-
-    __metaclass__ = abc.ABCMeta
 
     def __init__(self, context):
         self.context = context
@@ -46,9 +43,9 @@ class Plugin(object):
         return self.context.fixers.get(identifier, *args, **kwargs)
 
     # Make sure every plugin implements the run method
-    @abc.abstractmethod
     def run(self):
-        pass
+        raise NotImplementedError("The run method needs to be"
+            "implemented by the plugin itself")
 
 
 class Worker(Plugin):
