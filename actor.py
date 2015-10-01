@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import sys
 import os
 import logging
 import hashlib
@@ -161,12 +162,11 @@ class Actor(object):
                     module_id = "{0}.{1}".format(category.__name__, module)
                     importlib.import_module(module_id)
                     logging.debug(module_id + " loaded successfully.")
-                except Exception, e:
-                    logging.warning("The {0} {1} module could not be loaded. "
-                                    "Increase verbosity level to see more "
-                                    "information."
-                                    .format(module, category.__name__[:-1]))
-                    logging.info(str(e))
+                except Exception as e:
+                    logging.warning(
+                        "The {0} {1} module could not be loaded: {2} "
+                        .format(module, category.__name__[:-1]), str(e))
+                    logging.info(traceback.format_exc())
 
     def get_plugin(self, name, category):
         plugin_candidates = [plugin for plugin in category.plugins
@@ -190,8 +190,15 @@ class Actor(object):
                         if path.endswith('.py')]
 
         for path in python_rules:
-            module_id = os.path.basename(path.rstrip('.py'))
-            imp.load_source(module_id, path)
+            try:
+                module_id = os.path.basename(path.rstrip('.py'))
+                imp.load_source(module_id, path)
+            except Exception as e:
+                logging.warning(
+                    "Rule file {0} cannot be loaded, following error was "
+                    "encountered: {1}".format(path, str(e))
+                    )
+                logging.info(traceback.format_exc())
 
         for rule_class in PythonRule.plugins:
             self.rules.append(rule_class(self.context))
