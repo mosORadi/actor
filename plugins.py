@@ -79,3 +79,17 @@ class Fixer(Worker):
     side_effects = True
 
     __metaclass__ = PluginMount
+
+
+class PythonRule(Plugin):
+    """
+    Performs custom rule.
+    """
+
+    __metaclass__ = PluginMount
+
+    def run(self):
+        """
+        Evaluates custom python rule.
+        """
+        pass

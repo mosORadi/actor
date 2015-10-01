@@ -12,8 +12,7 @@ import gobject
 import dbus
 import dbus.mainloop.glib
 
-from plugins import Reporter, Checker, Fixer
-from rules import PythonRule
+from plugins import Reporter, Checker, Fixer, PythonRule
 
 from config import CONFIG_DIR, HOME_DIR
 from local_config import SLEEP_HASH
