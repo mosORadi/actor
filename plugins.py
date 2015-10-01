@@ -1,3 +1,4 @@
+import abc
 import logging
 
 class PluginMount(type):
@@ -8,6 +9,8 @@ class PluginMount(type):
             cls.plugins.append(cls)
 
 class Plugin(object):
+
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, context):
         self.context = context
@@ -40,6 +43,11 @@ class Plugin(object):
 
     def fix(self, identifier, *args, **kwargs):
         return self.context.fixers.get(identifier, *args, **kwargs)
+
+    # Make sure every plugin implements the run method
+    @abc.abstractmethod
+    def run(self):
+        pass
 
 
 class Worker(Plugin):
@@ -87,9 +95,3 @@ class PythonRule(Plugin):
     """
 
     __metaclass__ = PluginMount
-
-    def run(self):
-        """
-        Evaluates custom python rule.
-        """
-        pass
