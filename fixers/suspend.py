@@ -1,27 +1,18 @@
 import datetime
-import dbus
 
-from plugins import Fixer
+from plugins import Fixer, DBusMixin
 from util import run, convert_timestamp
 
 
-class SuspendFixer(Fixer):
+class SuspendFixer(DBusMixin, Fixer):
     """
     Simple fixer that suspends your workstation.
     """
 
     identifier = "suspend"
 
-    def __init__(self, context):
-        super(SuspendFixer, self).__init__(context)
-
-        bus_name = 'org.freedesktop.PowerManagement'
-        object_path = '/org/freedesktop/PowerManagement'
-        interface_name = bus_name
-
-        session_bus = dbus.SessionBus()
-        dbus_object = session_bus.get_object(bus_name, object_path)
-        self.interface = dbus.Interface(dbus_object, interface_name)
+    bus_name = 'org.freedesktop.PowerManagement'
+    object_path = '/org/freedesktop/PowerManagement'
 
     def run(self, enforced=False):
         if enforced:

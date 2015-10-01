@@ -1,8 +1,7 @@
-from plugins import Reporter
-import dbus
+from plugins import Reporter, DBusMixin
 
 
-class MessagesReporter(Reporter):
+class MessagesReporter(DBusMixin, Reporter):
     """
     Returns a list of raw sender names of users you have unread
     IM messages from.
@@ -10,26 +9,16 @@ class MessagesReporter(Reporter):
 
     identifier = 'messages'
 
-    def __init__(self, context):
-        super(MessagesReporter, self).__init__(context)
-
-        try:
-            self.bus = dbus.SessionBus()
-            proxy = self.bus.get_object("im.pidgin.purple.PurpleService",
-                                        "/im/pidgin/purple/PurpleObject")
-            self.pidgin = dbus.Interface(
-                proxy,
-                dbus_interface="im.pidgin.purple.PurpleInterface"
-            )
-        except dbus.exceptions.DBusException:
-            self.pidgin = None
+    bus_name = "im.pidgin.purple.PurpleService"
+    object_path = "/im/pidgin/purple/PurpleObject"
+    interface_name ="im.pidgin.purple.PurpleInterface"
 
     def run(self):
-        if not self.pidgin:
+        if not self.interface:
             return []
 
-        messages = self.pidgin.PurpleGetIms()
-        names = [self.pidgin.PurpleConversationGetName(m)
+        messages = self.interface.PurpleGetIms()
+        names = [self.interface.PurpleConversationGetName(m)
                  for m in messages]
 
         return names

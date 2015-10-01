@@ -1,9 +1,7 @@
-import dbus
-
-from plugins import Fixer
+from plugins import Fixer, DBusMixin
 
 
-class SetHamsterActivityFixer(Fixer):
+class SetHamsterActivityFixer(DBusMixin, Fixer):
     """
     Simple fixer, that sets current activity in Hamster.
 
@@ -15,14 +13,6 @@ class SetHamsterActivityFixer(Fixer):
 
     bus_name = 'org.gnome.Hamster'
     object_path = '/org/gnome/Hamster'
-    interface_name = bus_name
-
-    def __init__(self, context):
-        super(SetHamsterActivityFixer, self).__init__(context)
-
-        self.bus = dbus.SessionBus()
-        dbus_object = self.bus.get_object(self.bus_name, self.object_path)
-        self.interface = dbus.Interface(dbus_object, self.interface_name)
 
     def run(self, activity):
         # First, let's detect the current activity to not

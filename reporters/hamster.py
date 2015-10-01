@@ -1,8 +1,7 @@
-from plugins import Reporter
-import dbus
+from plugins import Reporter, DBusMixin
 
 
-class HamsterActivityReporter(Reporter):
+class HamsterActivityReporter(DBusMixin, Reporter):
     """
     Reports the current activity, as set in Hamster Time Tracker.
 
@@ -12,23 +11,13 @@ class HamsterActivityReporter(Reporter):
 
     identifier = 'hamster_activity'
 
-    def __init__(self, context):
-        super(HamsterActivityReporter, self).__init__(context)
-
-        self.bus = dbus.SessionBus()
-        self.bus.add_signal_receiver(
-            self.get_current_activity,
-            dbus_interface="org.gnome.Hamster",
-            signal_name="FactsChanged")
-
-        proxy = dbus.SessionBus().get_object(
-            "org.gnome.Hamster", "/org/gnome/Hamster")
-        self.hamster = dbus.Interface(proxy, dbus_interface='org.gnome.Hamster')
+    bus_name = "org.gnome.Hamster",
+    object_path = "/org/gnome/Hamster"
 
     def run(self):
         activity = None
 
-        today_facts = self.hamster.GetTodaysFacts()
+        today_facts = self.interface.GetTodaysFacts()
 
         # See to_dbus_fact method in src/hamster-service
         if today_facts:
@@ -50,19 +39,13 @@ class HamsterActivityDailyDurationReporter(Reporter):
 
     identifier = 'hamster_activity_daily_duration'
 
-    def __init__(self, context):
-        super(HamsterActivityDailyDurationReporter, self).__init__(context)
-
-        self.bus = dbus.SessionBus()
-        proxy = dbus.SessionBus().get_object(
-            "org.gnome.Hamster", "/org/gnome/Hamster")
-        self.hamster = dbus.Interface(proxy, dbus_interface='org.gnome.Hamster')
-
+    bus_name = "org.gnome.Hamster",
+    object_path = "/org/gnome/Hamster"
 
     def run(self, activity=None):
         totals = dict()
 
-        for fact in self.hamster.GetTodaysFacts():
+        for fact in self.interface.GetTodaysFacts():
             # 4 - name
             # 6 - category
             # 9 - duration
