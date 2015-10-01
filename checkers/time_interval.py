@@ -1,6 +1,7 @@
 import datetime
 
 from plugins import Checker
+from util import convert_timestamp
 
 class TimeIntervalChecker(Checker):
     """
@@ -13,20 +14,9 @@ class TimeIntervalChecker(Checker):
 
     identifier = 'time_interval'
 
-    def convert_from_input(timestamp):
-        """
-        Takes timestamp (either "%H.%M" string or datetime.time object)
-        and converts it to datetime.datetime object valid for today.
-        """
-
-        if type(timestamp) is str:
-            return datetime.datetime.strptime(timestamp, "%H.%M")
-        else:
-            return datetime.datetime.combine(datetime.date.today(), timestamp)
-
     def run(self, start, end):
-        start = self.convert_from_string(end)
-        end = sef.convert_from_string(end)
+        start = convert_timestamp(start)
+        end = convert_timestamp(end)
 
         # If the start of the interval is later than the end, add one day
         if start > end:
