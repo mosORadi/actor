@@ -1,4 +1,5 @@
 import abc
+import dbus
 import logging
 
 class PluginMount(type):
@@ -95,3 +96,26 @@ class PythonRule(Plugin):
     """
 
     __metaclass__ = PluginMount
+
+
+class DBusMixin(object):
+    """
+    Sets the interface of the specified DBus object as self.interface. In case
+    DBusException occurs during setup, self.interface is set to None.
+    """
+
+    bus_name = None        # i.e. 'org.freedesktop.PowerManagement'
+    object_path = None     # i.e.'/org/freedesktop/PowerManagement'
+    interface_name = None  # can be omitted, and bus_name will be used instead
+
+    def __init__(self, *args, **kwargs):
+        super(DBusMixin, self).__init__(*args, **kwargs)
+
+        try:
+            self.bus = dbus.SessionBus()
+            dbus_object = self.bus.get_object(self.bus_name, self.object_path)
+            self.interface = dbus.Interface(dbus_object,
+                                            self.interface_name or self.bus_name)
+        except dbus.exceptions.DBusException:
+            self.interface = None
+
