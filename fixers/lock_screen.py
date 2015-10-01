@@ -9,21 +9,18 @@ class LockScreenFixer(Fixer):
     """
 
     identifier = "lock_screen"
-    interface = None
 
-    def lock(self):
+    def __init__(self, context):
+        super(LockScreenFixer, self).__init__(context)
 
-        if not self.interface:
-            bus_name = 'org.freedesktop.ScreenSaver'
-            object_path = '/ScreenSaver'
-            interface_name = bus_name
+        bus_name = 'org.freedesktop.ScreenSaver'
+        object_path = '/ScreenSaver'
+        interface_name = bus_name
 
-            session_bus = dbus.SessionBus()
-            dbus_object = session_bus.get_object(bus_name, object_path)
-            self.interface = dbus.Interface(dbus_object, interface_name)
+        session_bus = dbus.SessionBus()
+        dbus_object = session_bus.get_object(bus_name, object_path)
+        self.interface = dbus.Interface(dbus_object, interface_name)
 
+    def run(self):
         if not self.interface.GetActive():
             self.interface.Lock()
-
-    def fix(self, **reports):
-        self.lock()
