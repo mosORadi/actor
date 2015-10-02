@@ -30,24 +30,34 @@ class PluginCache(object):
         self.mount = mount
         self.context = context
         self.cache = {}
+        self.instances = {}
         self.plugins = {
             plugin_class.identifier: plugin_class
             for plugin_class in self.mount.plugins
         }
 
-    def get(self, identifier, *args, **kwargs):
+    def get(self, identifier, args, kwargs, rule_name=None):
         plugin_class = self.get_plugin(identifier)
 
-        # If it is stateless and has no side-effects, it can be cached
-        # per loop
+        # Instances can be shared, and be kept for the time the Actor runs,
+        # however, in the case of stateful plugins, we need to make sure
+        # we create a separate instance per rule.
+
         if plugin_class.stateless and not plugin_class.side_effects:
-            return self.get_from_cache(identifier, *args, **kwargs)
+            # Can be cached (per loop).
+            return self.result_from_cache(identifier, args, kwargs)
         elif plugin_class.stateless:
-            return self.run_from_cache(identifier, *args, **kwargs)
+            # It has side-effects, hence we need to run it.
+            return self.run_plugin_instance(identifier, args, kwargs)
         else:
-            pass
-            # TODO: Raise an error, such things ought to be accessed
-            #       via a factory
+            if rule_name is None:
+                raise ValueError("Only stateless plugins can be accessed "
+                                 "from workers.")
+            # It is stateful, hence cannot be shared between modules.
+            # Modify instance name to include the rule name.
+            instance_id = '{0}_{1}'.format(identifier, rule_name)
+            return self.run_plugin_instance(instance_id, args, kwargs,
+                                            class_identifier=identifier)
 
     def get_plugin(self, identifier):
         try:
@@ -56,7 +66,16 @@ class PluginCache(object):
             pass
             # TODO: Raise an error, no such plugin available
 
-    def get_from_cache(self, identifier, *args, **kwargs):
+    def get_plugin_instance(self, identifier, class_identifier):
+        instance = self.instances.get(identifier)
+
+        if instance is None:
+            plugin_class = self.get_plugin(class_identifier or identifier)
+            self.instances[identifier] = instance = plugin_class(self.context)
+
+        return instance
+
+    def result_from_cache(self, identifier, args, kwargs):
         # Note: Only for stateless and no side-effects
 
         key = (identifier, args, HashableDict(**kwargs))
@@ -68,14 +87,9 @@ class PluginCache(object):
 
         return value
 
-    def run_from_cache(self, identifier, *args, **kwargs):
-        # Meant for stateless with side-effects
-
-        instance = self.cache.get(identifier)
-
-        if instance is None:
-            self.cache[identifier] = instance = self.get_plugin(identifier)(self.context)
-
+    def run_plugin_instance(self, identifier, args, kwargs, class_identifier=None):
+        # Meant for stateful or stateless with sideeffects
+        instance = self.get_plugin_instance(identifier, class_identifier)
         return instance.run(*args, **kwargs)
 
     def clear(self):
@@ -92,7 +106,7 @@ class PluginFactory(object):
             for plugin_class in self.mount.plugins
         }
 
-    def get(self, identifier, *args, **kwargs):
+    def get(self, identifier, args, kwargs):
         plugin_class = self.get_plugin(identifier)
 
         # If it is stateless and has no side-effects, it can be cached
