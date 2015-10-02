@@ -34,13 +34,22 @@ class Plugin(object):
 
     # Convenience function for accessing worker modules
     def report(self, identifier, *args, **kwargs):
-        return self.context.reporters.get(identifier, *args, **kwargs)
+        return self.context.reporters.get(identifier, args, kwargs)
 
     def check(self, identifier, *args, **kwargs):
-        return self.context.checkers.get(identifier, *args, **kwargs)
+        return self.context.checkers.get(identifier, args, kwargs)
 
     def fix(self, identifier, *args, **kwargs):
-        return self.context.fixers.get(identifier, *args, **kwargs)
+        return self.context.fixers.get(identifier, args, kwargs)
+
+    def factory_report(self, identifier, *args, **kwargs):
+        return self.context.reporter_factory.get(identifier, args, kwargs)
+
+    def factory_check(self, identifier, *args, **kwargs):
+        return self.context.checker_factory.get(identifier, args, kwargs)
+
+    def factory_fix(self, identifier, *args, **kwargs):
+        return self.context.fixer_factory.get(identifier, args, kwargs)
 
     # Make sure every plugin implements the run method
     def run(self):
