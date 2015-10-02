@@ -39,8 +39,11 @@ class PluginCache(object):
         plugin_class = self.get_plugin(identifier)
 
         # If it is stateless and has no side-effects, it can be cached
+        # per loop
         if plugin_class.stateless and not plugin_class.side_effects:
             return self.get_from_cache(identifier, *args, **kwargs)
+        elif plugin_class.stateless:
+            return self.run_from_cache(identifier, *args, **kwargs)
         else:
             pass
             # TODO: Raise an error, such things ought to be accessed
@@ -64,6 +67,16 @@ class PluginCache(object):
             self.cache[key] = value = plugin_instance.evaluate(*args, **kwargs)
 
         return value
+
+    def run_from_cache(self, identifier, *args, **kwargs):
+        # Meant for stateless with side-effects
+
+        instance = self.cache.get(identifier)
+
+        if instance is None:
+            self.cache[identifier] = instance = self.get_plugin(identifier)(self.context)
+
+        return instance.run(*args, **kwargs)
 
     def clear(self):
         self.cache.clear()
