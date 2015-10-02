@@ -1,49 +1,34 @@
 import dbus
 
-from plugins import Fixer
+from plugins import Fixer, DBusMixin
 
 
-class NotifyFixer(Fixer):
+class NotifyFixer(DBusMixin, Fixer):
     """
     Simple fixer, that sends a D-Bus notification.
 
     Accepted options (defaults in parentheses):
+      - message : Text of the message sent
       - headline: Headline of the notification (AcTor Alert!)
-      - message : Text of the message sent (Sample message!)
       - app_name: Application name (AcTor)
       - timeout : Timeout of the notification (0)
       - app_icon: Icon of the notification ('')
     """
 
     identifier = "notify"
-    required_plugin_options = ['message']
-    optional_plugin_options = ['timeout', 'app_icon', 'app_name', 'headline']
+    stateless = False
 
-    def __init__(self, **options):
-        super(NotifyFixer, self).__init__(**options)
+    bus_name = 'org.freedesktop.Notifications'
+    object_path = '/org/freedesktop/Notifications'
+
+
+    def __init__(self, context):
+        super(NotifyFixer, self).__init__(context)
+
         self.last_notification = 0
 
-    def notify(self):
-
-        headline = self.options.get('headline', 'AcTor Alert!')
-        app_name = self.options.get('app_name', 'AcTor')
-        app_icon = self.options.get('app_icon', '')
-        timeout = self.options.get('timeout', 0)
-        message = self.options.get('message', 'Sample message!')
-
+    def run(self, message, headline="Actor Alert!", app_name="Actor", app_icon='', timeout=0):
         replaces_id = self.last_notification
-        
-        bus_name = 'org.freedesktop.Notifications'
-        object_path = '/org/freedesktop/Notifications'
-        interface_name = bus_name
-
-        session_bus = dbus.SessionBus()
-        dbus_object = session_bus.get_object(bus_name, object_path)
-        interface = dbus.Interface(dbus_object, interface_name)
-
-        self.last_notification = interface.Notify(app_name, replaces_id, app_icon,
-                                                  headline, message, [], {},
-                                                  timeout)
-
-    def fix(self, **reports):
-        self.notify()
+        self.last_notification = self.interface.Notify(app_name, replaces_id, app_icon,
+                                                       headline, message, [], {},
+                                                       timeout)
