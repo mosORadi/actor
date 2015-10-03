@@ -85,6 +85,9 @@ class Checker(Worker):
 
     __metaclass__ = PluginMount
 
+    def __bool__(self):
+        return self.run()
+
 
 class Fixer(Worker):
     """
