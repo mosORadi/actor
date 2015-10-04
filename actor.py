@@ -95,6 +95,14 @@ class PluginCache(object):
     def clear(self):
         self.cache.clear()
 
+    def __iter__(self):
+        """
+        Iterates over all the instances of the plugins available to the cache.
+        """
+
+        for plugin_class in self.plugins:
+            yield self.get_plugin_instance(plugin_class.identifier, None)
+
 
 class PluginFactory(object):
 
