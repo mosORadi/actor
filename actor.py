@@ -51,7 +51,10 @@ class PluginCache(object):
         self.context = context
         self.cache = {}
         self.instances = {}
-        self.plugins = {
+
+    @property
+    def plugins(self):
+        return {
             plugin_class.identifier: plugin_class
             for plugin_class in self.mount.plugins
         }
@@ -164,7 +167,10 @@ class PluginFactory(object):
     def __init__(self, mount, context):
         self.mount = mount
         self.context = context
-        self.plugins = {
+
+    @property
+    def plugins(self):
+        return {
             plugin_class.identifier: plugin_class
             for plugin_class in self.mount.plugins
         }
