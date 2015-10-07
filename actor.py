@@ -270,16 +270,6 @@ class Actor(object):
                         .format(module, category.__name__[:-1]), str(e))
                     logging.info(traceback.format_exc())
 
-    def get_plugin(self, name, category):
-        plugin_candidates = [plugin for plugin in category.plugins
-                             if plugin.__name__ == name]
-
-        if plugin_candidates:
-            return plugin_candidates[0]
-        else:
-            raise ValueError("Could not find %s plugin of name: %s"
-                              % (category.__name__, name))
-
     def load_configuration(self):
         # Create the config directory, if it does not exist
         if not os.path.exists(CONFIG_DIR):
