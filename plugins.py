@@ -144,3 +144,39 @@ class DBusMixin(object):
         except dbus.exceptions.DBusException:
             self.interface = None
 
+
+class Activity(Plugin):
+
+    __metaclass__ = PluginMount
+
+    whitelist_commands = tuple()
+    whitelist_titles = tuple()
+
+    @property
+    def name(self):
+        return self.__class__.__name__
+
+    def report(self, identifier, *args, **kwargs):
+        return self.context.reporters.get(identifier, args, kwargs,
+                                          rule_name=self.name)
+
+    def check(self, identifier, *args, **kwargs):
+        return self.context.checkers.get(identifier, args, kwargs,
+                                         rule_name=self.name)
+
+    def fix(self, identifier, *args, **kwargs):
+        return self.context.fixers.get(identifier, args, kwargs,
+                                       rule_name=self.name)
+
+    def run(self):
+        """
+        Enforces the allowed applications.
+        """
+
+        current_title = self.report('active_window_name')
+        current_command = self.report('active_window_process_name')
+
+        if not any([title in current_title for title in self.whitelist_titles] +
+                   [command in current_command for command in self.whitelist_commands]):
+            self.fix('notify', message="Application not allowed")
+            self.fix('kill_process', pid=self.report('active_window_pid'))
