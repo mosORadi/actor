@@ -186,8 +186,9 @@ class PluginFactory(object):
         args = args or tuple()
         kwargs = kwargs or dict()
 
+        # Create an instance of the plugin class and return it
         plugin_class = self.get_plugin(identifier)
-        return self.get_plugin(identifier)(self.context, *args, **kwargs)
+        return plugin_class(self.context, *args, **kwargs)
 
     def get_plugin(self, identifier):
         try:
