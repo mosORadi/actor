@@ -99,12 +99,10 @@ class Fixer(Worker):
     __metaclass__ = PluginMount
 
 
-class PythonRule(Plugin):
+class ContextProxyMixin(object):
     """
-    Performs custom rule.
+    Provides a simplified interface to the workers exposed by the context.
     """
-
-    __metaclass__ = PluginMount
 
     @property
     def name(self):
@@ -121,6 +119,13 @@ class PythonRule(Plugin):
     def fix(self, identifier, *args, **kwargs):
         return self.context.fixers.get(identifier, args, kwargs,
                                        rule_name=self.name)
+
+class PythonRule(ContextProxyMixin, Plugin):
+    """
+    Performs custom rule.
+    """
+
+    __metaclass__ = PluginMount
 
 
 class DBusMixin(object):
@@ -145,28 +150,12 @@ class DBusMixin(object):
             self.interface = None
 
 
-class Activity(Plugin):
+class Activity(ContextProxyMixin, Plugin):
 
     __metaclass__ = PluginMount
 
     whitelist_commands = tuple()
     whitelist_titles = tuple()
-
-    @property
-    def name(self):
-        return self.__class__.__name__
-
-    def report(self, identifier, *args, **kwargs):
-        return self.context.reporters.get(identifier, args, kwargs,
-                                          rule_name=self.name)
-
-    def check(self, identifier, *args, **kwargs):
-        return self.context.checkers.get(identifier, args, kwargs,
-                                         rule_name=self.name)
-
-    def fix(self, identifier, *args, **kwargs):
-        return self.context.fixers.get(identifier, args, kwargs,
-                                       rule_name=self.name)
 
     def run(self):
         """
