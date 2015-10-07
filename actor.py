@@ -101,7 +101,7 @@ class PluginCache(object):
             pass
             # TODO: Raise an error, no such plugin available
 
-    def get_plugin_instance(self, identifier, class_identifier):
+    def get_plugin_instance(self, identifier, class_identifier=None):
         """
         Returns a plugin instance corresponding to the given class identifier.
         If case the class identifier is None, identifier will be used. This is
