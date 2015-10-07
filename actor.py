@@ -178,16 +178,16 @@ class PluginFactory(object):
             for plugin_class in self.mount.plugins
         }
 
-    def make(self, identifier, args, kwargs):
-        plugin_class = self.get_plugin(identifier)
+    def make(self, identifier, args=None, kwargs=None):
+        """
+        Returns an instance of a particular plugin given by identifier.
+        """
 
-        # If it is stateless and has no side-effects, it can be cached
-        if not plugin_class.stateless or plugin_class.side_effects:
-            return self.get_plugin(identifier)(self.context, *args, **kwargs)
-        else:
-            pass
-            # TODO: Raise an error, such things ought to be accessed
-            #       via a factory
+        args = args or tuple()
+        kwargs = kwargs or dict()
+
+        plugin_class = self.get_plugin(identifier)
+        return self.get_plugin(identifier)(self.context, *args, **kwargs)
 
     def get_plugin(self, identifier):
         try:
