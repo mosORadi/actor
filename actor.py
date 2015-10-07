@@ -59,7 +59,7 @@ class PluginCache(object):
             for plugin_class in self.mount.plugins
         }
 
-    def get(self, identifier, args, kwargs, rule_name=None):
+    def get(self, identifier, args=None, kwargs=None, rule_name=None):
         """
         Obtain a result from the given plugin. If the plugin is stateless
         and has no side effects, it will be returned from the result cache.
@@ -67,6 +67,9 @@ class PluginCache(object):
         Otherwise, the plugin will be re-evaluated and the result will be
         returned.
         """
+
+        args = args or tuple()
+        kwargs = kwargs or dict()
 
         plugin_class = self.get_plugin(identifier)
 
