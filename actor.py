@@ -175,7 +175,7 @@ class PluginFactory(object):
             for plugin_class in self.mount.plugins
         }
 
-    def get(self, identifier, args, kwargs):
+    def make(self, identifier, args, kwargs):
         plugin_class = self.get_plugin(identifier)
 
         # If it is stateless and has no side-effects, it can be cached

@@ -43,13 +43,13 @@ class Plugin(object):
         return self.context.fixers.get(identifier, args, kwargs)
 
     def factory_report(self, identifier, *args, **kwargs):
-        return self.context.reporter_factory.get(identifier, args, kwargs)
+        return self.context.reporter_factory.make(identifier, args, kwargs)
 
     def factory_check(self, identifier, *args, **kwargs):
-        return self.context.checker_factory.get(identifier, args, kwargs)
+        return self.context.checker_factory.make(identifier, args, kwargs)
 
     def factory_fix(self, identifier, *args, **kwargs):
-        return self.context.fixer_factory.get(identifier, args, kwargs)
+        return self.context.fixer_factory.make(identifier, args, kwargs)
 
     # Make sure every plugin implements the run method
     def run(self):
