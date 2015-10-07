@@ -13,7 +13,7 @@ import gobject
 import dbus
 import dbus.mainloop.glib
 
-from plugins import Reporter, Checker, Fixer, PythonRule
+from plugins import Reporter, Checker, Fixer, PythonRule, Activity
 
 from config import CONFIG_DIR, HOME_DIR
 from local_config import SLEEP_HASH
@@ -212,11 +212,13 @@ class Context(object):
         self.checker_factory = PluginFactory(Checker, self)
         self.fixer_factory = PluginFactory(Fixer, self)
 
+        self.activities = PluginFactory(Activity, self)
 
 class Actor(object):
 
     def __init__(self):
         self.rules = []
+        self.activity = None
 
     def main(self):
         # Start dbus mainloop
@@ -329,6 +331,10 @@ class Actor(object):
 
         for rule in self.rules:
             rule.run()
+
+        # Make sure current activity is respected
+        if self.activity is not None:
+            self.activity.run()
 
         return True
 
