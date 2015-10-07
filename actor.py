@@ -221,22 +221,12 @@ class Actor(object):
         self.rules = []
         self.activity = None
 
-    def main(self):
-        # Start dbus mainloop
-        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+    # Logging related methods
 
-        # Load the plugins
-        self.import_plugins()
-        self.context = Context()
-
-        # Load the Actor configuration
-        self.load_configuration()
-
-        # Start the main loop
-        loop = gobject.MainLoop()
-        gobject.timeout_add(2000, self.check_everything)
-        logging.info("AcTor started.")
-        loop.run()
+    def log_exception(self, exception_type, value, tb):
+        logging.error("Exception: %s", exception_type)
+        logging.error("Value: %s", value)
+        logging.error("Traceback: %s", traceback.format_exc())
 
     def setup_logging(self, daemon_mode=False, level=logging.WARNING):
         # Setup Actor logging
@@ -249,10 +239,7 @@ class Actor(object):
 
         logging.basicConfig(**config)
 
-    def log_exception(self, exception_type, value, tb):
-        logging.error("Exception: %s", exception_type)
-        logging.error("Value: %s", value)
-        logging.error("Traceback: %s", traceback.format_exc())
+    # Initialization related methods
 
     def import_plugins(self):
         import reporters, checkers, fixers
@@ -298,6 +285,8 @@ class Actor(object):
         if not python_rules:
             logging.warning("No Python rules available")
 
+    # Runtime related methods
+
     def check_sleep_file(self):
         """
         You can create one sleep file in your home directory.
@@ -328,6 +317,23 @@ class Actor(object):
             self.activity.run()
 
         return True
+
+    def main(self):
+        # Start dbus mainloop
+        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+        # Load the plugins
+        self.import_plugins()
+        self.context = Context()
+
+        # Load the Actor configuration
+        self.load_configuration()
+
+        # Start the main loop
+        loop = gobject.MainLoop()
+        gobject.timeout_add(2000, self.check_everything)
+        logging.info("AcTor started.")
+        loop.run()
 
 if __name__ == "__main__":
     actor = Actor()
