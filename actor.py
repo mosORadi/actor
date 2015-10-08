@@ -160,7 +160,7 @@ class Actor(object):
         loop.run()
 
 if __name__ == "__main__":
+    Actor.setup_logging(level=logging.DEBUG)
     actor = Actor()
     proxy = ActorDBusProxy(actor)
-    actor.setup_logging(level=logging.DEBUG)
     actor.main()
