@@ -11,6 +11,7 @@ import imp
 
 import gobject
 import dbus
+import dbus.service
 import dbus.mainloop.glib
 
 from context import Context
@@ -18,6 +19,22 @@ from plugins import PythonRule
 
 from config import CONFIG_DIR, HOME_DIR
 from local_config import SLEEP_HASH
+
+class ActorDBusProxy(dbus.service.Object):
+
+    def __init__(self, actor):
+        self.actor = actor
+
+        bus = dbus.SessionBus()
+        bus_name = dbus.service.BusName("org.freedesktop.Actor", bus=bus)
+
+        super(ActorDBusProxy, self).__init__(bus_name, "/Actor")
+
+    # Dbus interface
+    @dbus.service.method("org.freedesktop.Actor", in_signature='s')
+    def SetActivity(self, activity):
+        logging.info("Making activity: %s" % activity)
+        self.actor.activity = self.actor.context.activities.make(activity)
 
 
 class Actor(object):
@@ -142,5 +159,6 @@ class Actor(object):
 
 if __name__ == "__main__":
     actor = Actor()
+    proxy = ActorDBusProxy(actor)
     actor.setup_logging(level=logging.DEBUG)
     actor.main()
