@@ -55,12 +55,14 @@ class Actor(object):
 
     # Logging related methods
 
-    def log_exception(self, exception_type, value, tb):
+    @staticmethod
+    def log_exception(exception_type, value, tb):
         logging.error("Exception: %s", exception_type)
         logging.error("Value: %s", value)
         logging.error("Traceback: %s", traceback.format_exc())
 
-    def setup_logging(self, daemon_mode=False, level=logging.WARNING):
+    @staticmethod
+    def setup_logging(daemon_mode=False, level=logging.WARNING):
         # Setup Actor logging
         config = dict(format='%(asctime)s: %(levelname)s: %(message)s',
                       datefmt='%m/%d/%Y %I:%M:%S %p',
