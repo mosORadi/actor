@@ -32,13 +32,14 @@ class ActorDaemon(object):
         # Since Actor can connect from plugins to sockets,
         # we need to do the import inside the DaemonContext
         from actor import Actor. ActorDBusProxy
-        actor = Actor()
-        proxy = ActorDBusProxy(actor)
 
         # Forward all exceptions to the log
-        sys.excepthook = actor.log_exception
+        sys.excepthook = Actor.log_exception
+        Actor.setup_logging(daemon_mode=True)
 
-        actor.setup_logging(daemon_mode=True)
+        # Initialize an Actor instance and setup proxy for it
+        actor = Actor()
+        proxy = ActorDBusProxy(actor)
 
         # Run the AcTor!
         actor.main()
