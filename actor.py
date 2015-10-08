@@ -26,6 +26,16 @@ class Actor(object):
         self.rules = []
         self.activity = None
 
+        # Start dbus mainloop
+        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+        # Load the plugins
+        self.import_plugins()
+        self.context = Context()
+
+        # Load the Actor configuration
+        self.load_configuration()
+
     # Logging related methods
 
     def log_exception(self, exception_type, value, tb):
@@ -124,16 +134,6 @@ class Actor(object):
         return True
 
     def main(self):
-        # Start dbus mainloop
-        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-
-        # Load the plugins
-        self.import_plugins()
-        self.context = Context()
-
-        # Load the Actor configuration
-        self.load_configuration()
-
         # Start the main loop
         loop = gobject.MainLoop()
         gobject.timeout_add(2000, self.check_everything)
