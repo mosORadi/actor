@@ -33,8 +33,7 @@ class ActorDBusProxy(dbus.service.Object):
     # Dbus interface
     @dbus.service.method("org.freedesktop.Actor", in_signature='s')
     def SetActivity(self, activity):
-        logging.info("Making activity: %s" % activity)
-        self.actor.activity = self.actor.context.activities.make(activity)
+        self.actor.set_activity(actiity)
 
 
 class Actor(object):
@@ -118,6 +117,15 @@ class Actor(object):
 
         if not python_rules:
             logging.warning("No Python rules available")
+
+    # Interface related methods
+
+    def set_activity(self, activity):
+        """
+        Sets the current activity as given by the identifier.
+        """
+
+        self.activity = self.context.activities.make(identifier)
 
     # Runtime related methods
 
