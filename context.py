@@ -195,3 +195,4 @@ class Context(object):
         self.fixer_factory = PluginFactory(Fixer, self)
 
         self.activities = PluginFactory(Activity, self)
+        self.flows = PluginFactory(Flow, self)
