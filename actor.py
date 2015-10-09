@@ -33,7 +33,19 @@ class ActorDBusProxy(dbus.service.Object):
     # Dbus interface
     @dbus.service.method("org.freedesktop.Actor", in_signature='s')
     def SetActivity(self, activity):
-        self.actor.set_activity(actiity)
+        self.actor.set_activity(activity)
+
+    @dbus.service.method("org.freedesktop.Actor", in_signature='')
+    def UnsetActivity(self):
+        self.actor.unset_activity()
+
+    @dbus.service.method("org.freedesktop.Actor", in_signature='s')
+    def SetFlow(self, activity):
+        self.actor.set_flow(actiity)
+
+    @dbus.service.method("org.freedesktop.Actor", in_signature='')
+    def UnsetFlow(self):
+        self.actor.unset_flow()
 
 
 class Actor(object):
@@ -121,12 +133,33 @@ class Actor(object):
 
     # Interface related methods
 
-    def set_activity(self, activity):
+    def set_activity(self, identifier):
         """
         Sets the current activity as given by the identifier.
         """
 
         self.activity = self.context.activities.make(identifier)
+
+    def unset_activity(self):
+        """
+        Unsets the current activity.
+        """
+
+        self.activity = None
+
+    def set_flow(self, identifier):
+        """
+        Sets the current flow as given by the identifier.
+        """
+
+        self.flow = self.context.flows.make(identifier, args=(self,))
+
+    def unset_flow(self):
+        """
+        Unsets the current flow.
+        """
+
+        self.flow = None
 
     # Runtime related methods
 
