@@ -41,7 +41,7 @@ class ActorDBusProxy(dbus.service.Object):
 
     @dbus.service.method("org.freedesktop.Actor", in_signature='s')
     def SetFlow(self, activity):
-        self.actor.set_flow(actiity)
+        self.actor.set_flow(activity)
 
     @dbus.service.method("org.freedesktop.Actor", in_signature='')
     def UnsetFlow(self):
