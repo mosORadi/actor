@@ -1,4 +1,4 @@
-from plugins import Reporter, Checker, Fixer, Activity
+from plugins import Reporter, Checker, Fixer, Activity, Flow
 
 class HashableDict(dict):
     def __hash__(self):

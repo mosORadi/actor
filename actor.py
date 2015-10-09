@@ -41,6 +41,7 @@ class Actor(object):
     def __init__(self):
         self.rules = []
         self.activity = None
+        self.flow = None
 
         # Start dbus mainloop
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
@@ -157,6 +158,9 @@ class Actor(object):
         # Make sure current activity is respected
         if self.activity is not None:
             self.activity.run()
+
+        if self.flow is not None:
+            self.flow.run()
 
         return True
 

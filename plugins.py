@@ -1,3 +1,4 @@
+import datetime
 import dbus
 import logging
 
@@ -169,3 +170,56 @@ class Activity(ContextProxyMixin, Plugin):
                    [command in current_command for command in self.whitelist_commands]):
             self.fix('notify', message="Application not allowed")
             self.fix('kill_process', pid=self.report('active_window_pid'))
+
+
+class Flow(Plugin):
+    """
+    Defines a list of activities with their duration.
+    """
+
+    __metaclass__ = PluginMount
+
+    activities = tuple()
+
+    def __init__(self, context, actor):
+        self.actor = actor
+        self.current_activity_index = None
+        self.current_activity_start = None
+
+    @property
+    def next_activity(self):
+        try:
+            return self.activities[(self.current_activity_index or 0) + 1]
+        except IndexError:
+            return None
+
+    @property
+    def current_activity(self):
+        return self.activities[self.current_activity_index]
+
+    @property
+    def current_activity_expired(self):
+        duration = datetime.timedelta(minutes=self.current_activity[1])
+        end_time = self.current_activity_start + duration
+
+        return datetime.datetime.now() > end_time
+
+    def start(self, activity):
+        self.current_activity_start = datetime.datetime.now()
+        self.actor.set_activity(activity[0])
+
+    def end(self):
+        self.actor.unset_activity()
+        self.current_activity_start = None
+
+    def run(self):
+        if self.current_activity_index is None:
+            self.current_activity_index = 0
+            self.start(self.current_activity)
+        elif self.current_activity_expired and self.next_activity is not None:
+            self.end()
+            self.current_activity_index =+ 1
+            self.start(self.current_activity)
+        elif self.current_activity_expired and self.next_activity is None:
+            self.end()
+            self.actor.unset_flow()
