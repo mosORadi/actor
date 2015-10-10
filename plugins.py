@@ -106,20 +106,20 @@ class ContextProxyMixin(object):
     """
 
     @property
-    def name(self):
+    def identifier(self):
         return self.__class__.__name__
 
     def report(self, identifier, *args, **kwargs):
         return self.context.reporters.get(identifier, args, kwargs,
-                                          rule_name=self.name)
+                                          rule_name=self.identifier)
 
     def check(self, identifier, *args, **kwargs):
         return self.context.checkers.get(identifier, args, kwargs,
-                                         rule_name=self.name)
+                                         rule_name=self.identifier)
 
     def fix(self, identifier, *args, **kwargs):
         return self.context.fixers.get(identifier, args, kwargs,
-                                       rule_name=self.name)
+                                       rule_name=self.identifier)
 
 class PythonRule(ContextProxyMixin, Plugin):
     """
