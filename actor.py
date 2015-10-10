@@ -139,7 +139,10 @@ class Actor(object):
         """
 
         logging.info("Setting activity %s" % identifier)
-        self.activity = self.context.activities.make(identifier)
+        if self.flow is None:
+            self.activity = self.context.activities.make(identifier)
+        else:
+            logging.info("Activity cannot be set, flow in progress.")
 
     def unset_activity(self):
         """
@@ -147,7 +150,11 @@ class Actor(object):
         """
 
         logging.info("Unsetting activity.")
-        self.activity = None
+        if self.flow is None:
+            self.activity = None
+        else:
+            logging.info("Activity cannot be unset, flow in progress.")
+
 
     def set_flow(self, identifier):
         """
@@ -155,7 +162,10 @@ class Actor(object):
         """
 
         logging.info("Setting flow %s" % identifier)
-        self.flow = self.context.flows.make(identifier, args=(self,))
+        if self.flow is None:
+            self.flow = self.context.flows.make(identifier, args=(self,))
+        else:
+            logging.info("Flow already in progress")
 
     def unset_flow(self):
         """
@@ -164,6 +174,7 @@ class Actor(object):
 
         logging.info("Unsetting flow.")
         self.flow = None
+        self.unset_activity()
 
     # Runtime related methods
 
