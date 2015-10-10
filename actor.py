@@ -138,6 +138,7 @@ class Actor(object):
         Sets the current activity as given by the identifier.
         """
 
+        logging.info("Setting activity %s" % identifier)
         self.activity = self.context.activities.make(identifier)
 
     def unset_activity(self):
@@ -145,6 +146,7 @@ class Actor(object):
         Unsets the current activity.
         """
 
+        logging.info("Unsetting activity.")
         self.activity = None
 
     def set_flow(self, identifier):
@@ -152,6 +154,7 @@ class Actor(object):
         Sets the current flow as given by the identifier.
         """
 
+        logging.info("Setting flow %s" % identifier)
         self.flow = self.context.flows.make(identifier, args=(self,))
 
     def unset_flow(self):
@@ -159,6 +162,7 @@ class Actor(object):
         Unsets the current flow.
         """
 
+        logging.info("Unsetting flow.")
         self.flow = None
 
     # Runtime related methods
