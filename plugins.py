@@ -172,7 +172,7 @@ class Activity(ContextProxyMixin, Plugin):
             self.fix('kill_process', pid=self.report('active_window_pid'))
 
 
-class Flow(Plugin):
+class Flow(ContextProxyMixin, Plugin):
     """
     Defines a list of activities with their duration.
     """
@@ -182,6 +182,7 @@ class Flow(Plugin):
     activities = tuple()
 
     def __init__(self, context, actor):
+        self.context = context
         self.actor = actor
         self.current_activity_index = None
         self.current_activity_start = None
