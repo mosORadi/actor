@@ -155,8 +155,8 @@ class Activity(ContextProxyMixin, Plugin):
 
     __metaclass__ = PluginMount
 
-    whitelist_commands = tuple()
-    whitelist_titles = tuple()
+    whitelisted_commands = tuple()
+    whitelisted_titles = tuple()
 
     def run(self):
         """
@@ -166,8 +166,8 @@ class Activity(ContextProxyMixin, Plugin):
         current_title = self.report('active_window_name')
         current_command = self.report('active_window_process_name')
 
-        if not any([title in current_title for title in self.whitelist_titles] +
-                   [command in current_command for command in self.whitelist_commands]):
+        if not any([title in current_title for title in self.whitelisted_titles] +
+                   [command in current_command for command in self.whitelisted_commands]):
             self.fix('notify', message="Application not allowed")
             self.fix('kill_process', pid=self.report('active_window_pid'))
 
