@@ -37,3 +37,6 @@ def generate_hash():
             content = f.readlines()[0].strip()
             content_hash = hashlib.sha1(content).hexdigest()
             return content_hash
+
+WHITELISTED_COMMANDS = tuple()
+WHITELISTED_TITLES = tuple()

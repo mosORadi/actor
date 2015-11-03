@@ -2,6 +2,9 @@ import datetime
 import dbus
 import logging
 
+import local_config
+
+
 class PluginMount(type):
     def __init__(cls, name, bases, attrs):
         if not hasattr(cls, 'plugins'):
@@ -163,11 +166,22 @@ class Activity(ContextProxyMixin, Plugin):
         Enforces the allowed applications.
         """
 
+        # Get the list of all allowed commands / titles by joining
+        # the allowed values from the class with the global values from the
+        # settings
+        whitelisted_commands = (self.whitelisted_commands +
+                                local_config.WHITELISTED_COMMANDS)
+
+        whitelisted_titles = (self.whitelisted_titles +
+                              local_config.WHITELISTED_TITLES)
+
         current_title = self.report('active_window_name')
         current_command = self.report('active_window_process_name')
 
-        if not any([title in current_title for title in self.whitelisted_titles] +
-                   [command in current_command for command in self.whitelisted_commands]):
+        # If no of the whitelisted entries partially matches the reported
+        # command / title, user will have to face the consenquences
+        if not any([t in current_title for t in whitelisted_titles] +
+                   [c in current_command for c in whitelisted_commands]):
             self.fix('notify', message="Application not allowed")
             self.fix('kill_process', pid=self.report('active_window_pid'))
 
