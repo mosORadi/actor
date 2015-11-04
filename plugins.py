@@ -161,10 +161,21 @@ class Activity(ContextProxyMixin, Plugin):
     whitelisted_commands = tuple()
     whitelisted_titles = tuple()
 
+    notification = None
+    notification_timeout = 30000
+    notification_headline = "Actor"
+
+
     def run(self):
         """
-        Enforces the allowed applications.
+        Performs the activity validation and setup.
+        - Displays the activity instructions.
+        - Enforces the allowed applications.
         """
+
+        if self.notification:
+            self.fix('notify', message=self.notification, timeout=self.timeout
+                     headline=self.notification_headline)
 
         # Get the list of all allowed commands / titles by joining
         # the allowed values from the class with the global values from the
@@ -190,7 +201,9 @@ class Activity(ContextProxyMixin, Plugin):
 
             if tmux_commands:
                 tmux_active = True
-                current_command = tmux_commands[0]  # Assume 1 active pane
+                # We do substring search for allowed commands, so let's just
+                # join all commands into one string
+                current_command = ' '.join(tmux_commands)
 
         # If no of the whitelisted entries partially matches the reported
         # command / title, user will have to face the consenquences
