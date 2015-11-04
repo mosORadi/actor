@@ -40,3 +40,4 @@ def generate_hash():
 
 WHITELISTED_COMMANDS = tuple()
 WHITELISTED_TITLES = tuple()
+TERMINAL_EMULATORS = ('konsole', 'xterm', 'guake', 'gnome-terminal')

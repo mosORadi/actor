@@ -175,15 +175,33 @@ class Activity(ContextProxyMixin, Plugin):
         whitelisted_titles = (self.whitelisted_titles +
                               local_config.WHITELISTED_TITLES)
 
+        # Detect the current running process / window title
         current_title = self.report('active_window_name')
         current_command = self.report('active_window_process_name')
+
+        # If we're running terminal emulator, we need to get inside
+        # tmux to detect the command being run
+        tmux_active = False
+
+        if any([e in current_command
+                for e in local_config.TERMINAL_EMULATORS]):
+
+            tmux_commands = self.report('tmux_active_panes_process_names')
+
+            if tmux_commands:
+                tmux_active = True
+                current_command = tmux_commands[0]  # Assume 1 active pane
 
         # If no of the whitelisted entries partially matches the reported
         # command / title, user will have to face the consenquences
         if not any([t in current_title for t in whitelisted_titles] +
                    [c in current_command for c in whitelisted_commands]):
             self.fix('notify', message="Application not allowed")
-            self.fix('kill_process', pid=self.report('active_window_pid'))
+
+            if tmux_active:
+                self.fix('tmux_kill_active_pane')
+            else:
+                self.fix('kill_process', pid=self.report('active_window_pid'))
 
 
 class Flow(ContextProxyMixin, Plugin):
