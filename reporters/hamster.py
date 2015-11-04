@@ -11,7 +11,7 @@ class HamsterActivityReporter(DBusMixin, Reporter):
 
     identifier = 'hamster_activity'
 
-    bus_name = "org.gnome.Hamster",
+    bus_name = "org.gnome.Hamster"
     object_path = "/org/gnome/Hamster"
 
     def run(self):
