@@ -30,7 +30,7 @@ class TmuxActiveWindowNameReporter(TmuxActiveSessionNameReporter):
     identifier = 'tmux_active_windows'
 
     def run(self):
-        active_sessions = self.get_active_sessions()
+        active_sessions = super(TmuxActiveWindowNameReporter, self).run()
         active_windows = []
 
         for session in active_sessions:
@@ -55,7 +55,7 @@ class TmuxActivePanePIDsReporter(TmuxActiveSessionNameReporter):
     identifier = 'tmux_active_panes_pids'
 
     def get_active_panes(self):
-        active_sessions = self.get_active_sessions()
+        active_sessions = super(TmuxActivePanePIDsReporter, self).run()
         active_panes = []
 
         for session in active_sessions:
