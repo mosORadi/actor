@@ -17,12 +17,12 @@ class SetHamsterActivityFixer(DBusMixin, Fixer):
     def run(self, activity):
         # First, let's detect the current activity to not
         # redefine the same activity over and over
-        current_activity = self.report('hamster_activity') or ''
+        current_activity = self.report('hamster_activity')
 
         # We use substring search here to support setting activity
         # of the form activity@Project, description
         # since we generate only activity@Project
-        if current_activity not in activity:
+        if current_activity is None or current_activity not in activity:
 
             # Zero stands for now
             self.interface.StopTracking(0)
