@@ -165,6 +165,30 @@ class Activity(ContextProxyMixin, Plugin):
     notification_timeout = 30000
     notification_headline = "Actor"
 
+    def __init__(self, *args, **kwargs):
+        super(Activity, self).__init__(*args, **kwargs)
+
+        # Run initial setup for the activity
+        self.setup()
+
+    def setup(self):
+        """
+        Performs the tasks related to the activity setup.
+        """
+
+        if self.notification:
+            self.fix('notify', message=self.notification,
+                     timeout=self.notification_timeout,
+                     headline=self.notification_headline)
+
+        # Get the list of all allowed commands / titles by joining
+        # the allowed values from the class with the global values from the
+        # settings
+        self.whitelisted_commands = (self.whitelisted_commands +
+                                     local_config.WHITELISTED_COMMANDS)
+
+        self.whitelisted_titles = (self.whitelisted_titles +
+                                   local_config.WHITELISTED_TITLES)
 
     def run(self):
         """
@@ -172,19 +196,6 @@ class Activity(ContextProxyMixin, Plugin):
         - Displays the activity instructions.
         - Enforces the allowed applications.
         """
-
-        if self.notification:
-            self.fix('notify', message=self.notification, timeout=self.timeout
-                     headline=self.notification_headline)
-
-        # Get the list of all allowed commands / titles by joining
-        # the allowed values from the class with the global values from the
-        # settings
-        whitelisted_commands = (self.whitelisted_commands +
-                                local_config.WHITELISTED_COMMANDS)
-
-        whitelisted_titles = (self.whitelisted_titles +
-                              local_config.WHITELISTED_TITLES)
 
         # Detect the current running process / window title
         current_title = self.report('active_window_name')
@@ -207,8 +218,8 @@ class Activity(ContextProxyMixin, Plugin):
 
         # If no of the whitelisted entries partially matches the reported
         # command / title, user will have to face the consenquences
-        if not any([t in current_title for t in whitelisted_titles] +
-                   [c in current_command for c in whitelisted_commands]):
+        if not any([t in current_title for t in self.whitelisted_titles] +
+                   [c in current_command for c in self.whitelisted_commands]):
             self.fix('notify', message="Application not allowed")
 
             if tmux_active:
