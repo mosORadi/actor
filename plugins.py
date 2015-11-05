@@ -210,8 +210,9 @@ class Activity(ContextProxyMixin, Plugin):
         current_command = self.report('active_window_process_name')
 
         # If we're running terminal emulator, we need to get inside
-        # tmux to detect the command being run
+        # the emulator to detect what is actually being run inside
         tmux_active = False
+        emulator_active = False
 
         if any([e in current_command
                 for e in local_config.TERMINAL_EMULATORS]):
@@ -223,6 +224,14 @@ class Activity(ContextProxyMixin, Plugin):
                 # We do substring search for allowed commands, so let's just
                 # join all commands into one string
                 current_command = ' '.join(tmux_commands)
+            else:
+                emulator_active = True
+                # This is what we do if we detect that the terminal emulator
+                # is being run
+                active_window_pid = self.report('active_window_pid')
+                emulator_commands = self.report('subprocess_cmdlines',
+                                                pid=active_window_pid)
+                current_command = ' '.join(emulator_commands)
 
         # If no of the whitelisted entries partially matches the reported
         # command / title, user will have to face the consenquences
@@ -234,6 +243,13 @@ class Activity(ContextProxyMixin, Plugin):
                 self.fix('tmux_kill_active_pane')
             else:
                 self.fix('kill_process', pid=self.report('active_window_pid'))
+
+        # Selective blacklisting of the spawned applications
+        if emulator_active:
+            for child in Process(active_window_pid).children():
+                command = child.cmdline()
+                if any([b in command for b in self.blacklisted_commands]):
+                    child.kill()
 
 
 class Flow(ContextProxyMixin, Plugin):
