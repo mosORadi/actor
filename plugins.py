@@ -1,6 +1,8 @@
 import datetime
 import dbus
 import logging
+import itertools
+import psutil
 
 import local_config
 
@@ -176,6 +178,7 @@ class Activity(ContextProxyMixin, Plugin):
     def setup(self):
         """
         Performs the tasks related to the activity setup.
+        - Displays the activity instructions.
         """
 
         # Issue a setup notification
@@ -200,8 +203,7 @@ class Activity(ContextProxyMixin, Plugin):
 
     def run(self):
         """
-        Performs the activity validation and setup.
-        - Displays the activity instructions.
+        Performs the periodic activity validation.
         - Enforces the allowed applications.
         """
 
@@ -209,47 +211,44 @@ class Activity(ContextProxyMixin, Plugin):
         current_title = self.report('active_window_name')
         current_command = self.report('active_window_process_name')
 
+        if current_command is None or current_title is None:
+            return
+
+        # If no of the whitelisted entries partially matches the reported
+        # window command / title, user will have to face the consenquences
+        if not any([t in current_title for t in self.whitelisted_titles] +
+                   [c in current_command for c in self.whitelisted_commands]):
+            self.fix('notify', message="Application not allowed")
+            self.fix('kill_process', pid=self.report('active_window_pid'))
+
         # If we're running terminal emulator, we need to get inside
         # the emulator to detect what is actually being run inside
-        tmux_active = False
-        emulator_active = False
+        emulator_processes = []
 
         if any([e in current_command
                 for e in local_config.TERMINAL_EMULATORS]):
 
-            tmux_commands = self.report('tmux_active_panes_process_names')
+            active_window_process = self.report('active_window_process')
 
-            if tmux_commands:
-                tmux_active = True
-                # We do substring search for allowed commands, so let's just
-                # join all commands into one string
-                current_command = ' '.join(tmux_commands)
-            else:
-                emulator_active = True
-                # This is what we do if we detect that the terminal emulator
-                # is being run
-                active_window_pid = self.report('active_window_pid')
-                emulator_commands = self.report('subprocess_cmdlines',
-                                                pid=active_window_pid)
-                current_command = ' '.join(emulator_commands)
+            if active_window_process:
+                emulator_processes = active_window_process.children(recursive=True)
 
-        # If no of the whitelisted entries partially matches the reported
-        # command / title, user will have to face the consenquences
-        if not any([t in current_title for t in self.whitelisted_titles] +
-                   [c in current_command for c in self.whitelisted_commands]):
-            self.fix('notify', message="Application not allowed")
+                # If we're running tmux, the commands are being executed
+                # under tmux server instead
+                if any(['tmux' in ' '.join(e.cmdline())
+                        for e in emulator_processes]):
 
-            if tmux_active:
-                self.fix('tmux_kill_active_pane')
-            else:
-                self.fix('kill_process', pid=self.report('active_window_pid'))
+                    emulator_processes = list(itertools.chain(*[
+                        psutil.Process(pane_pid).children(recursive=True)
+                        for pane_pid in self.report('tmux_active_panes_pids')
+                    ]))
 
-        # Selective blacklisting of the spawned applications
-        if emulator_active:
-            for child in Process(active_window_pid).children():
-                command = child.cmdline()
-                if any([b in command for b in self.blacklisted_commands]):
-                    child.kill()
+                # If the active window is a terminal emulator, perform
+                # selective blacklisting of the spawned applications
+                for process in emulator_processes:
+                    command = ' '.join(process.cmdline())
+                    if any([b in command for b in self.blacklisted_commands]):
+                        process.kill()
 
 
 class Flow(ContextProxyMixin, Plugin):
