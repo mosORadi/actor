@@ -165,6 +165,8 @@ class Activity(ContextProxyMixin, Plugin):
     notification_timeout = 30000
     notification_headline = "Actor"
 
+    hamster_activity = None
+
     def __init__(self, *args, **kwargs):
         super(Activity, self).__init__(*args, **kwargs)
 
@@ -176,10 +178,16 @@ class Activity(ContextProxyMixin, Plugin):
         Performs the tasks related to the activity setup.
         """
 
+        # Issue a setup notification
         if self.notification:
             self.fix('notify', message=self.notification,
                      timeout=self.notification_timeout,
                      headline=self.notification_headline)
+
+        # Setup the current activity in the Hamster Time Tracker
+        if self.hamster_activity:
+            self.info("Setting the activity: %s" % self.hamster_activity)
+            self.fix('set_hamster_activity', activity=self.hamster_activity)
 
         # Get the list of all allowed commands / titles by joining
         # the allowed values from the class with the global values from the
