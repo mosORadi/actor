@@ -109,6 +109,26 @@ class ActiveWindowPidReporter(ActiveWindowNameReporter):
         return pid
 
 
+class ActiveWindowProcessReporter(ActiveWindowPidReporter):
+    """
+    Returns the process belonging to the active window using the
+    psutil.Process abstraction.
+    """
+
+    identifier = 'active_window_process'
+
+    def run(self):
+        pid = super(ActiveWindowProcess, self).run()
+
+        if pid is None:
+            return None
+
+        try:
+            return psutil.Process(pid)
+        except Exception:
+            return None
+
+
 class ActiveWindowProcessNameReporter(ActiveWindowPidReporter):
     """
     Returns the command name of the process the active window belongs to.
