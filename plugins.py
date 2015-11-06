@@ -160,6 +160,7 @@ class Activity(ContextProxyMixin, Plugin):
 
     __metaclass__ = PluginMount
 
+    blacklisted_commands = tuple()
     whitelisted_commands = tuple()
     whitelisted_titles = tuple()
 
