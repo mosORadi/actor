@@ -118,7 +118,7 @@ class ActiveWindowProcessReporter(ActiveWindowPidReporter):
     identifier = 'active_window_process'
 
     def run(self):
-        pid = super(ActiveWindowProcess, self).run()
+        pid = super(ActiveWindowProcessReporter, self).run()
 
         if pid is None:
             return None
