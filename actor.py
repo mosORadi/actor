@@ -133,24 +133,24 @@ class Actor(object):
 
     # Interface related methods
 
-    def set_activity(self, identifier):
+    def set_activity(self, identifier, force=False):
         """
         Sets the current activity as given by the identifier.
         """
 
         logging.info("Setting activity %s" % identifier)
-        if self.flow is None:
+        if self.flow is None or force:
             self.activity = self.context.activities.make(identifier)
         else:
             logging.info("Activity cannot be set, flow in progress.")
 
-    def unset_activity(self):
+    def unset_activity(self, force=False):
         """
         Unsets the current activity.
         """
 
         logging.info("Unsetting activity.")
-        if self.flow is None:
+        if self.flow is None or force:
             self.activity = None
         else:
             logging.info("Activity cannot be unset, flow in progress.")

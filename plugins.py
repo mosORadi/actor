@@ -286,10 +286,10 @@ class Flow(ContextProxyMixin, Plugin):
 
     def start(self, activity):
         self.current_activity_start = datetime.datetime.now()
-        self.actor.set_activity(activity[0])
+        self.actor.set_activity(activity[0], force=True)
 
     def end(self):
-        self.actor.unset_activity()
+        self.actor.unset_activity(force=True)
         self.current_activity_start = None
 
     def run(self):
