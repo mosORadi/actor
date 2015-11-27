@@ -1,11 +1,9 @@
 #!/usr/bin/python
 
-import sys
 import os
 import logging
 import hashlib
 import traceback
-import re
 import importlib
 import imp
 
