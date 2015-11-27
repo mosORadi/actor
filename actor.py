@@ -69,7 +69,8 @@ class Actor(object):
     def log_exception(exception_type, value, tb):
         logging.error("Exception: %s", exception_type)
         logging.error("Value: %s", value)
-        logging.error("Traceback: %s", traceback.format_exc())
+        logging.error("Traceback (on a new line):\n%s",
+                      "\n".join(traceback.format_tb(tb)))
 
     @staticmethod
     def setup_logging(daemon_mode=False, level=logging.WARNING):
