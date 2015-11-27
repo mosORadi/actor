@@ -22,10 +22,10 @@ class ActorDaemon(object):
                                               local_config.DESKTOP_PROCESS,
                                               shell=True).strip()
         with open('/proc/%s/environ' % desktop_pid) as f:
-             desktop_environ = dict(map(lambda x: x.split('=', 1),
+            desktop_environ = dict(map(lambda x: x.split('=', 1),
                                    [var for var in f.read().split('\0')
                                     if '=' in var]))
-             os.putenv('DBUS_SESSION_BUS_ADDRESS',
+            os.putenv('DBUS_SESSION_BUS_ADDRESS',
                        desktop_environ['DBUS_SESSION_BUS_ADDRESS'])
 
     def run(self):
