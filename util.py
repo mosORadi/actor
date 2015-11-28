@@ -1,5 +1,7 @@
 import datetime
+import dbus
 import subprocess
+import sys
 
 def run(args):
     child = subprocess.Popen(
@@ -34,3 +36,15 @@ def extract_dbus_exception_error(exception):
 
     if error_lines:
         return error_lines[0][:-1]
+
+def dbus_error_handler(function):
+    def wrapped(*args):
+        try:
+            function(*args)
+        except DBusException as e:
+            error = extract_dbus_exception_error(e)
+            error = error or "DBus exception occured."
+
+            sys.exit(error)
+
+    return wrapped

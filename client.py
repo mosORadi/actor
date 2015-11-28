@@ -4,7 +4,7 @@ import argparse
 import dbus
 import sys
 from plugins import DBusMixin
-from util import extract_dbus_exception_error
+from util import dbus_error_handler
 
 class CLIClient(DBusMixin):
 
@@ -21,13 +21,10 @@ class CLIClient(DBusMixin):
         self.interface.UnsetActivity()
         print("Activity stopped.")
 
+    @dbus_error_handler
     def command_flow_start(self, identifier):
-        try:
-            self.interface.SetFlow(identifier)
-        except dbus.DBusException as e:
-            print(extract_dbus_exception_error(e))
-        else:
-            print("Flow %s started." % identifier)
+        self.interface.SetFlow(identifier)
+        print("Flow %s started." % identifier)
 
     def command_flow_stop(self):
         self.interface.UnsetFlow()
