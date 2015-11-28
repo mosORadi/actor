@@ -45,6 +45,10 @@ class ActorDBusProxy(dbus.service.Object):
     def UnsetFlow(self):
         self.actor.unset_flow()
 
+    @dbus.service.method("org.freedesktop.Actor", in_signature='s')
+    def Report(self, identifier):
+        return self.actor.context.reporters.get(identifier)
+
 
 class Actor(object):
 

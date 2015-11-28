@@ -9,7 +9,7 @@ class CLIClient(DBusMixin):
     bus_name = "org.freedesktop.Actor"
     object_path = "/Actor"
 
-    commands = ('activity-start', 'activity-stop', 'flow-start', 'flow-stop')
+    commands = ('activity-start', 'activity-stop', 'flow-start', 'flow-stop', 'report')
 
     def command_activity_start(self, identifier):
         self.interface.SetActivity(identifier)
@@ -26,6 +26,10 @@ class CLIClient(DBusMixin):
     def command_flow_stop(self):
         self.interface.UnsetFlow()
         print("Flow %s stopped.")
+
+    def command_report(self, identifier):
+        result = self.interface.Report(identifier)
+        print("{0}: {1}".format(identifier, result))
 
     def process_args(self):
         parser = argparse.ArgumentParser("CLI interface to Actor daemon")
