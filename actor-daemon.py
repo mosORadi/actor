@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
-import config
 import os
 import subprocess
 import sys
+sys.dont_write_bytecode = True
 
+import config
 from daemon import runner
+
 
 class ActorDaemon(object):
 
