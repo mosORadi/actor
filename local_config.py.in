@@ -17,6 +17,30 @@ LOGGING_TARGET = 'stdout'
 
 LOGGING_LEVEL = 'info'
 
+# Whether the format of the log messagess should include timestamp
+
+LOGGING_TIMESTAMP = False
+
+# File to log to if LOGGING_TARGET is set to 'file'.
+
+LOGGING_FILE = '~/actor.log'
+
+# Windows spawned by the following commands should be allowed
+# to have focus in any activity
+
+# WHITELISTED_COMMANDS = ('konsole', 'plasma', 'krunner', 'polkit')
+WHITELISTED_COMMANDS = tuple()
+
+# Windows containing these titles are allowed to be used during any activity
+
+WHITELISTED_TITLES = tuple()
+
+# The following commands are terminal emulators being used
+
+TERMINAL_EMULATORS = ('konsole', 'xterm', 'guake', 'gnome-terminal')
+
+# Sleep hash is used to temporarily suspend Actor.
+
 # To set the correct Sleep hash, do the following
 
 # 1.) Make up a sleep phrase. This is a sentence you need to write
@@ -37,18 +61,14 @@ LOGGING_LEVEL = 'info'
 
 SLEEP_HASH = 'your-sleep-hashphrase-sha1-hash'
 
-import os
-import hashlib
-
-def generate_hash():
-    HOME_DIR = os.path.expanduser("~")
-    sleep_file_path = os.path.join(HOME_DIR, 'actor-sleep')
-    if os.path.exists(sleep_file_path):
-        with open(sleep_file_path, 'r') as f:
-            content = f.readlines()[0].strip()
-            content_hash = hashlib.sha1(content).hexdigest()
-            return content_hash
-
-WHITELISTED_COMMANDS = tuple()
-WHITELISTED_TITLES = tuple()
-TERMINAL_EMULATORS = ('konsole', 'xterm', 'guake', 'gnome-terminal')
+# import os
+# import hashlib
+#
+# def generate_hash():
+#     HOME_DIR = os.path.expanduser("~")
+#     sleep_file_path = os.path.join(HOME_DIR, 'actor-sleep')
+#     if os.path.exists(sleep_file_path):
+#         with open(sleep_file_path, 'r') as f:
+#             content = f.readlines()[0].strip()
+#             content_hash = hashlib.sha1(content).hexdigest()
+#             return content_hash
