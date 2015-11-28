@@ -1,3 +1,14 @@
+import os
+
+path_parts = os.path.dirname(os.path.realpath(__file__)).split('/')
+PROJECT_ROOT = '/'.join(path_parts) + '/'
+
+# User's home directory. There should be no need to override this.
+HOME_DIR = os.path.expanduser('~')
+
+# The location of the configuration directory
+CONFIG_DIR = os.path.join(HOME_DIR, '.actor')
+
 # Any process that shares the user session you are accessing. This is
 # here to provide a workaround so that actor can connect to your
 # dbus session bus, it reads the environment variable of DBUS
@@ -23,7 +34,7 @@ LOGGING_TIMESTAMP = False
 
 # File to log to if LOGGING_TARGET is set to 'file'.
 
-LOGGING_FILE = '~/actor.log'
+LOGGING_FILE = os.path.join(CONFIG_DIR, 'actor.log')
 
 # Windows spawned by the following commands should be allowed
 # to have focus in any activity
