@@ -26,3 +26,11 @@ def convert_timestamp(timestamp):
         return datetime.datetime.combine(datetime.date.today(), parsed.time())
     else:
         return datetime.datetime.combine(datetime.date.today(), timestamp)
+
+def extract_dbus_exception_error(exception):
+    exception_type = exception.get_dbus_name().split('.')[-1]
+    error_lines = [l for l in exception.message.splitlines()
+                   if l.startswith(exception_type)]
+
+    if error_lines:
+        return error_lines[0][:-1]

@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
 import argparse
+import dbus
 import sys
 from plugins import DBusMixin
+from util import extract_dbus_exception_error
 
 class CLIClient(DBusMixin):
 
@@ -20,8 +22,12 @@ class CLIClient(DBusMixin):
         print("Activity stopped.")
 
     def command_flow_start(self, identifier):
-        self.interface.SetFlow(identifier)
-        print("Flow %s started." % identifier)
+        try:
+            self.interface.SetFlow(identifier)
+        except dbus.DBusException as e:
+            print(extract_dbus_exception_error(e))
+        else:
+            print("Flow %s started." % identifier)
 
     def command_flow_stop(self):
         self.interface.UnsetFlow()
