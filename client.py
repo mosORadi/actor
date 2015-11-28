@@ -41,8 +41,17 @@ class CLIClient(DBusMixin):
 
     def run_command(self, command, options):
         method_name = "command_" + command.replace('-', '_')
-        method = getattr(self, method_name)
-        method(*options)
+        method = getattr(self, method_name, None)
+
+        args_expected = method.func_code.co_argcount - 1
+
+        if method is None:
+            sys.exit("Command '{0}' not found.".format(command))
+        else:
+            if len(options) != args_expected:
+                sys.exit("Invalid number of arguments, expected %d, got %d."
+                         % (args_expected, len(options)))
+            method(*options)
 
     def main(self):
         args = self.process_args()
