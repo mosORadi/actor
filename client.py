@@ -46,7 +46,7 @@ class CLIClient(DBusMixin):
         method_name = "command_" + command.replace('-', '_')
         method = getattr(self, method_name, None)
 
-        args_expected = method.func_code.co_argcount - 1
+        args_expected = method._co_argcount - 1
 
         if method is None:
             sys.exit("Command '{0}' not found.".format(command))

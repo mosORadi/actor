@@ -38,13 +38,20 @@ def extract_dbus_exception_error(exception):
         return error_lines[0][:-1]
 
 def dbus_error_handler(function):
+    """
+    Makes sure that DBus errors are properly parsed out and handled.
+
+    Also caches the argcount of the original (un-wrapped) function in the
+    _co_argcount attribute.
+    """
     def wrapped(*args):
         try:
             function(*args)
-        except DBusException as e:
+        except dbus.DBusException as e:
             error = extract_dbus_exception_error(e)
             error = error or "DBus exception occured."
-
             sys.exit(error)
+
+    wrapped._co_argcount = function.func_code.co_argcount
 
     return wrapped
