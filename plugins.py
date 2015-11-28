@@ -108,7 +108,7 @@ class ContextProxyMixin(object):
         return self.context.fixers.get(identifier, args, kwargs,
                                        rule_name=self.identifier)
 
-class PythonRule(ContextProxyMixin, Plugin):
+class Rule(ContextProxyMixin, Plugin):
     """
     Performs custom rule.
     """

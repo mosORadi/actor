@@ -14,7 +14,7 @@ import dbus.service
 import dbus.mainloop.glib
 
 from context import Context
-from plugins import PythonRule
+from plugins import Rule
 
 from config import CONFIG_DIR, HOME_DIR
 from local_config import (SLEEP_HASH, LOGGING_TARGET,
@@ -163,13 +163,13 @@ class Actor(LoggerMixin):
         if not os.path.exists(CONFIG_DIR):
             os.mkdir(CONFIG_DIR)
 
-        # Load the python rules files. They will be automatically
-        # added to the PythonRule pluginmount.
-        python_rules = [os.path.join(CONFIG_DIR, path)
-                        for path in os.listdir(CONFIG_DIR)
-                        if path.endswith('.py')]
+        # Load the rule files. They will be automatically
+        # added to the Rule pluginmount.
+        rules = [os.path.join(CONFIG_DIR, path)
+                 for path in os.listdir(CONFIG_DIR)
+                 if path.endswith('.py')]
 
-        for path in python_rules:
+        for path in rules:
             try:
                 module_id = os.path.basename(path.rstrip('.py'))
                 imp.load_source(module_id, path)
@@ -180,11 +180,11 @@ class Actor(LoggerMixin):
                     )
                 self.info(traceback.format_exc())
 
-        for rule_class in PythonRule.plugins:
+        for rule_class in Rule.plugins:
             self.rules.append(rule_class(self.context))
 
-        if not python_rules:
-            self.warning("No Python rules available")
+        if not rules:
+            self.warning("No rules available")
 
     # Interface related methods
 
