@@ -4,7 +4,7 @@ import logging
 import itertools
 import psutil
 
-import local_config
+import config
 import logger
 
 
@@ -179,10 +179,10 @@ class Activity(ContextProxyMixin, Plugin):
         # the allowed values from the class with the global values from the
         # settings
         self.whitelisted_commands = (self.whitelisted_commands +
-                                     local_config.WHITELISTED_COMMANDS)
+                                     config.WHITELISTED_COMMANDS)
 
         self.whitelisted_titles = (self.whitelisted_titles +
-                                   local_config.WHITELISTED_TITLES)
+                                   config.WHITELISTED_TITLES)
 
     def run(self):
         """
@@ -209,7 +209,7 @@ class Activity(ContextProxyMixin, Plugin):
         emulator_processes = []
 
         if any([e in current_command
-                for e in local_config.TERMINAL_EMULATORS]):
+                for e in config.TERMINAL_EMULATORS]):
 
             active_window_process = self.report('active_window_process')
 

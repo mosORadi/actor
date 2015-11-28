@@ -17,7 +17,7 @@ from context import Context
 from plugins import Rule
 
 from config import CONFIG_DIR, HOME_DIR
-from local_config import (SLEEP_HASH, LOGGING_TARGET,
+from config import (SLEEP_HASH, LOGGING_TARGET,
         LOGGING_FILE, LOGGING_TIMESTAMP)
 from logger import LoggerMixin
 

@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-import local_config
 import config
 import os
 import subprocess
@@ -19,7 +18,7 @@ class ActorDaemon(object):
 
     def set_environ(self):
         desktop_pid = subprocess.check_output('/usr/sbin/pidof %s' %
-                                              local_config.DESKTOP_PROCESS,
+                                              config.DESKTOP_PROCESS,
                                               shell=True).strip()
         with open('/proc/%s/environ' % desktop_pid) as f:
             desktop_environ = dict(map(lambda x: x.split('=', 1),
@@ -35,7 +34,7 @@ class ActorDaemon(object):
 
         # Forward all exceptions to the log
         sys.excepthook = Actor.log_exception
-        Actor.setup_logging(level=local_config.LOGGING_LEVEL, daemon_mode=True)
+        Actor.setup_logging(level=config.LOGGING_LEVEL, daemon_mode=True)
 
         # Initialize an Actor instance and setup proxy for it
         actor = Actor()
@@ -57,7 +56,7 @@ if os.environ.get('DBUS_SESSION_BUS_ADDRESS', None):
 
 daemon_runner = runner.DaemonRunner(app)
 
-if local_config.LOGGING_TARGET == 'stdout':
+if config.LOGGING_TARGET == 'stdout':
     daemon_runner.daemon_context.stdout = sys.stdout
     daemon_runner.daemon_context.stderr = sys.stderr
 

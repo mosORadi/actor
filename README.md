@@ -53,8 +53,8 @@ be valid yaml file, in the format as example below.
 You also need to define few local configuration values:
 
 ```
-cp local_config.py.in local_config.py
-vim local_config.py
+cp config.py.in config.py
+vim config.py
 ```
 
 Now you're all set. Start actor with:
