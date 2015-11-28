@@ -19,6 +19,7 @@ from plugins import PythonRule
 from config import CONFIG_DIR, HOME_DIR
 from local_config import (SLEEP_HASH, LOGGING_TARGET,
         LOGGING_FILE, LOGGING_TIMESTAMP)
+from logger import LoggerMixin
 
 class ActorDBusProxy(dbus.service.Object):
 
@@ -52,11 +53,9 @@ class ActorDBusProxy(dbus.service.Object):
         return self.actor.context.reporters.get(identifier)
 
 
-class Actor(object):
+class Actor(LoggerMixin):
 
     def __init__(self):
-        self.logger = logging.getLogger('main')
-
         self.rules = []
         self.activity = None
         self.flow = None
@@ -152,12 +151,12 @@ class Actor(object):
                 try:
                     module_id = "{0}.{1}".format(category.__name__, module)
                     importlib.import_module(module_id)
-                    self.logger.debug(module_id + " loaded successfully.")
+                    self.debug(module_id + " loaded successfully.")
                 except Exception as e:
-                    self.logger.warning(
+                    self.warning(
                         "The {0} {1} module could not be loaded: {2} "
                         .format(module, category.__name__[:-1]), str(e))
-                    self.logger.info(traceback.format_exc())
+                    self.info(traceback.format_exc())
 
     def load_configuration(self):
         # Create the config directory, if it does not exist
@@ -175,17 +174,17 @@ class Actor(object):
                 module_id = os.path.basename(path.rstrip('.py'))
                 imp.load_source(module_id, path)
             except Exception as e:
-                self.logger.warning(
+                self.warning(
                     "Rule file {0} cannot be loaded, following error was "
                     "encountered: {1}".format(path, str(e))
                     )
-                self.logger.info(traceback.format_exc())
+                self.info(traceback.format_exc())
 
         for rule_class in PythonRule.plugins:
             self.rules.append(rule_class(self.context))
 
         if not python_rules:
-            self.logger.warning("No Python rules available")
+            self.warning("No Python rules available")
 
     # Interface related methods
 
@@ -194,22 +193,22 @@ class Actor(object):
         Sets the current activity as given by the identifier.
         """
 
-        self.logger.info("Setting activity %s", identifier)
+        self.info("Setting activity %s", identifier)
         if self.flow is None or force:
             self.activity = self.context.activities.make(identifier)
         else:
-            self.logger.info("Activity cannot be set, flow in progress.")
+            self.info("Activity cannot be set, flow in progress.")
 
     def unset_activity(self, force=False):
         """
         Unsets the current activity.
         """
 
-        self.logger.info("Unsetting activity.")
+        self.info("Unsetting activity.")
         if self.flow is None or force:
             self.activity = None
         else:
-            self.logger.info("Activity cannot be unset, flow in progress.")
+            self.info("Activity cannot be unset, flow in progress.")
 
 
     def set_flow(self, identifier):
@@ -217,18 +216,18 @@ class Actor(object):
         Sets the current flow as given by the identifier.
         """
 
-        self.logger.info("Setting flow %s" % identifier)
+        self.info("Setting flow %s" % identifier)
         if self.flow is None:
             self.flow = self.context.flows.make(identifier, args=(self,))
         else:
-            self.logger.info("Flow already in progress")
+            self.info("Flow already in progress")
 
     def unset_flow(self):
         """
         Unsets the current flow.
         """
 
-        self.logger.info("Unsetting flow.")
+        self.info("Unsetting flow.")
         self.flow = None
         self.unset_activity()
 
@@ -250,7 +249,7 @@ class Actor(object):
 
     def check_everything(self):
         if self.check_sleep_file():
-            self.logger.warning('Sleep file exists, skipping.')
+            self.warning('Sleep file exists, skipping.')
             return True
 
         # Clear the cached report values
@@ -272,7 +271,7 @@ class Actor(object):
         # Start the main loop
         loop = gobject.MainLoop()
         gobject.timeout_add(2000, self.check_everything)
-        self.logger.info("AcTor started.")
+        self.info("AcTor started.")
         loop.run()
 
 if __name__ == "__main__":
