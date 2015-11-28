@@ -6,6 +6,17 @@
 
 DESKTOP_PROCESS = "plasma-desktop"
 
+# The preferred way of logging. For systemd-based systems, use 'stdout'
+# and the Actor logging output will be available using journalctl.
+# For file-based logging, use 'file'
+
+LOGGING_TARGET = 'stdout'
+
+# The minimal logging level that should be logged. Must be one of
+# 'debug', 'info', 'warn', 'error', 'critical'.
+
+LOGGING_LEVEL = 'info'
+
 # To set the correct Sleep hash, do the following
 
 # 1.) Make up a sleep phrase. This is a sentence you need to write
@@ -16,7 +27,7 @@ DESKTOP_PROCESS = "plasma-desktop"
 #     will use this bypass option only in need.
 
 # 2.) Generate the hash from your sleep phrase. Just write your sleep
-#     phrase into the ~/actor-sleep file and run the function 
+#     phrase into the ~/actor-sleep file and run the function
 #     generate_hash below
 
 # 3.) Hardcode the hash printed here.

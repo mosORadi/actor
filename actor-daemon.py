@@ -35,7 +35,7 @@ class ActorDaemon(object):
 
         # Forward all exceptions to the log
         sys.excepthook = Actor.log_exception
-        Actor.setup_logging(daemon_mode=True)
+        Actor.setup_logging(level=local_config.LOGGING_LEVEL, daemon_mode=True)
 
         # Initialize an Actor instance and setup proxy for it
         actor = Actor()
@@ -47,6 +47,7 @@ class ActorDaemon(object):
 
 app = ActorDaemon()
 
+# Use dummy files for daemons
 if not sys.stdout.isatty():
     app.stdout_path = '/dev/null'
     app.stderr_path = '/dev/null'
@@ -55,4 +56,9 @@ if os.environ.get('DBUS_SESSION_BUS_ADDRESS', None):
     app.set_environ()
 
 daemon_runner = runner.DaemonRunner(app)
+
+if local_config.LOGGING_TARGET == 'stdout':
+    daemon_runner.daemon_context.stdout = sys.stdout
+    daemon_runner.daemon_context.stderr = sys.stderr
+
 daemon_runner.do_action()

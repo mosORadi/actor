@@ -67,17 +67,35 @@ class Actor(object):
 
     @staticmethod
     def log_exception(exception_type, value, tb):
+        if exception_type == exceptions.KeyboardInterrupt:
+            logging.error("Actor was interrupted.")
+
         logging.error("Exception: %s", exception_type)
         logging.error("Value: %s", value)
         logging.error("Traceback (on a new line):\n%s",
                       "\n".join(traceback.format_tb(tb)))
 
     @staticmethod
-    def setup_logging(daemon_mode=False, level=logging.WARNING):
+    def setup_logging(daemon_mode=False, level='info'):
         # Setup Actor logging
+        level_map = {
+            'debug': logging.DEBUG,
+            'info': logging.INFO,
+            'warning': logging.WARNING,
+            'error': logging.ERROR,
+            'critical': logging.CRITICAL,
+        }
+
+        logging_level = level_map.get(level)
+
+        if logging_level is None:
+            logging_level = logging.INFO
+            logging.warning("Logging level '{0}' not recognized, "
+                            "using 'info instead")
+
         config = dict(format='%(asctime)s: %(levelname)s: %(message)s',
                       datefmt='%m/%d/%Y %I:%M:%S %p',
-                      level=level)
+                      level=logging_level)
 
         if daemon_mode:
             config.update(dict(filename=os.path.join(HOME_DIR, 'actor.log')))
