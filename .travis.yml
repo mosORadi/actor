@@ -13,6 +13,8 @@ install:
   # Install AcTor dependencies
   - sudo apt-get --fix-missing install python-gi python-gobject python-dbus python-wnck libwnck-3-0
   - pip install -r requirements.txt
+  # Create config file
+  - cp config.py.in config.py
   # Install Hamster time tracker
   - sudo add-apt-repository ppa:dylanmccall/hamster-time-tracker-git-stable -y
   - sudo apt-get update
