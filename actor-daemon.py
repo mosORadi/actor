@@ -14,7 +14,7 @@ class ActorDaemon(object):
         self.stdin_path = '/dev/null'
         self.stdout_path = '/dev/tty'
         self.stderr_path = '/dev/tty'
-        self.pidfile_path = os.path.join(config.HOME_DIR, 'actor.pid')
+        self.pidfile_path = os.path.join(config.CONFIG_DIR, 'actor.pid')
         self.pidfile_timeout = 5
 
     def set_environ(self):

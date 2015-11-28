@@ -14,7 +14,7 @@ Type=forking
 Environment=DISPLAY=:0
 ExecStart=/your/path/to/actor/actor-daemon.py start
 ExecStop=/bin/true
-PIDFile=/home/yourusername/actor.pid
+PIDFile=/home/yourusername/.actor/actor.pid
 Restart=always
 RestartSec=8s
 
