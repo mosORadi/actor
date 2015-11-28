@@ -8,12 +8,20 @@ import config
 import logger
 
 
+class NoSuchPlugin(Exception):
+    """
+    Raised when a plugin could not be found.
+    """
+    pass
+
+
 class PluginMount(type):
     def __init__(cls, name, bases, attrs):
         if not hasattr(cls, 'plugins'):
             cls.plugins = []
         else:
             cls.plugins.append(cls)
+
 
 class Plugin(logger.LoggerMixin):
 

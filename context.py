@@ -1,4 +1,4 @@
-from plugins import Reporter, Checker, Fixer, Activity, Flow
+from plugins import Reporter, Checker, Fixer, Activity, Flow, NoSuchPlugin
 
 class HashableDict(dict):
     def __hash__(self):
@@ -82,8 +82,8 @@ class PluginCache(object):
         try:
             return self.plugins[identifier]
         except KeyError:
-            pass
-            # TODO: Raise an error, no such plugin available
+            raise NoSuchPlugin("Plugin with identifier {0} is not available'"
+                               .format(identifier))
 
     def get_plugin_instance(self, identifier, class_identifier=None):
         """
@@ -175,8 +175,8 @@ class PluginFactory(object):
         try:
             return self.plugins[identifier]
         except KeyError:
-            pass
-            # TODO: Raise an error, no such plugin available
+            raise NoSuchPlugin("Plugin with identifier {0} is not available'"
+                               .format(identifier))
 
 
 class Context(object):
