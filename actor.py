@@ -16,7 +16,8 @@ from context import Context
 from plugins import PythonRule
 
 from config import CONFIG_DIR, HOME_DIR
-from local_config import SLEEP_HASH
+from local_config import (SLEEP_HASH, LOGGING_TARGET,
+        LOGGING_FILE, LOGGING_TIMESTAMP)
 
 class ActorDBusProxy(dbus.service.Object):
 
@@ -53,6 +54,8 @@ class ActorDBusProxy(dbus.service.Object):
 class Actor(object):
 
     def __init__(self):
+        self.logger = logging.getLogger('main')
+
         self.rules = []
         self.activity = None
         self.flow = None
@@ -71,12 +74,15 @@ class Actor(object):
 
     @staticmethod
     def log_exception(exception_type, value, tb):
-        if exception_type == exceptions.KeyboardInterrupt:
-            logging.error("Actor was interrupted.")
+        logger = logging.getLogger('main')
 
-        logging.error("Exception: %s", exception_type)
-        logging.error("Value: %s", value)
-        logging.error("Traceback (on a new line):\n%s",
+        if exception_type == KeyboardInterrupt:
+            logger.error("Actor was interrupted.")
+            sys.exit(0)
+
+        logger.error("Exception: %s", exception_type)
+        logger.error("Value: %s", value)
+        logger.error("Traceback (on a new line):\n%s",
                       "\n".join(traceback.format_tb(tb)))
 
     @staticmethod
@@ -92,19 +98,47 @@ class Actor(object):
 
         logging_level = level_map.get(level)
 
+        log_default_level_warning = False
+
         if logging_level is None:
             logging_level = logging.INFO
-            logging.warning("Logging level '{0}' not recognized, "
-                            "using 'info instead")
+            log_default_level_warning = True
 
-        config = dict(format='%(asctime)s: %(levelname)s: %(message)s',
-                      datefmt='%m/%d/%Y %I:%M:%S %p',
-                      level=logging_level)
+        # Setup main logger
+        logger = logging.getLogger('main')
+        logger.setLevel(logging.DEBUG)
 
-        if daemon_mode:
-            config.update(dict(filename=os.path.join(HOME_DIR, 'actor.log')))
+        # Define logging format
+        timeformat = '%(asctime)s:' if LOGGING_TIMESTAMP else ''
+        formatter = logging.Formatter(
+            timeformat + ' %(levelname)s: %(message)s',
+            datefmt='%m/%d/%Y %I:%M:%S %p',
+        )
 
-        logging.basicConfig(**config)
+        # Define default handlers
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(logging_level)
+        stream_handler.setFormatter(formatter)
+
+        file_handler = logging.FileHandler(
+            filename=os.path.expanduser(LOGGING_FILE)
+        )
+        file_handler.setLevel(logging_level)
+        file_handler.setFormatter(formatter)
+
+        # Setup desired handlers
+        if LOGGING_TARGET == 'both':
+            logger.addHandler(file_handler)
+            logger.addHandler(stream_handler)
+        elif LOGGING_TARGET == 'file':
+            logger.addHandler(file_handler)
+        else:
+            logger.addHandler(stream_handler)
+
+        if log_default_level_warning:
+            logger.warning("Logging level '{0}' not recognized, "
+                            "using 'info' instead".format(level))
+
 
     # Initialization related methods
 
@@ -117,12 +151,12 @@ class Actor(object):
                 try:
                     module_id = "{0}.{1}".format(category.__name__, module)
                     importlib.import_module(module_id)
-                    logging.debug(module_id + " loaded successfully.")
+                    self.logger.debug(module_id + " loaded successfully.")
                 except Exception as e:
-                    logging.warning(
+                    self.logger.warning(
                         "The {0} {1} module could not be loaded: {2} "
                         .format(module, category.__name__[:-1]), str(e))
-                    logging.info(traceback.format_exc())
+                    self.logger.info(traceback.format_exc())
 
     def load_configuration(self):
         # Create the config directory, if it does not exist
@@ -140,17 +174,17 @@ class Actor(object):
                 module_id = os.path.basename(path.rstrip('.py'))
                 imp.load_source(module_id, path)
             except Exception as e:
-                logging.warning(
+                self.logger.warning(
                     "Rule file {0} cannot be loaded, following error was "
                     "encountered: {1}".format(path, str(e))
                     )
-                logging.info(traceback.format_exc())
+                self.logger.info(traceback.format_exc())
 
         for rule_class in PythonRule.plugins:
             self.rules.append(rule_class(self.context))
 
         if not python_rules:
-            logging.warning("No Python rules available")
+            self.logger.warning("No Python rules available")
 
     # Interface related methods
 
@@ -159,22 +193,22 @@ class Actor(object):
         Sets the current activity as given by the identifier.
         """
 
-        logging.info("Setting activity %s" % identifier)
+        self.logger.info("Setting activity %s", identifier)
         if self.flow is None or force:
             self.activity = self.context.activities.make(identifier)
         else:
-            logging.info("Activity cannot be set, flow in progress.")
+            self.logger.info("Activity cannot be set, flow in progress.")
 
     def unset_activity(self, force=False):
         """
         Unsets the current activity.
         """
 
-        logging.info("Unsetting activity.")
+        self.logger.info("Unsetting activity.")
         if self.flow is None or force:
             self.activity = None
         else:
-            logging.info("Activity cannot be unset, flow in progress.")
+            self.logger.info("Activity cannot be unset, flow in progress.")
 
 
     def set_flow(self, identifier):
@@ -182,18 +216,18 @@ class Actor(object):
         Sets the current flow as given by the identifier.
         """
 
-        logging.info("Setting flow %s" % identifier)
+        self.logger.info("Setting flow %s" % identifier)
         if self.flow is None:
             self.flow = self.context.flows.make(identifier, args=(self,))
         else:
-            logging.info("Flow already in progress")
+            self.logger.info("Flow already in progress")
 
     def unset_flow(self):
         """
         Unsets the current flow.
         """
 
-        logging.info("Unsetting flow.")
+        self.logger.info("Unsetting flow.")
         self.flow = None
         self.unset_activity()
 
@@ -215,7 +249,7 @@ class Actor(object):
 
     def check_everything(self):
         if self.check_sleep_file():
-            logging.warning('Sleep file exists, skipping.')
+            self.logger.warning('Sleep file exists, skipping.')
             return True
 
         # Clear the cached report values
@@ -237,7 +271,7 @@ class Actor(object):
         # Start the main loop
         loop = gobject.MainLoop()
         gobject.timeout_add(2000, self.check_everything)
-        logging.info("AcTor started.")
+        self.logger.info("AcTor started.")
         loop.run()
 
 if __name__ == "__main__":

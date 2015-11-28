@@ -7,6 +7,9 @@ import psutil
 import local_config
 
 
+logger = logging.getLogger('main')
+
+
 class PluginMount(type):
     def __init__(cls, name, bases, attrs):
         if not hasattr(cls, 'plugins'):
@@ -24,19 +27,19 @@ class Plugin(object):
         log_func("%s: %s" % (self.__class__.__name__, message))
 
     def debug(self, message):
-        self.log(logging.debug, message)
+        self.log(logger.debug, message)
 
     def info(self, message):
-        self.log(logging.info, message)
+        self.log(logger.info, message)
 
     def warning(self, message):
-        self.log(logging.warning, message)
+        self.log(logger.warning, message)
 
     def error(self, message):
-        self.log(logging.error, message)
+        self.log(logger.error, message)
 
     def critical(self, message):
-        self.log(logging.critical, message)
+        self.log(logger.critical, message)
 
     # Convenience function for accessing worker modules
     def report(self, identifier, *args, **kwargs):
