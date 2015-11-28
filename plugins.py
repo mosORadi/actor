@@ -5,9 +5,7 @@ import itertools
 import psutil
 
 import local_config
-
-
-logger = logging.getLogger('main')
+import logger
 
 
 class PluginMount(type):
@@ -17,29 +15,10 @@ class PluginMount(type):
         else:
             cls.plugins.append(cls)
 
-class Plugin(object):
+class Plugin(logger.LoggerMixin):
 
     def __init__(self, context):
         self.context = context
-
-    # Logging-related helpers
-    def log(self, log_func, message):
-        log_func("%s: %s" % (self.__class__.__name__, message))
-
-    def debug(self, message):
-        self.log(logger.debug, message)
-
-    def info(self, message):
-        self.log(logger.info, message)
-
-    def warning(self, message):
-        self.log(logger.warning, message)
-
-    def error(self, message):
-        self.log(logger.error, message)
-
-    def critical(self, message):
-        self.log(logger.critical, message)
 
     # Convenience function for accessing worker modules
     def report(self, identifier, *args, **kwargs):
