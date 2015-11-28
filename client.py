@@ -1,4 +1,7 @@
+#!/usr/bin/python
+
 import argparse
+import sys
 from plugins import DBusMixin
 
 class CLIClient(DBusMixin):
