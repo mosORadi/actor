@@ -74,15 +74,15 @@ class Actor(LoggerMixin):
 
     @staticmethod
     def log_exception(exception_type, value, tb):
-        logger = logging.getLogger('main')
+        root_logger = logging.getLogger('main')
 
         if exception_type == KeyboardInterrupt:
-            logger.error("Actor was interrupted.")
+            root_logger.error("Actor was interrupted.")
             sys.exit(0)
 
-        logger.error("Exception: %s", exception_type)
-        logger.error("Value: %s", value)
-        logger.error("Traceback (on a new line):\n%s",
+        root_logger.error("Exception: %s", exception_type)
+        root_logger.error("Value: %s", value)
+        root_logger.error("Traceback (on a new line):\n%s",
                       "\n".join(traceback.format_tb(tb)))
 
     @staticmethod
@@ -105,8 +105,8 @@ class Actor(LoggerMixin):
             log_default_level_warning = True
 
         # Setup main logger
-        logger = logging.getLogger('main')
-        logger.setLevel(logging.DEBUG)
+        root_logger = logging.getLogger('main')
+        root_logger.setLevel(logging.DEBUG)
 
         # Define logging format
         timeformat = '%(asctime)s:' if LOGGING_TIMESTAMP else ''
@@ -128,16 +128,16 @@ class Actor(LoggerMixin):
 
         # Setup desired handlers
         if LOGGING_TARGET == 'both':
-            logger.addHandler(file_handler)
-            logger.addHandler(stream_handler)
+            root_logger.addHandler(file_handler)
+            root_logger.addHandler(stream_handler)
         elif LOGGING_TARGET == 'file':
-            logger.addHandler(file_handler)
+            root_logger.addHandler(file_handler)
         else:
-            logger.addHandler(stream_handler)
+            root_logger.addHandler(stream_handler)
 
         if log_default_level_warning:
-            logger.warning("Logging level '{0}' not recognized, "
-                            "using 'info' instead".format(level))
+            root_logger.warning("Logging level '{0}' not recognized, "
+                                "using 'info' instead".format(level))
 
 
     # Initialization related methods
