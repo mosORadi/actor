@@ -275,7 +275,7 @@ class Actor(LoggerMixin):
         loop.run()
 
 if __name__ == "__main__":
-    Actor.setup_logging(level=logging.DEBUG)
+    Actor.setup_logging(level='debug')
     actor = Actor()
     proxy = ActorDBusProxy(actor)
     actor.main()
