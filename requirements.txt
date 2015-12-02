@@ -2,4 +2,3 @@
 PyYAML
 psutil
 tasklib
-python-daemon
