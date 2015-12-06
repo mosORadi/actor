@@ -60,7 +60,12 @@ class CLIClient(DBusMixin):
                          % (args_expected, len(options)))
             method(*options)
 
+    def validate_actor(self):
+        if self.interface is None:
+            sys.exit("Actor is not running.")
+
     def main(self):
+        self.validate_actor()
         args = self.process_args()
         self.run_command(args.command, args.options)
 
