@@ -1,6 +1,5 @@
 import datetime
 import dbus
-import logging
 import itertools
 import psutil
 
