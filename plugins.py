@@ -62,8 +62,12 @@ class Worker(Plugin):
     side_effects = False
 
     def evaluate(self, *args, **kwargs):
-        # TODO: Wrap in exception handling
-        return self.run(*args, **kwargs)
+        self.debug('Running with args={1}, kwargs={2}'.format(args, kwargs))
+
+        result = self.run(*args, **kwargs)
+        self.debug('Result: {0}'.format(result))
+
+        return result
 
 
 class Reporter(Worker):
