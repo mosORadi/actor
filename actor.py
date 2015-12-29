@@ -252,8 +252,8 @@ class Actor(LoggerMixin):
             self.warning('Sleep file exists, skipping.')
             return True
 
-        # Clear the cached report values
-        self.context.reporters.clear()
+        # Clear the cached values
+        self.context.clear_cache()
 
         for rule in self.rules:
             rule.run()

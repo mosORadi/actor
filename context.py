@@ -196,3 +196,8 @@ class Context(object):
 
         self.activities = PluginFactory(Activity, self)
         self.flows = PluginFactory(Flow, self)
+
+    def clear_cache(self):
+        self.reporters.cache.clear()
+        self.checkers.cache.clear()
+        self.fixers.cache.clear()
