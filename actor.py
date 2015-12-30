@@ -155,7 +155,7 @@ class Actor(LoggerMixin):
                 except Exception as e:
                     self.warning(
                         "The {0} {1} module could not be loaded: {2} "
-                        .format(module, category.__name__[:-1]), str(e))
+                        .format(module, category.__name__[:-1], str(e)))
                     self.info(traceback.format_exc())
 
     def load_configuration(self):
