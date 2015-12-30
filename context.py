@@ -128,7 +128,7 @@ class PluginCache(object):
         """
 
         instance = self.get_plugin_instance(identifier, class_identifier)
-        return instance.run(*args, **kwargs)
+        return instance.evaluate(*args, **kwargs)
 
     def clear(self):
         """
