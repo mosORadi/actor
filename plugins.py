@@ -323,3 +323,40 @@ class AsyncEvalMixin(Plugin):
             thread.start()
         elif self.completed:
             return self.result
+
+
+class Tracker(Plugin):
+    """
+    Tracks a specific user-defined variable, in a automated or manual
+    manner.
+    """
+
+    __metaclass__ = PluginMount
+
+    identifier = None
+    availability = None
+    message = None
+
+    def __init__(self, *args, **kwargs):
+        super(Tracker, self).__init__(*args, **kwargs)
+
+        self.prompt = self.factory_fix('prompt')
+        self.written = False
+
+    @property
+    def promptable(self):
+        line = datetime.datetime.strptime(self.availability, "%H:%M").time()
+        return datetime.datetime.now().time() > line
+
+    @property
+    def key(self):
+        return datetime.datetime.now().strftime("%Y-%m-%dT%H:%M")
+
+    def run(self):
+        if not self.written and self.promptable:
+            value = self.prompt.evaluate(message=self.message, ident=self.identifier)
+            if value is None:
+                return
+
+            self.fix('track', ident=self.identifier, key=self.key, value=value)
+            self.written = True

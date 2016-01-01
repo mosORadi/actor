@@ -183,6 +183,8 @@ class Context(object):
 
     def __init__(self):
         self.rules = []
+        self.trackers = []
+
         self.activity = None
         self.flow = None
 

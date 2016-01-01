@@ -14,7 +14,7 @@ import dbus.service
 import dbus.mainloop.glib
 
 from context import Context
-from plugins import Rule
+from plugins import Rule, Tracker
 
 from config import CONFIG_DIR, HOME_DIR
 from config import (SLEEP_HASH, LOGGING_TARGET,
@@ -57,6 +57,7 @@ class Actor(LoggerMixin):
 
     def __init__(self):
         self.rules = []
+        self.trackers = []
         self.activity = None
         self.flow = None
 
@@ -183,6 +184,9 @@ class Actor(LoggerMixin):
         for rule_class in Rule.plugins:
             self.rules.append(rule_class(self.context))
 
+        for tracker_class in Tracker.plugins:
+            self.trackers.append(tracker_class(self.context))
+
         if not rules:
             self.warning("No rules available")
 
@@ -257,6 +261,9 @@ class Actor(LoggerMixin):
 
         for rule in self.rules:
             rule.run()
+
+        for tracker in self.trackers:
+            tracker.run()
 
         # Make sure current activity is respected
         if self.activity is not None:
