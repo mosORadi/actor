@@ -2,6 +2,7 @@ import datetime
 import dbus
 import itertools
 import psutil
+import threading
 
 import config
 import logger
@@ -297,3 +298,26 @@ class Flow(ContextProxyMixin, Plugin):
         elif self.current_activity_expired and self.next_activity is None:
             self.end()
             self.actor.unset_flow()
+
+
+class AsyncEvalMixin(Plugin):
+
+    def __init__(self, *args, **kwargs):
+        super(AsyncEvalMixin, self).__init__(*args, **kwargs)
+        self.running = False
+        self.completed = False
+
+    def thread_handler(self, *args, **kwargs):
+        self.running = True
+        super(AsyncEvalMixin, self).evaluate(*args, **kwargs)
+        self.completed = True
+        self.running = False
+
+    def evaluate(self, *args, **kwargs):
+        if not self.running:
+            thread = threading.Thread(
+                target=self.thread_handler,
+                args=args,
+                kwargs=kwargs
+            )
+            thread.start()
