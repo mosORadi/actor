@@ -309,15 +309,17 @@ class AsyncEvalMixin(Plugin):
 
     def thread_handler(self, *args, **kwargs):
         self.running = True
-        super(AsyncEvalMixin, self).evaluate(*args, **kwargs)
+        self.result = super(AsyncEvalMixin, self).evaluate(*args, **kwargs)
         self.completed = True
         self.running = False
 
     def evaluate(self, *args, **kwargs):
-        if not self.running:
+        if not self.running and not self.completed:
             thread = threading.Thread(
                 target=self.thread_handler,
                 args=args,
                 kwargs=kwargs
             )
             thread.start()
+        elif self.completed:
+            return self.result
