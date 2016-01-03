@@ -41,6 +41,22 @@ class AsyncPromptInputThread(AsyncPromptThreadBase):
         self.reply_handler(str(value))
 
 
+class AsyncPromptYesNoThread(AsyncPromptThreadBase):
+
+    def __init__(self, desktop, *args, **kwargs):
+        super(AsyncPromptYesNoThread, self).__init__(desktop, *args, **kwargs)
+        self.communicator.prompted.connect(desktop.prompt_yesno)
+
+    # pyqtSignals need to be class attributes of class inheriting from QObject
+    class Communicator(PyQt4.QtCore.QObject):
+        prompted = PyQt4.QtCore.pyqtSignal(str, str)
+        received = PyQt4.QtCore.pyqtSignal(bool)
+
+    @PyQt4.QtCore.pyqtSlot(bool)
+    def return_result(self, value):
+        self.reply_handler(bool(value))
+
+
 class ActorDesktopDBusProxy(dbus.service.Object):
 
     def __init__(self, desktop):
@@ -50,10 +66,8 @@ class ActorDesktopDBusProxy(dbus.service.Object):
 
         super(ActorDesktopDBusProxy, self).__init__(bus_name, "/Desktop")
 
-    @dbus.service.method("org.freedesktop.ActorDesktop", in_signature='ss', out_signature='s',
-                         async_callbacks=('reply_handler', 'error_handler'))
-    def Prompt(self, message, identifier, reply_handler, error_handler):
-        thread = AsyncPromptInputThread(
+    def prompt_generic(self, cls, message, identifier, reply_handler):
+        thread = cls(
             self.desktop,
             reply_handler,
             message,
@@ -61,17 +75,41 @@ class ActorDesktopDBusProxy(dbus.service.Object):
         )
         thread.start()
 
+    @dbus.service.method("org.freedesktop.ActorDesktop", in_signature='ss', out_signature='s',
+                         async_callbacks=('reply_handler', 'error_handler'))
+    def Prompt(self, message, identifier, reply_handler, error_handler):
+        self.prompt_generic(AsyncPromptInputThread, message, identifier, reply_handler)
+
+    @dbus.service.method("org.freedesktop.ActorDesktop", in_signature='ss', out_signature='b',
+                         async_callbacks=('reply_handler', 'error_handler'))
+    def PromptYesNo(self, message, identifier, reply_handler, error_handler):
+        self.prompt_generic(AsyncPromptYesNoThread, message, identifier, reply_handler)
+
 
 class ActorDesktop(PyQt4.QtGui.QWidget):
 
     @PyQt4.QtCore.pyqtSlot(str, str)
-    def prompt(self, message, identifier):
+    def prompt_input(self, message, identifier):
         text, ok = PyQt4.QtGui.QInputDialog.getText(
             self,
             'Actor: %s' % identifier,
             message,
         )
         self.sender().received.emit(text)
+
+    @PyQt4.QtCore.pyqtSlot(str, str)
+    def prompt_yesno(self, message, identifier):
+        reply = PyQt4.QtGui.QMessageBox.question(
+            self,
+            'Actor: %s' % identifier,
+            message,
+            PyQt4.QtGui.QMessageBox.Yes | PyQt4.QtGui.QMessageBox.No
+        )
+
+        if reply == PyQt4.QtGui.QMessageBox.Yes:
+            self.sender().received.emit(True)
+        else:
+            self.sender().received.emit(False)
 
 def main():
     # Start dbus mainloop, must happen before definition of the main app
