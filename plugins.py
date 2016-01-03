@@ -345,7 +345,10 @@ class Tracker(Plugin):
         super(Tracker, self).__init__(*args, **kwargs)
 
         self.prompt = self.factory_fix('prompt')
-        self.written = False
+
+    @property
+    def written(self):
+        return self.report('track', self.identifier, self.key) is not None
 
     @property
     def promptable(self):
@@ -363,4 +366,3 @@ class Tracker(Plugin):
                 return
 
             self.fix('track', ident=self.identifier, key=self.key, value=value)
-            self.written = True
