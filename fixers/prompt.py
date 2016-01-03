@@ -11,4 +11,5 @@ class PromptFixer(AsyncEvalMixin, DBusMixin, Fixer):
     object_path = '/Desktop'
 
     def run(self, ident, message):
-        return self.interface.Prompt(ident, message)
+        return self.interface.Prompt(ident, message,
+            timeout=self.INFINITE_TIMEOUT)
