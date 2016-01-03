@@ -3,8 +3,6 @@ from plugins import Fixer, DBusMixin, AsyncEvalMixin
 
 class PromptInputFixer(AsyncEvalMixin, DBusMixin, Fixer):
 
-    stateless = False
-
     identifier = 'prompt'
 
     bus_name = 'org.freedesktop.ActorDesktop'
@@ -16,8 +14,6 @@ class PromptInputFixer(AsyncEvalMixin, DBusMixin, Fixer):
 
 
 class PromptYesNoFixer(AsyncEvalMixin, DBusMixin, Fixer):
-
-    stateless = False
 
     identifier = 'prompt_yesno'
 

@@ -306,6 +306,8 @@ class Flow(ContextProxyMixin, Plugin):
 
 class AsyncEvalMixin(Plugin):
 
+    stateless = False
+
     def __init__(self, *args, **kwargs):
         super(AsyncEvalMixin, self).__init__(*args, **kwargs)
         self.running = False
