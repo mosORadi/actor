@@ -19,7 +19,6 @@ class AsyncPromptThreadBase(PyQt4.QtCore.QThread):
         self.identifier = identifier
 
         self.communicator = self.Communicator()
-        self.communicator.prompted.connect(desktop.prompt)
         self.communicator.received.connect(self.return_result)
 
     def run(self):
@@ -27,6 +26,10 @@ class AsyncPromptThreadBase(PyQt4.QtCore.QThread):
 
 
 class AsyncPromptInputThread(AsyncPromptThreadBase):
+
+    def __init__(self, desktop, *args, **kwargs):
+        super(AsyncPromptInputThread, self).__init__(desktop, *args, **kwargs)
+        self.communicator.prompted.connect(desktop.prompt_input)
 
     # pyqtSignals need to be class attributes of class inheriting from QObject
     class Communicator(PyQt4.QtCore.QObject):
