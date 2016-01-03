@@ -354,7 +354,7 @@ class Tracker(Plugin):
 
     @property
     def key(self):
-        return datetime.datetime.now().strftime("%Y-%m-%dT%H:%M")
+        return datetime.datetime.now().strftime("%Y-%m-%d")
 
     def run(self):
         if not self.written and self.promptable:
