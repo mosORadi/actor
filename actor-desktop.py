@@ -61,7 +61,11 @@ class ActorDesktop(PyQt4.QtGui.QWidget):
 
     @PyQt4.QtCore.pyqtSlot(str, str)
     def prompt(self, message, identifier):
-        text, ok = PyQt4.QtGui.QInputDialog.getText(self, 'Title window', 'Enter:')
+        text, ok = PyQt4.QtGui.QInputDialog.getText(
+            self,
+            'Actor: %s' % identifier,
+            message,
+        )
         self.sender().received.emit(text)
 
 if __name__ == "__main__":
