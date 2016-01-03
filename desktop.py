@@ -68,7 +68,7 @@ class ActorDesktop(PyQt4.QtGui.QWidget):
         )
         self.sender().received.emit(text)
 
-if __name__ == "__main__":
+def main():
     # Start dbus mainloop, must happen before definition of the main app
     dbus.mainloop.qt.DBusQtMainLoop(set_as_default=True)
 
@@ -80,3 +80,6 @@ if __name__ == "__main__":
     desktop = ActorDesktop()
     proxy = ActorDesktopDBusProxy(desktop)
     sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()
