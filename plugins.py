@@ -138,6 +138,10 @@ class DBusMixin(object):
     object_path = None     # i.e.'/org/freedesktop/PowerManagement'
     interface_name = None  # can be omitted, and bus_name will be used instead
 
+    # This is the maximum timeout possible, see
+    # http://dbus.freedesktop.org/doc/api/html/group__DBusPendingCall.html
+    INFINITE_TIMEOUT = 0x7FFFFFFF / 1000.0
+
     def __init__(self, *args, **kwargs):
         super(DBusMixin, self).__init__(*args, **kwargs)
 
