@@ -10,11 +10,9 @@ Description=Activity Monitor Daemon
 After=graphical.target
 
 [Service]
-Type=forking
+Type=simple
 Environment=DISPLAY=:0
-ExecStart=/your/path/to/actor/actor-daemon.py start
-ExecStop=/bin/true
-PIDFile=/home/yourusername/.actor/actor.pid
+ExecStart=/path/to/actor/actor-daemon.py
 Restart=always
 RestartSec=8s
 
