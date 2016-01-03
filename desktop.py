@@ -10,16 +10,10 @@ import PyQt4.QtGui
 import PyQt4.QtCore
 
 
-class AsyncPromptThread(PyQt4.QtCore.QThread):
-
-    # pyqtSignals need to be class attributes of class inheriting from QObject
-    class Communicator(PyQt4.QtCore.QObject):
-        prompted = PyQt4.QtCore.pyqtSignal(str, str)
-        received = PyQt4.QtCore.pyqtSignal(str)
-
+class AsyncPromptThreadBase(PyQt4.QtCore.QThread):
 
     def __init__(self, desktop, reply_handler, message, identifier):
-        super(AsyncPromptThread, self).__init__(desktop)
+        super(AsyncPromptThreadBase, self).__init__(desktop)
         self.reply_handler = reply_handler
         self.message = message
         self.identifier = identifier
@@ -30,6 +24,14 @@ class AsyncPromptThread(PyQt4.QtCore.QThread):
 
     def run(self):
         self.communicator.prompted.emit(self.message, self.identifier)
+
+
+class AsyncPromptInputThread(AsyncPromptThreadBase):
+
+    # pyqtSignals need to be class attributes of class inheriting from QObject
+    class Communicator(PyQt4.QtCore.QObject):
+        prompted = PyQt4.QtCore.pyqtSignal(str, str)
+        received = PyQt4.QtCore.pyqtSignal(str)
 
     @PyQt4.QtCore.pyqtSlot(str)
     def return_result(self, value):
@@ -48,7 +50,7 @@ class ActorDesktopDBusProxy(dbus.service.Object):
     @dbus.service.method("org.freedesktop.ActorDesktop", in_signature='ss', out_signature='s',
                          async_callbacks=('reply_handler', 'error_handler'))
     def Prompt(self, message, identifier, reply_handler, error_handler):
-        thread = AsyncPromptThread(
+        thread = AsyncPromptInputThread(
             self.desktop,
             reply_handler,
             message,
