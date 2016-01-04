@@ -361,10 +361,17 @@ class Tracker(Plugin):
     def key(self):
         return datetime.datetime.now().strftime("%Y-%m-%d")
 
+    def process_value(self, value):
+        return value
+
     def run(self):
         if not self.written and self.promptable:
             value = self.prompt.evaluate(message=self.message, ident=self.identifier)
             if value is None:
                 return
 
-            self.fix('track', ident=self.identifier, key=self.key, value=value)
+            self.fix('track',
+                ident=self.identifier,
+                key=self.key,
+                value=self.process_value(value)
+            )
