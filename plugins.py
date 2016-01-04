@@ -337,8 +337,7 @@ class AsyncEvalMixin(Plugin):
 
 class Tracker(Plugin):
     """
-    Tracks a specific user-defined variable, in a automated or manual
-    manner.
+    Base class for Trackers.
     """
 
     __metaclass__ = PluginMount
@@ -353,11 +352,11 @@ class Tracker(Plugin):
         self.prompt = self.factory_fix('prompt')
 
     @property
-    def written(self):
+    def recorded(self):
         return self.report('track', self.identifier, self.key) is not None
 
     @property
-    def promptable(self):
+    def obtainable(self):
         line = datetime.datetime.strptime(self.availability, "%H:%M").time()
         return datetime.datetime.now().time() > line
 
@@ -369,7 +368,7 @@ class Tracker(Plugin):
         return value
 
     def run(self):
-        if not self.written and self.promptable:
+        if not self.recorded and self.obtainable:
             value = self.prompt.evaluate(message=self.message, ident=self.identifier)
             if value is None:
                 return
@@ -379,3 +378,31 @@ class Tracker(Plugin):
                 key=self.key,
                 value=self.process_value(value)
             )
+
+
+class InputTracker(Tracker):
+    """
+    Tracker that requires manual text input from the user.
+    """
+
+    noplugin = True
+
+    def __init__(self, *args, **kwargs):
+        super(Tracker, self).__init__(*args, **kwargs)
+
+        self.prompt = self.factory_fix('prompt')
+
+
+class BoolTracker(Tracker):
+    """
+    Tracker that requires manual yes/no input from the user.
+    """
+
+    noplugin = True
+
+    def __init__(self, *args, **kwargs):
+        super(Tracker, self).__init__(*args, **kwargs)
+        self.prompt = self.factory_fix('prompt_yesno')
+
+    def process_value(self, value):
+        return "Yes" if value else "No"
