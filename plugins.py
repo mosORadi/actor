@@ -20,7 +20,11 @@ class PluginMount(type):
         if not hasattr(cls, 'plugins'):
             cls.plugins = []
         else:
-            cls.plugins.append(cls)
+            # System generic plugin classes are marked with 'noplugin'
+            # attribute. We do not want to mix those with user plugin
+            # instances, so let's skip them
+            if not 'noplugin' in cls.__dict__:
+                cls.plugins.append(cls)
 
 
 class Plugin(logger.LoggerMixin):
