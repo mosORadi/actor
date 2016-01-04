@@ -12,7 +12,7 @@ After=graphical.target
 [Service]
 Type=simple
 Environment=DISPLAY=:0
-ExecStart=/path/to/actor/actor-daemon.py
+ExecStart=/path/to/actor/actord.py
 Restart=always
 RestartSec=8s
 
