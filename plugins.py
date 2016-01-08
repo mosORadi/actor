@@ -388,7 +388,7 @@ class InputTracker(Tracker):
     noplugin = True
 
     def __init__(self, *args, **kwargs):
-        super(Tracker, self).__init__(*args, **kwargs)
+        super(InputTracker, self).__init__(*args, **kwargs)
 
         self.prompt = self.factory_fix('prompt')
 
@@ -401,7 +401,7 @@ class BoolTracker(Tracker):
     noplugin = True
 
     def __init__(self, *args, **kwargs):
-        super(Tracker, self).__init__(*args, **kwargs)
+        super(BoolTracker, self).__init__(*args, **kwargs)
         self.prompt = self.factory_fix('prompt_yesno')
 
     def process_value(self, value):
