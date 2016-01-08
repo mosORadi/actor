@@ -308,7 +308,7 @@ class Flow(ContextProxyMixin, Plugin):
             self.actor.unset_flow()
 
 
-class AsyncEvalMixin(Plugin):
+class AsyncEvalMixin(object):
 
     stateless = False
 
