@@ -1,7 +1,7 @@
-from plugins import Fixer, DBusMixin, AsyncEvalMixin
+from plugins import Fixer, AsyncDBusEvalMixin
 
 
-class PromptInputFixer(AsyncEvalMixin, DBusMixin, Fixer):
+class PromptInputFixer(AsyncDBusEvalMixin, Fixer):
 
     identifier = 'prompt'
 
@@ -10,10 +10,12 @@ class PromptInputFixer(AsyncEvalMixin, DBusMixin, Fixer):
 
     def run(self, ident, message):
         return self.interface.Prompt(message, ident,
-            timeout=self.INFINITE_TIMEOUT)
+            timeout=self.INFINITE_TIMEOUT,
+            reply_handler=self.reply_handler,
+            error_handler=self.error_handler)
 
 
-class PromptYesNoFixer(AsyncEvalMixin, DBusMixin, Fixer):
+class PromptYesNoFixer(AsyncDBusEvalMixin, Fixer):
 
     identifier = 'prompt_yesno'
 
@@ -22,4 +24,6 @@ class PromptYesNoFixer(AsyncEvalMixin, DBusMixin, Fixer):
 
     def run(self, ident, message):
         return self.interface.PromptYesNo(message, ident,
-            timeout=self.INFINITE_TIMEOUT)
+            timeout=self.INFINITE_TIMEOUT,
+            reply_handler=self.reply_handler,
+            error_handler=self.error_handler)
