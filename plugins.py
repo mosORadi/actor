@@ -2,6 +2,7 @@ import datetime
 import dbus
 import itertools
 import psutil
+import time
 import threading
 
 import config
@@ -333,6 +334,26 @@ class AsyncEvalMixin(object):
             thread.start()
         elif self.completed:
             return self.result
+
+class AsyncDBusEvalMixin(AsyncEvalMixin, DBusMixin):
+
+    def reply_handler(self, reply):
+        self.result = reply
+
+    def error_handler(self, error):
+        # Raise the returned DBusException
+        raise error
+
+    def thread_handler(self, *args, **kwargs):
+        self.running = True
+        super(AsyncEvalMixin, self).evaluate(*args, **kwargs)
+
+        # Block until result is available
+        while getattr(self, 'result', None) is None:
+            time.sleep(1)
+
+        self.completed = True
+        self.running = False
 
 
 class Tracker(Plugin):
