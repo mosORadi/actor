@@ -62,8 +62,15 @@ class OverlayWindow(PyQt5.QtWidgets.QMainWindow):
         self.pushButton = PyQt5.QtWidgets.QPushButton(self.frame)
         self.pushButton.setText("Finished")
         self.pushButton.setShortcut("Q")
-        self.pushButton.clicked.connect(self.app.quit)
         self.pushButton.setGeometry(PyQt5.QtCore.QRect(150, 200, 100, 30))
+        self.pushButton.clicked.connect(self.handle_clicked)
+
+    def handle_clicked(self):
+        self.reply_signal.emit(self.lineEdit.text())
+        self.close()
+
+    def set_reply_signal(self, signal):
+        self.reply_signal = signal
 
     def create_main_label(self):
         # Create the button
@@ -228,7 +235,7 @@ class ActorDesktop(PyQt5.QtWidgets.QWidget):
     def overlay(self, title, description):
         self.window = OverlayWindow(self.app)
         self.window.showFullScreen()
-        return "Success"
+        self.window.set_reply_signal(self.sender().received)
 
 
 def main():
