@@ -3,14 +3,14 @@
 import sys
 import dbus
 import dbus.service
-import dbus.mainloop.qt
+import dbus.mainloop.pyqt5
 
-import PyQt4.Qt
-import PyQt4.QtGui
-import PyQt4.QtCore
+import PyQt5.QtWidgets
+import PyQt5.QtGui
+import PyQt5.QtCore
 
 
-class AsyncPromptThreadBase(PyQt4.QtCore.QThread):
+class AsyncPromptThreadBase(PyQt5.QtCore.QThread):
 
     def __init__(self, desktop, reply_handler, message, identifier):
         super(AsyncPromptThreadBase, self).__init__(desktop)
@@ -32,11 +32,11 @@ class AsyncPromptInputThread(AsyncPromptThreadBase):
         self.communicator.prompted.connect(desktop.prompt_input)
 
     # pyqtSignals need to be class attributes of class inheriting from QObject
-    class Communicator(PyQt4.QtCore.QObject):
-        prompted = PyQt4.QtCore.pyqtSignal(str, str)
-        received = PyQt4.QtCore.pyqtSignal(str)
+    class Communicator(PyQt5.QtCore.QObject):
+        prompted = PyQt5.QtCore.pyqtSignal(str, str)
+        received = PyQt5.QtCore.pyqtSignal(str)
 
-    @PyQt4.QtCore.pyqtSlot(str)
+    @PyQt5.QtCore.pyqtSlot(str)
     def return_result(self, value):
         self.reply_handler(str(value))
 
@@ -48,11 +48,11 @@ class AsyncPromptYesNoThread(AsyncPromptThreadBase):
         self.communicator.prompted.connect(desktop.prompt_yesno)
 
     # pyqtSignals need to be class attributes of class inheriting from QObject
-    class Communicator(PyQt4.QtCore.QObject):
-        prompted = PyQt4.QtCore.pyqtSignal(str, str)
-        received = PyQt4.QtCore.pyqtSignal(bool)
+    class Communicator(PyQt5.QtCore.QObject):
+        prompted = PyQt5.QtCore.pyqtSignal(str, str)
+        received = PyQt5.QtCore.pyqtSignal(bool)
 
-    @PyQt4.QtCore.pyqtSlot(bool)
+    @PyQt5.QtCore.pyqtSlot(bool)
     def return_result(self, value):
         self.reply_handler(bool(value))
 
@@ -86,36 +86,36 @@ class ActorDesktopDBusProxy(dbus.service.Object):
         self.prompt_generic(AsyncPromptYesNoThread, message, identifier, reply_handler)
 
 
-class ActorDesktop(PyQt4.QtGui.QWidget):
+class ActorDesktop(PyQt5.QtWidgets.QWidget):
 
-    @PyQt4.QtCore.pyqtSlot(str, str)
+    @PyQt5.QtCore.pyqtSlot(str, str)
     def prompt_input(self, message, identifier):
-        text, ok = PyQt4.QtGui.QInputDialog.getText(
+        text, ok = PyQt5.QtWidgets.QInputDialog.getText(
             self,
             'Actor: %s' % identifier,
             message,
         )
         self.sender().received.emit(text)
 
-    @PyQt4.QtCore.pyqtSlot(str, str)
+    @PyQt5.QtCore.pyqtSlot(str, str)
     def prompt_yesno(self, message, identifier):
-        reply = PyQt4.QtGui.QMessageBox.question(
+        reply = PyQt5.QtWidgets.QMessageBox.question(
             self,
             'Actor: %s' % identifier,
             message,
-            PyQt4.QtGui.QMessageBox.Yes | PyQt4.QtGui.QMessageBox.No
+            PyQt5.QtWidgets.QMessageBox.Yes | PyQt5.QtWidgets.QMessageBox.No
         )
 
-        if reply == PyQt4.QtGui.QMessageBox.Yes:
+        if reply == PyQt5.QtWidgets.QMessageBox.Yes:
             self.sender().received.emit(True)
         else:
             self.sender().received.emit(False)
 
 def main():
     # Start dbus mainloop, must happen before definition of the main app
-    dbus.mainloop.qt.DBusQtMainLoop(set_as_default=True)
+    dbus.mainloop.pyqt5.DBusQtMainLoop(set_as_default=True)
 
-    app = PyQt4.Qt.QApplication([])
+    app = PyQt5.QtWidgets.QApplication([])
 
     # Prevent input dialog from causing termination of the whole app
     app.setQuitOnLastWindowClosed(False)
