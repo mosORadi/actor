@@ -74,17 +74,29 @@ class OverlayWindow(PyQt5.QtWidgets.QMainWindow):
 
     def create_main_label(self):
         # Create the button
-        self.label = PyQt5.QtWidgets.QLabel("Hello world", self.frame)
-        self.label.setGeometry(PyQt5.QtCore.QRect(0, 0, 400, 150))
-        self.label.setAlignment(PyQt5.QtCore.Qt.AlignCenter)
+        self.title = PyQt5.QtWidgets.QLabel("", self.frame)
+        self.title.setGeometry(PyQt5.QtCore.QRect(0, 0, 400, 70))
+        self.title.setAlignment(PyQt5.QtCore.Qt.AlignCenter)
 
         # This is a necessary override, since otherwise it seems
         # the background color opaqueness coefficient is summed up
         # with the underlying QFrame
-        self.label.setStyleSheet("QLabel {"
+        self.title.setStyleSheet("QLabel {"
             "background-color: rgba(255, 255, 255, 0); "
             "color: gray; "
-            "font-size: 24pt; "
+            "font-size: 20pt; "
+            "font-weight: bold; "
+            "}"
+        )
+
+        self.description = PyQt5.QtWidgets.QLabel("", self.frame)
+        self.description.setGeometry(PyQt5.QtCore.QRect(0, 70, 400, 70))
+        self.description.setAlignment(PyQt5.QtCore.Qt.AlignHCenter | PyQt5.QtCore.Qt.AlignTop)
+
+        self.description.setStyleSheet("QLabel {"
+            "background-color: rgba(255, 255, 255, 0); "
+            "color: gray; "
+            "font-size: 12pt; "
             "font-weight: bold; "
             "}"
         )
@@ -236,6 +248,8 @@ class ActorDesktop(PyQt5.QtWidgets.QWidget):
         self.window = OverlayWindow(self.app)
         self.window.showFullScreen()
         self.window.set_reply_signal(self.sender().received)
+        self.window.title.setText(title)
+        self.window.description.setText(description)
 
 
 def main():
