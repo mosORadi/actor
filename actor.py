@@ -58,8 +58,6 @@ class Actor(LoggerMixin):
     def __init__(self):
         self.rules = []
         self.trackers = []
-        self.activity = None
-        self.flow = None
 
         # Start dbus mainloop
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
@@ -198,8 +196,8 @@ class Actor(LoggerMixin):
         """
 
         self.info("Setting activity %s", identifier)
-        if self.flow is None or force:
-            self.activity = self.context.activities.make(identifier)
+        if self.context.flow is None or force:
+            self.context.activity = self.context.activities.make(identifier)
         else:
             self.info("Activity cannot be set, flow in progress.")
 
@@ -209,8 +207,8 @@ class Actor(LoggerMixin):
         """
 
         self.info("Unsetting activity.")
-        if self.flow is None or force:
-            self.activity = None
+        if self.context.flow is None or force:
+            self.context.activity = None
         else:
             self.info("Activity cannot be unset, flow in progress.")
 
@@ -221,8 +219,8 @@ class Actor(LoggerMixin):
         """
 
         self.info("Setting flow %s" % identifier)
-        if self.flow is None:
-            self.flow = self.context.flows.make(identifier, args=(self,))
+        if self.context.flow is None:
+            self.context.flow = self.context.flows.make(identifier, args=(self,))
         else:
             self.info("Flow already in progress")
 
@@ -232,7 +230,7 @@ class Actor(LoggerMixin):
         """
 
         self.info("Unsetting flow.")
-        self.flow = None
+        self.context.flow = None
         self.unset_activity()
 
     # Runtime related methods
@@ -266,11 +264,11 @@ class Actor(LoggerMixin):
             tracker.run()
 
         # Make sure current activity is respected
-        if self.activity is not None:
-            self.activity.run()
+        if self.context.activity is not None:
+            self.context.activity.run()
 
-        if self.flow is not None:
-            self.flow.run()
+        if self.context.flow is not None:
+            self.context.flow.run()
 
         return True
 
