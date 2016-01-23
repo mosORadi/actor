@@ -389,7 +389,7 @@ class Tracker(Plugin):
         return value
 
     def run(self):
-        if not self.recorded and self.obtainable:
+        if self.obtainable and not self.recorded:
             value = self.prompt.evaluate(message=self.message, ident=self.identifier)
             if value is None:
                 return
