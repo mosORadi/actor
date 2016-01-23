@@ -184,6 +184,12 @@ class ActorDesktopDBusProxy(dbus.service.Object):
     def __init__(self, desktop):
         self.desktop = desktop
         bus = dbus.SessionBus()
+
+        # Prevent duplicate Actor instances
+        if 'org.freedesktop.ActorDesktop' in bus.list_names():
+            print("Actor-desktop already running, exiting.")
+            sys.exit(0)
+
         bus_name = dbus.service.BusName("org.freedesktop.ActorDesktop", bus=bus)
 
         super(ActorDesktopDBusProxy, self).__init__(bus_name, "/Desktop")

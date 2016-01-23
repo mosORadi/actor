@@ -27,6 +27,12 @@ class ActorDBusProxy(dbus.service.Object):
         self.actor = actor
 
         bus = dbus.SessionBus()
+
+        # Prevent duplicate Actor instances
+        if 'org.freedesktop.Actor' in bus.list_names():
+            actor.info("Actord already running, exiting.")
+            sys.exit(0)
+
         bus_name = dbus.service.BusName("org.freedesktop.Actor", bus=bus)
 
         super(ActorDBusProxy, self).__init__(bus_name, "/Actor")
