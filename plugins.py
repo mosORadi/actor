@@ -252,14 +252,20 @@ class Activity(ContextProxyMixin, Plugin):
                     emulator_processes = list(itertools.chain(*[
                         psutil.Process(pane_pid).children(recursive=True)
                         for pane_pid in self.report('tmux_active_panes_pids')
+                        if psutil.pid_exists(pane_pid)
                     ]))
 
                 # If the active window is a terminal emulator, perform
                 # selective blacklisting of the spawned applications
                 for process in emulator_processes:
-                    command = ' '.join(process.cmdline())
-                    if any([b in command for b in self.blacklisted_commands]):
-                        process.kill()
+                    try:
+                        command = ' '.join(process.cmdline())
+                        if any([forbidden in command
+                               for forbidden in self.blacklisted_commands]):
+                            process.kill()
+                    except psutil.NoSuchProcess:
+                        # If process ended in the mean time, ignore it
+                        pass
 
 
 class Flow(ContextProxyMixin, Plugin):
