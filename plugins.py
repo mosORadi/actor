@@ -440,3 +440,47 @@ class BoolTracker(Tracker):
 
     def process_value(self, value):
         return "Yes" if value else "No"
+
+
+class IntervalTracker(Tracker):
+    """
+    Tracker that is triggered in a periodic intervals from the startup.
+
+    Does not survive Actor restarts.
+    """
+
+    noplugin = True
+
+    identifier = None
+    message = None
+    interval = None
+
+    def __init__(self, *args, **kwargs):
+        super(IntervalTracker, self).__init__(*args, **kwargs)
+        self.last_recorded = datetime.datetime.now()
+
+        if not isinstance(self.interval, int) or self.interval < 1:
+            raise ValueError("Interval needs to be a positive integer")
+
+    @property
+    def obtainable(self):
+        threshold = self.last_recorded + datetime.timedelta(minutes=self.interval)
+        return datetime.datetime.now() > threshold
+
+    @property
+    def key(self):
+        return datetime.datetime.now().strftime("%Y-%m-%d %H.%M")
+
+    def run(self):
+        if self.obtainable:
+            value = self.prompt.evaluate(message=self.message, ident=self.identifier)
+            if value is None:
+                return
+
+            self.fix('track',
+                ident=self.identifier,
+                key=self.key,
+                value=self.process_value(value)
+            )
+
+            self.last_recorded = datetime.datetime.now()
