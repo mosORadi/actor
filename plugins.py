@@ -7,6 +7,7 @@ import threading
 
 import config
 import logger
+import util
 
 
 class NoSuchPlugin(Exception):
@@ -163,6 +164,8 @@ class Activity(ContextProxyMixin, Plugin):
 
     __metaclass__ = PluginMount
 
+    startup_commands = tuple()
+
     blacklisted_commands = tuple()
     whitelisted_commands = tuple()
     whitelisted_titles = tuple()
@@ -204,6 +207,10 @@ class Activity(ContextProxyMixin, Plugin):
 
         self.whitelisted_titles = (self.whitelisted_titles +
                                    config.WHITELISTED_TITLES)
+
+        # Execute the startup commands
+        for command in self.startup_commands:
+            util.run_async(command)
 
     def run(self):
         """

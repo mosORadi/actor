@@ -14,6 +14,10 @@ def run(args):
 
     return stdout, stderr, rc
 
+def run_async(args):
+    child = subprocess.Popen(map(str, args))
+    return child
+
 def convert_timestamp(timestamp):
     """
     Takes timestamp (either "%H.%M" string or datetime.time object)
