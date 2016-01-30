@@ -328,8 +328,7 @@ class AsyncEvalMixin(object):
 
     def __init__(self, *args, **kwargs):
         super(AsyncEvalMixin, self).__init__(*args, **kwargs)
-        self.running = False
-        self.completed = False
+        self.reset()
 
     def thread_handler(self, *args, **kwargs):
         self.running = True
@@ -347,6 +346,20 @@ class AsyncEvalMixin(object):
             thread.start()
         elif self.completed:
             return self.result
+
+    def reset(self):
+        """
+        Resets the cached result and state of the plugin.
+
+        This method should be explicitly called after the value
+        from the plugin has been pulled and processed, to allow the
+        further re-use of this plugin instance.
+        """
+
+        self.running = False
+        self.completed = False
+        self.result = None
+
 
 class AsyncDBusEvalMixin(AsyncEvalMixin, DBusMixin):
 
@@ -412,6 +425,8 @@ class Tracker(Plugin):
                 key=self.key,
                 value=self.process_value(value)
             )
+
+            self.prompt.reset()
 
 
 class InputTracker(Tracker):
@@ -484,3 +499,4 @@ class IntervalTracker(Tracker):
             )
 
             self.last_recorded = datetime.datetime.now()
+            self.prompt.reset()
