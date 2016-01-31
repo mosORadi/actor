@@ -115,6 +115,18 @@ class OverlayWindow(PyQt5.QtWidgets.QMainWindow):
         self.setAttribute(PyQt5.QtCore.Qt.WA_NoSystemBackground, True)
         self.setAttribute(PyQt5.QtCore.Qt.WA_TranslucentBackground, True)
 
+    def event(self, event):
+        """
+        Incoming event processor: catches and ignores attempted close events,
+        otherwise passes everything on.
+        """
+
+        if event.type() == PyQt5.QtCore.QEvent.Close and event.spontaneous():
+            event.ignore()
+            return True  # Signalize that event was processed
+        else:
+            return super(OverlayWindow, self).event(event)
+
 
 class AsyncPromptThreadBase(PyQt5.QtCore.QThread):
 
