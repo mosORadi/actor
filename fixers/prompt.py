@@ -27,3 +27,17 @@ class PromptYesNoFixer(AsyncDBusEvalMixin, Fixer):
             timeout=self.INFINITE_TIMEOUT,
             reply_handler=self.reply_handler,
             error_handler=self.error_handler)
+
+
+class OverlayInputFixer(AsyncDBusEvalMixin, Fixer):
+
+    identifier = 'overlay'
+
+    bus_name = 'org.freedesktop.ActorDesktop'
+    object_path = '/Desktop'
+
+    def run(self, ident, header, message):
+        return self.interface.Overlay(header, message,
+            timeout=self.INFINITE_TIMEOUT,
+            reply_handler=self.reply_handler,
+            error_handler=self.error_handler)
