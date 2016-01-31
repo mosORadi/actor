@@ -205,7 +205,7 @@ class AsyncDBusEvalMixin(AsyncEvalMixin, DBusMixin):
 
     def thread_handler(self, *args, **kwargs):
         self.running = True
-        super(AsyncEvalMixin, self).evaluate(*args, **kwargs)
+        super(AsyncDBusEvalMixin, self).evaluate(*args, **kwargs)
 
         # Block until result is available
         while getattr(self, 'result', None) is None:
