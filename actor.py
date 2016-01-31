@@ -14,7 +14,8 @@ import dbus.service
 import dbus.mainloop.glib
 
 from context import Context
-from plugins import Rule, Tracker
+from plugins import Rule
+from trackers import Tracker
 
 from config import CONFIG_DIR, HOME_DIR
 from config import (SLEEP_HASH, LOGGING_TARGET,
