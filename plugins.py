@@ -155,19 +155,30 @@ class DBusMixin(object):
             self.interface = None
 
 
-class AsyncEvalMixin(object):
+class AsyncEvalMixinBase(object):
+
+    """
+    Base class for the asynchronous evaluation of the plugins. It makes
+    sure that the plugin is evaluated in a separate thread, and hence
+    it does not block the main execution loop of the program.
+
+    This class is not to be used directly, instead one of the two child
+    classes is supposed to be used:
+        AsyncEvalNonBlockingMixin - does not block the thread, useful for
+                                    plugins that leverage polling to obtain
+                                    the data
+        AsyncEvalBlockingMixin - blocks the thread, useful for the plugins
+                                 that have data pushed using callbacks
+    """
 
     stateless = False
 
     def __init__(self, *args, **kwargs):
-        super(AsyncEvalMixin, self).__init__(*args, **kwargs)
+        super(AsyncEvalMixinBase, self).__init__(*args, **kwargs)
         self.reset()
 
     def thread_handler(self, *args, **kwargs):
-        self.running = True
-        self.result = super(AsyncEvalMixin, self).evaluate(*args, **kwargs)
-        self.completed = True
-        self.running = False
+        raise NotImplementedError("This class is not meant to be run directly")
 
     def evaluate(self, *args, **kwargs):
         if not self.running and not self.completed:
@@ -194,22 +205,27 @@ class AsyncEvalMixin(object):
         self.result = None
 
 
-class AsyncDBusEvalMixin(AsyncEvalMixin, DBusMixin):
-
-    def reply_handler(self, reply):
-        self.result = reply
-
-    def error_handler(self, error):
-        # Raise the returned DBusException
-        raise error
+class AsyncEvalNonBlockingMixin(AsyncEvalMixinBase):
+    """
+    Async mixin for polling-based plugins. Does not block the thread.
+    """
 
     def thread_handler(self, *args, **kwargs):
         self.running = True
+        self.result = super(AsyncEvalNonBlockingMixin, self).evaluate(*args, **kwargs)
+        self.completed = True
+        self.running = False
 
-        # The AsyncEvalMixin reference is intentional here,
-        # since calling the evaluate on the AsyncEvalMixin will
-        # cause deadlock
-        super(AsyncEvalMixin, self).evaluate(*args, **kwargs)
+
+class AsyncEvalBlockingMixin(AsyncEvalMixinBase):
+    """
+    Async mixin for pushing-based plugins. Does block the thread, waiting
+    for the result to be updated.
+    """
+
+    def thread_handler(self, *args, **kwargs):
+        self.running = True
+        super(AsyncEvalBlockingMixin, self).evaluate(*args, **kwargs)
 
         # Block until result is available
         while getattr(self, 'result', None) is None:
@@ -217,3 +233,17 @@ class AsyncDBusEvalMixin(AsyncEvalMixin, DBusMixin):
 
         self.completed = True
         self.running = False
+
+
+class AsyncDBusEvalMixin(AsyncEvalNonBlockingMixin):
+    """
+    Async mixin for pushing-based plugins leveraging async dbus
+    calls.
+    """
+
+    def reply_handler(self, reply):
+        self.result = reply
+
+    def error_handler(self, error):
+        # Raise the returned DBusException
+        raise error
