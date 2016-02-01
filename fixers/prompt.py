@@ -36,7 +36,7 @@ class OverlayInputFixer(AsyncDBusEvalMixin, Fixer):
     bus_name = 'org.freedesktop.ActorDesktop'
     object_path = '/Desktop'
 
-    def run(self, ident, header, message):
+    def run(self, header, message):
         return self.interface.Overlay(header, message,
             timeout=self.INFINITE_TIMEOUT,
             reply_handler=self.reply_handler,
