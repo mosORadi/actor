@@ -8,7 +8,7 @@ class PromptInputFixer(AsyncDBusEvalMixin, Fixer):
     bus_name = 'org.freedesktop.ActorDesktop'
     object_path = '/Desktop'
 
-    def run(self, ident, message):
+    def run(self, title, message):
         return self.interface.Prompt(message, ident,
             timeout=self.INFINITE_TIMEOUT,
             reply_handler=self.reply_handler,
@@ -22,7 +22,7 @@ class PromptYesNoFixer(AsyncDBusEvalMixin, Fixer):
     bus_name = 'org.freedesktop.ActorDesktop'
     object_path = '/Desktop'
 
-    def run(self, ident, message):
+    def run(self, title, message):
         return self.interface.PromptYesNo(message, ident,
             timeout=self.INFINITE_TIMEOUT,
             reply_handler=self.reply_handler,
