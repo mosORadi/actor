@@ -115,6 +115,41 @@ class Activity(ContextProxyMixin, Plugin):
                         pass
 
 
+class AfkTrackedActivity(Activity):
+    """
+    Implements a input-terminated activity that should occur away from
+    keyboard. Desktop is blocked using a overlay window.
+    """
+
+    noplugin = True
+    header = None
+
+    def setup(self):
+        # Setup the current activity in the Hamster Time Tracker
+        if self.hamster_activity:
+            self.info("Setting the activity: %s" % self.hamster_activity)
+            self.fix('set_hamster_activity', activity=self.hamster_activity)
+
+        self.overlay = self.factory_fix('overlay')
+
+    def run(self):
+        value = self.overlay.evaluate(message=self.message, header=self.header)
+
+        if value is None:
+            return
+
+        self.fix('track',
+            ident=self.identifier,
+            key=self.key,
+            value=self.process_value(value)
+        )
+
+        self.prompt.reset()
+
+        # TODO: Handle activity teardown more gracefully
+        self.context.activity = None
+
+
 class Flow(ContextProxyMixin, Plugin):
     """
     Defines a list of activities with their duration.
