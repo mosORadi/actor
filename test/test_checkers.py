@@ -1,14 +1,6 @@
 from test.base import CheckerTestCase
 
 
-class TautologyCheckerTest(CheckerTestCase):
-    class_name = 'TautologyChecker'
-    module_name = 'tautology'
-
-    def test_tautology_checker(self):
-        assert self.plugin.check() == True
-
-
 class RegularExpressionCheckerTest(CheckerTestCase):
     class_name = 'RegularExpressionChecker'
     module_name = 'regular_expression'
