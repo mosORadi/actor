@@ -1,21 +1,31 @@
 import importlib
 from unittest import TestCase
 
+class FakePluginCache(object):
+
+    def __init__(self):
+        self.store = {}
+
+    def get(self, identifier, args, kwargs):
+        """
+        Returns a stored value for the given identifier, ignoring the
+        args/kwargs.
+        """
+        return self.store.get(identifier)
+
+    def __setitem__(self, identifier, value):
+        """
+        Supports faking the cache values via item assigment.
+        """
+
+        self.store[identifier] = value
+
 class MockContext(object):
 
     def __init__(self):
-        self.fake_reports = {}
-        self.fake_checks = {}
-        self.fake_fixes = {}
-
-    def report(self, identifier, *args, **kwargs):
-        return self.fake_reports[identifier]
-
-    def check(self, identifier, *args, **kwargs):
-        return self.fake_checks[identifier]
-
-    def fix(self, identifier, *args, **kwargs):
-        return self.fake_fixes[identifier]
+        self.reporters = FakePluginCache()
+        self.checkers = FakePluginCache()
+        self.fixers = FakePluginCache()
 
 
 class PluginTestCase(TestCase):
