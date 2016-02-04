@@ -1,6 +1,23 @@
 import importlib
 from unittest import TestCase
 
+class MockContext(object):
+
+    def __init__(self):
+        self.fake_reports = {}
+        self.fake_checks = {}
+        self.fake_fixes = {}
+
+    def report(self, identifier, *args, **kwargs):
+        return self.fake_reports[identifier]
+
+    def check(self, identifier, *args, **kwargs):
+        return self.fake_checks[identifier]
+
+    def fix(self, identifier, *args, **kwargs):
+        return self.fake_fixes[identifier]
+
+
 class PluginTestCase(TestCase):
     class_name = None
     module_name = None
