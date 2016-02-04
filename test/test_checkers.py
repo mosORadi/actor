@@ -5,14 +5,10 @@ class RegularExpressionCheckerTest(CheckerTestCase):
     class_name = 'RegularExpressionChecker'
     module_name = 'regular_expression'
 
-    def setUp(self):
-        self.options.update({'regexp': 'ratata'})
-        super(RegularExpressionCheckerTest, self).setUp()
-
     def test_regular_expression_checker(self):
-        assert self.plugin.check(string="potato") == False
-        assert self.plugin.check(string="jiglypuff") == False
-        assert self.plugin.check(string="nasty ratata defeated") == True
+        assert self.plugin.run(regexp='ratata', string="potato") == False
+        assert self.plugin.run(regexp='ratata', string="jiglypuff") == False
+        assert self.plugin.run(regexp='ratata', string="nasty ratata") == True
 
 
 class TimeIntervalCheckerTest(CheckerTestCase):
