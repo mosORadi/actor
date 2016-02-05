@@ -158,7 +158,6 @@ class FileContentReporterTest(ReporterTestCase):
 
     def setUp(self):
         self.tempfile = tempfile.NamedTemporaryFile()
-        self.options.update({'path': self.tempfile.name})
 
         self.tempfile.write("aaa\n")
         self.tempfile.write("bbb\n")
@@ -168,7 +167,7 @@ class FileContentReporterTest(ReporterTestCase):
         super(FileContentReporterTest, self).setUp()
 
     def test_file_content_reporter(self):
-        file_content = self.plugin.run()
+        file_content = self.plugin.run(path=self.tempfile.name)
         assert type(file_content) == str
         assert len(file_content) > 0
         assert "aaa" in file_content
