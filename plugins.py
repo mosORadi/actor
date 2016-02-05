@@ -235,7 +235,7 @@ class AsyncEvalBlockingMixin(AsyncEvalMixinBase):
         self.running = False
 
 
-class AsyncDBusEvalMixin(AsyncEvalNonBlockingMixin):
+class AsyncDBusEvalMixin(AsyncEvalNonBlockingMixin, DBusMixin):
     """
     Async mixin for pushing-based plugins leveraging async dbus
     calls.
