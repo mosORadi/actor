@@ -39,6 +39,6 @@ class HamsterCategoryDailyDurationChecker(Checker):
 
         for activity, duration in activities.iteritems():
             if activity.endswith(category):
-                category_duration =+ duration
+                category_duration += duration
 
         return category_duration > limit
