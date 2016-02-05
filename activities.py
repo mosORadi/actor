@@ -208,7 +208,7 @@ class Flow(ContextProxyMixin, Plugin):
             self.start(self.current_activity)
         elif self.current_activity_expired and self.next_activity is not None:
             self.end()
-            self.current_activity_index =+ 1
+            self.current_activity_index += 1
             self.start(self.current_activity)
         elif self.current_activity_expired and self.next_activity is None:
             self.end()
