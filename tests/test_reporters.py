@@ -4,7 +4,7 @@ import tempfile
 import os
 import dbus.mainloop.glib
 
-from test.base import ReporterTestCase
+from tests.base import ReporterTestCase
 from util import run
 from time import sleep
 from tasklib import TaskWarrior, Task

@@ -1,4 +1,4 @@
-from test.base import CheckerTestCase
+from tests.base import CheckerTestCase
 
 from util import convert_timestamp
 
