@@ -206,58 +206,29 @@ class HamsterActivityReporterTest(ReporterTestCase):
         assert self.plugin.run() == "other@Home"
 
 
-class TaskTestBase(object):
+class TaskWarriorReporterTest(ReporterTestCase):
+    class_name = 'TaskWarriorReporter'
     module_name = 'taskwarrior'
 
     def setUp(self):
-        self.data = tempfile.mkdtemp()
-        self.warrior = TaskWarrior(data_location=self.data)
-        super(TaskTestBase, self).setUp()
-
-    def initialize(self, **options):
-        warrior_options = {'data_location': self.data}
-
-        if not 'warrior_options' in options:
-            options['warrior_options'] = warrior_options
-        else:
-            options['warrior_options'].update(warrior_options)
-
-        self.plugin = self.plugin_class(
-                **options
-            )
-
-
-class TaskWarriorReporterTest(TaskTestBase, ReporterTestCase):
-    class_name = 'TaskWarriorReporter'
+        data_dir = tempfile.mkdtemp()
+        self.warrior = TaskWarrior(data_location=data_dir)
+        self.tw_options = {'data_location': data_dir}
+        super(ReporterTestCase, self).setUp()
 
     def test_empty_tasklist(self):
-        assert self.plugin.run() == ''
+        assert len(self.plugin.run(warrior_options=self.tw_options)) == 0
 
     def test_correct_description(self):
         Task(self.warrior, description="test").save()
-        assert self.plugin.run() == "test"
+        assert repr(self.plugin.run(warrior_options=self.tw_options)) == '[test]'
 
     def test_filtered_description(self):
-        self.initialize(filter=dict(project="work"))
         Task(self.warrior, project="work", description="work task1").save()
         Task(self.warrior, project="home", description="home task1").save()
 
-        assert self.plugin.run() == "work task1"
-
-
-class TaskCountReporterTest(TaskTestBase, ReporterTestCase):
-    class_name = 'TaskCountReporter'
-
-    def test_empty_tasklist(self):
-        assert self.plugin.run() == 0
-
-    def test_correct_description(self):
-        Task(self.warrior, description="test").save()
-        assert self.plugin.run() == 1
-
-    def test_filtered_description(self):
-        self.initialize(filter=dict(project="work"))
-        Task(self.warrior, project="work", description="work task1").save()
-        Task(self.warrior, project="home", description="home task1").save()
-
-        assert self.plugin.run() == 1
+        result = self.plugin.run(
+            warrior_options=self.tw_options,
+            taskfilter={'project': 'work'}
+        )
+        assert repr(result) == '[work task1]'
