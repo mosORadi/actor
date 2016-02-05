@@ -1,7 +1,6 @@
 #!/usr/bin/python -B
 
 import argparse
-import dbus
 import sys
 from plugins import DBusMixin
 from util import dbus_error_handler
