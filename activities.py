@@ -123,6 +123,7 @@ class AfkTrackedActivity(Activity):
 
     noplugin = True
     header = None
+    message = None
 
     def setup(self):
         # Setup the current activity in the Hamster Time Tracker
@@ -132,19 +133,24 @@ class AfkTrackedActivity(Activity):
 
         self.overlay = self.factory_fix('overlay')
 
+    @property
+    def key(self):
+        return datetime.datetime.now().strftime("%Y-%m-%d")
+
     def run(self):
         value = self.overlay.evaluate(message=self.message, header=self.header)
 
         if value is None:
             return
 
-        self.fix('track',
+        self.fix(
+            'track',
             ident=self.identifier,
             key=self.key,
-            value=self.process_value(value)
+            value=value
         )
 
-        self.prompt.reset()
+        self.overlay.reset()
 
         # TODO: Handle activity teardown more gracefully
         self.context.activity = None
