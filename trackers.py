@@ -36,7 +36,7 @@ class Tracker(Plugin):
 
     def run(self):
         if self.obtainable and not self.recorded:
-            value = self.prompt.evaluate(message=self.message, ident=self.identifier)
+            value = self.prompt.evaluate(message=self.message, title=self.identifier)
             if value is None:
                 return
 
@@ -108,7 +108,7 @@ class IntervalTracker(Tracker):
 
     def run(self):
         if self.obtainable:
-            value = self.prompt.evaluate(message=self.message, ident=self.identifier)
+            value = self.prompt.evaluate(message=self.message, title=self.identifier)
             if value is None:
                 return
 
