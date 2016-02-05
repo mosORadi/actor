@@ -70,7 +70,7 @@ class ActiveWindowPidReporter(ActiveWindowNameReporter):
             return None
 
         candidate_lines = [line for line in output.splitlines()
-                          if line.startswith('_NET_ACTIVE_WINDOW')]
+                           if line.startswith('_NET_ACTIVE_WINDOW')]
 
         if len(candidate_lines) == 1:
             window_id = candidate_lines[0].split()[-1]

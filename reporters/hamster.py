@@ -52,7 +52,7 @@ class HamsterActivityDailyDurationReporter(Reporter):
             key = "%s@%s" % (fact[4], fact[6])
 
             if key in totals:
-                totals[key] =+ fact[9] / 60.0
+                totals[key] = + fact[9] / 60.0
             else:
                 totals[key] = fact[9] / 60.0
 

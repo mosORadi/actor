@@ -11,7 +11,7 @@ class MessagesReporter(DBusMixin, Reporter):
 
     bus_name = "im.pidgin.purple.PurpleService"
     object_path = "/im/pidgin/purple/PurpleObject"
-    interface_name ="im.pidgin.purple.PurpleInterface"
+    interface_name = "im.pidgin.purple.PurpleInterface"
 
     def run(self):
         if not self.interface:

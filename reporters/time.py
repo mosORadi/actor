@@ -23,5 +23,12 @@ class WeekdayReporter(Reporter):
     def run(self):
         day = datetime.datetime.now().strftime("%w")
 
-        weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        weekdays = [
+            'Sunday',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday']
         return weekdays[int(day)]

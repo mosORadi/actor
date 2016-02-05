@@ -17,7 +17,7 @@ class TmuxActiveSessionNameReporter(Reporter):
                       '-F', '#{session_attached} #{session_name}'])[0]
 
         active_sessions = [line[2:] for line in output.splitlines()
-                                    if line.startswith('1 ')]
+                           if line.startswith('1 ')]
 
         return active_sessions
 
@@ -41,8 +41,8 @@ class TmuxActiveWindowNameReporter(TmuxActiveSessionNameReporter):
                  '-F', '#{window_active} #{window_name}'])[0]
 
             active_windows = active_windows + [line[2:]
-                    for line in output.splitlines()
-                    if line.startswith('1 ')]
+                                               for line in output.splitlines()
+                                               if line.startswith('1 ')]
 
         return active_windows
 
@@ -66,8 +66,8 @@ class TmuxActivePanePIDsReporter(TmuxActiveSessionNameReporter):
                  '-F', '#{pane_active} #{pane_pid}'])[0]
 
             active_panes = active_panes + [int(line[2:])
-                    for line in output.splitlines()
-                    if line.startswith('1 ')]
+                                           for line in output.splitlines()
+                                           if line.startswith('1 ')]
 
         return active_panes
 
