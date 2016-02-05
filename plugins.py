@@ -212,7 +212,7 @@ class AsyncEvalNonBlockingMixin(AsyncEvalMixinBase):
 
     def thread_handler(self, *args, **kwargs):
         self.running = True
-        self.result = super(AsyncEvalNonBlockingMixin, self).evaluate(*args, **kwargs)
+        self.result = super(AsyncEvalMixinBase, self).evaluate(*args, **kwargs)
         self.completed = True
         self.running = False
 
