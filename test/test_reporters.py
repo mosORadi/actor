@@ -15,8 +15,7 @@ class TimeReporterTest(ReporterTestCase):
     module_name = 'time'
 
     def test_time_reporter(self):
-        time = self.plugin.report()
-        assert time == datetime.now().strftime("%H.%M")
+        assert self.plugin.run() == datetime.now().strftime("%H.%M")
 
 
 class WeekdayReporterTest(ReporterTestCase):
@@ -28,7 +27,7 @@ class WeekdayReporterTest(ReporterTestCase):
         output, _, _ = run(['date', '+%w'])
         system_day = weekdays[int(output.strip())]
 
-        day = self.plugin.report()
+        day = self.plugin.run()
         assert day == system_day
 
 
@@ -68,24 +67,24 @@ class ActiveWindowNameReporterTest(ActiveWindowReporterTest):
 
     def test_active_window_name_reporter(self):
         self.activate('gedit')
-        window = self.plugin.report()
+        window = self.plugin.run()
         assert type(window) == str
         assert 'gedit' in window
 
     def test_active_window_name_reporter_changing(self):
         self.activate('gedit')
-        window = self.plugin.report()
+        window = self.plugin.run()
         assert type(window) == str
         assert 'gedit' in window
 
         self.activate('Calculator')
-        window = self.plugin.report()
+        window = self.plugin.run()
         assert type(window) == str
         # The title depends on the package version
         assert 'Calculator' in window or 'gnome-calculator' in window
 
         self.activate('gedit')
-        window = self.plugin.report()
+        window = self.plugin.run()
         assert type(window) == str
         assert 'gedit' in window
 
@@ -106,23 +105,23 @@ class ActiveWindowPidReporterTest(ActiveWindowReporterTest):
 
     def test_active_window_pid_reporter(self):
         self.activate('gedit')
-        pid = self.plugin.report()
+        pid = self.plugin.run()
         assert type(pid) == int
         assert pid == self.gedit_pid
 
     def test_active_window_pid_reporter_changing(self):
         self.activate('gedit')
-        pid = self.plugin.report()
+        pid = self.plugin.run()
         assert type(pid) == int
         assert pid == self.gedit_pid
 
         self.activate('Calculator')
-        pid = self.plugin.report()
+        pid = self.plugin.run()
         assert type(pid) == int
         assert pid == self.calc_pid
 
         self.activate('gedit')
-        pid = self.plugin.report()
+        pid = self.plugin.run()
         assert type(pid) == int
         assert pid == self.gedit_pid
 
@@ -133,23 +132,23 @@ class ActiveWindowProcessNameReporterTest(ActiveWindowReporterTest):
 
     def test_active_process_name_reporter(self):
         self.activate('gedit')
-        process = self.plugin.report()
+        process = self.plugin.run()
         assert type(process) == str
         assert 'gedit' in process
 
     def test_active_process_name_reporter_changing(self):
         self.activate('gedit')
-        process = self.plugin.report()
+        process = self.plugin.run()
         assert type(process) == str
         assert 'gedit' in process
 
         self.activate('Calculator')
-        process = self.plugin.report()
+        process = self.plugin.run()
         assert type(process) == str
         assert 'gnome-calculator' in process
 
         self.activate('gedit')
-        process = self.plugin.report()
+        process = self.plugin.run()
         assert type(process) == str
         assert 'gedit' in process
 
@@ -169,7 +168,7 @@ class FileContentReporterTest(ReporterTestCase):
         super(FileContentReporterTest, self).setUp()
 
     def test_file_content_reporter(self):
-        file_content = self.plugin.report()
+        file_content = self.plugin.run()
         assert type(file_content) == str
         assert len(file_content) > 0
         assert "aaa" in file_content
@@ -202,14 +201,14 @@ class HamsterActivityReporterTest(ReporterTestCase):
         run(['hamster', 'current'])
 
     def test_correct_activity(self):
-        assert self.plugin.report() == "something@Home"
+        assert self.plugin.run() == "something@Home"
 
         run(['hamster', 'start', 'other@Home'])
 
         # We need to update the activity manually, since tests
         # do not listen to the DBUS signals
         self.plugin.get_current_activity()
-        assert self.plugin.report() == "other@Home"
+        assert self.plugin.run() == "other@Home"
 
 
 class TaskTestBase(object):
@@ -237,33 +236,33 @@ class TaskWarriorReporterTest(TaskTestBase, ReporterTestCase):
     class_name = 'TaskWarriorReporter'
 
     def test_empty_tasklist(self):
-        assert self.plugin.report() == ''
+        assert self.plugin.run() == ''
 
     def test_correct_description(self):
         Task(self.warrior, description="test").save()
-        assert self.plugin.report() == "test"
+        assert self.plugin.run() == "test"
 
     def test_filtered_description(self):
         self.initialize(filter=dict(project="work"))
         Task(self.warrior, project="work", description="work task1").save()
         Task(self.warrior, project="home", description="home task1").save()
 
-        assert self.plugin.report() == "work task1"
+        assert self.plugin.run() == "work task1"
 
 
 class TaskCountReporterTest(TaskTestBase, ReporterTestCase):
     class_name = 'TaskCountReporter'
 
     def test_empty_tasklist(self):
-        assert self.plugin.report() == 0
+        assert self.plugin.run() == 0
 
     def test_correct_description(self):
         Task(self.warrior, description="test").save()
-        assert self.plugin.report() == 1
+        assert self.plugin.run() == 1
 
     def test_filtered_description(self):
         self.initialize(filter=dict(project="work"))
         Task(self.warrior, project="work", description="work task1").save()
         Task(self.warrior, project="home", description="home task1").save()
 
-        assert self.plugin.report() == 1
+        assert self.plugin.run() == 1
