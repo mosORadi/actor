@@ -19,7 +19,7 @@ from trackers import Tracker
 
 from config import CONFIG_DIR, HOME_DIR
 from config import (SLEEP_HASH, LOGGING_TARGET,
-        LOGGING_FILE, LOGGING_TIMESTAMP)
+                    LOGGING_FILE, LOGGING_TIMESTAMP)
 from logger import LoggerMixin
 
 class ActorDBusProxy(dbus.service.Object):
