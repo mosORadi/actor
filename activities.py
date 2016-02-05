@@ -184,6 +184,11 @@ class Flow(ContextProxyMixin, Plugin):
 
     @property
     def current_activity_expired(self):
+        # If the activity is no longer set, consider it expired
+        if self.context.activity is None:
+            return True
+
+        # Otherwise check if the time allocated ran out
         duration = datetime.timedelta(minutes=self.current_activity[1])
         end_time = self.current_activity_start + duration
 
