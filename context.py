@@ -3,6 +3,9 @@ from activities import Activity, Flow
 
 
 class HashableDict(dict):
+    """
+    Enhanced dictionary that can be hashed (hence used as a key).
+    """
 
     def __hash__(self):
         return hash(frozenset(self.items()))
@@ -158,6 +161,11 @@ class PluginFactory(object):
 
     @property
     def plugins(self):
+        """
+        Returns a dictionary of plugins contained in the
+        given PluginMount upon which the factory is built.
+        """
+
         return {
             plugin_class.identifier: plugin_class
             for plugin_class in self.mount.plugins
@@ -176,6 +184,11 @@ class PluginFactory(object):
         return plugin_class(self.context, *args, **kwargs)
 
     def get_plugin(self, identifier):
+        """
+        Returns a plugin class corresponding to the given identifier. Raises
+        NoSuchPlugin exception if none found.
+        """
+
         try:
             return self.plugins[identifier]
         except KeyError:
@@ -204,6 +217,12 @@ class Context(object):
         self.flows = PluginFactory(Flow, self)
 
     def clear_cache(self):
+        """
+        Clears all the cached values in the PluginCaches. This method should
+        be called after each evaluation round, since external data sources
+        might provide new values.
+        """
+
         self.reporters.cache.clear()
         self.checkers.cache.clear()
         self.fixers.cache.clear()
