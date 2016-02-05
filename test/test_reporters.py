@@ -203,10 +203,6 @@ class HamsterActivityReporterTest(ReporterTestCase):
         assert self.plugin.run() == "something@Home"
 
         run(['hamster', 'start', 'other@Home'])
-
-        # We need to update the activity manually, since tests
-        # do not listen to the DBUS signals
-        self.plugin.get_current_activity()
         assert self.plugin.run() == "other@Home"
 
 
