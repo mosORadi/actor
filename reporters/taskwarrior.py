@@ -9,12 +9,12 @@ class TaskWarriorReporter(Reporter):
 
     identifier = 'tasks'
 
-    def report(self, warrior_options=None, rawfilter=None, taskfilter=None):
+    def run(self, warrior_options=None, rawfilter=None, taskfilter=None):
         warrior_options = warrior_options or dict()
         taskfilter = taskfilter or dict()
         rawfilter = rawfilter or tuple()
 
         warrior = TaskWarrior(**warrior_options)
-        tasks = warrior.filter(*rawfilter, **taskfilter)
+        tasks = warrior.tasks.filter(*rawfilter, **taskfilter)
 
         return tasks
