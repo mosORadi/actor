@@ -9,6 +9,7 @@ sys.dont_write_bytecode = True
 from actor import Actor, ActorDBusProxy
 import config
 
+
 # Start the desktop service in a separate process
 def start_desktop():
     import desktop

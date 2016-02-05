@@ -1,7 +1,9 @@
 from plugins import Reporter, Checker, Fixer, NoSuchPlugin
 from activities import Activity, Flow
 
+
 class HashableDict(dict):
+
     def __hash__(self):
         return hash(frozenset(self.items()))
 
@@ -122,7 +124,8 @@ class PluginCache(object):
 
         return value
 
-    def run_plugin_instance(self, identifier, args, kwargs, class_identifier=None):
+    def run_plugin_instance(self, identifier, args,
+                            kwargs, class_identifier=None):
         """
         Evaluates the plugin instance corresponding to the given identifier
         and returns the result.

@@ -3,20 +3,23 @@ import dbus
 import subprocess
 import sys
 
+
 def run(args):
     child = subprocess.Popen(
-            map(str, args),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+        map(str, args),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
     )
     stdout, stderr = child.communicate()
     rc = child.returncode
 
     return stdout, stderr, rc
 
+
 def run_async(args):
     child = subprocess.Popen(map(str, args))
     return child
+
 
 def convert_timestamp(timestamp):
     """
@@ -24,7 +27,7 @@ def convert_timestamp(timestamp):
     and converts it to datetime.datetime object valid for today.
     """
 
-    if type(timestamp) is str:
+    if isinstance(timestamp, str):
         # If the date is not specified, beginning of epoch will be used
         parsed = datetime.datetime.strptime(timestamp, "%H.%M")
 
@@ -33,6 +36,7 @@ def convert_timestamp(timestamp):
     else:
         return datetime.datetime.combine(datetime.date.today(), timestamp)
 
+
 def extract_dbus_exception_error(exception):
     exception_type = exception.get_dbus_name().split('.')[-1]
     error_lines = [l for l in exception.message.splitlines()
@@ -40,6 +44,7 @@ def extract_dbus_exception_error(exception):
 
     if error_lines:
         return error_lines[0][:-1]
+
 
 def dbus_error_handler(function):
     """

@@ -22,6 +22,7 @@ from config import (SLEEP_HASH, LOGGING_TARGET,
                     LOGGING_FILE, LOGGING_TIMESTAMP)
 from logger import LoggerMixin
 
+
 class ActorDBusProxy(dbus.service.Object):
 
     def __init__(self, actor):
@@ -89,7 +90,7 @@ class Actor(LoggerMixin):
         root_logger.error("Exception: %s", exception_type)
         root_logger.error("Value: %s", value)
         root_logger.error("Traceback (on a new line):\n%s",
-                      "\n".join(traceback.format_tb(tb)))
+                          "\n".join(traceback.format_tb(tb)))
 
     @staticmethod
     def setup_logging(daemon_mode=False, level='info'):
@@ -145,11 +146,12 @@ class Actor(LoggerMixin):
             root_logger.warning("Logging level '{0}' not recognized, "
                                 "using 'info' instead".format(level))
 
-
     # Initialization related methods
 
     def import_plugins(self):
-        import reporters, checkers, fixers
+        import reporters
+        import checkers
+        import fixers
         categories = [reporters, checkers, fixers]
 
         for category in categories:
@@ -183,7 +185,7 @@ class Actor(LoggerMixin):
                 self.warning(
                     "Rule file {0} cannot be loaded, following error was "
                     "encountered: {1}".format(path, str(e))
-                    )
+                )
                 self.info(traceback.format_exc())
 
         for rule_class in Rule.plugins:
@@ -219,7 +221,6 @@ class Actor(LoggerMixin):
         else:
             self.info("Activity cannot be unset, flow in progress.")
 
-
     def set_flow(self, identifier):
         """
         Sets the current flow as given by the identifier.
@@ -227,7 +228,10 @@ class Actor(LoggerMixin):
 
         self.info("Setting flow %s" % identifier)
         if self.context.flow is None:
-            self.context.flow = self.context.flows.make(identifier, args=(self,))
+            self.context.flow = self.context.flows.make(
+                identifier,
+                args=(self,)
+            )
         else:
             self.info("Flow already in progress")
 

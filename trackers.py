@@ -2,6 +2,7 @@ import datetime
 
 from plugins import Plugin, PluginMount
 
+
 class Tracker(Plugin):
     """
     Base class for Trackers.
@@ -36,11 +37,14 @@ class Tracker(Plugin):
 
     def run(self):
         if self.obtainable and not self.recorded:
-            value = self.prompt.evaluate(message=self.message, title=self.identifier)
+            value = self.prompt.evaluate(message=self.message,
+                                         title=self.identifier)
+
             if value is None:
                 return
 
-            self.fix('track',
+            self.fix(
+                'track',
                 ident=self.identifier,
                 key=self.key,
                 value=self.process_value(value)
@@ -99,7 +103,9 @@ class IntervalTracker(Tracker):
 
     @property
     def obtainable(self):
-        threshold = self.last_recorded + datetime.timedelta(minutes=self.interval)
+        threshold = self.last_recorded + \
+            datetime.timedelta(minutes=self.interval)
+
         return datetime.datetime.now() > threshold
 
     @property
@@ -108,11 +114,13 @@ class IntervalTracker(Tracker):
 
     def run(self):
         if self.obtainable:
-            value = self.prompt.evaluate(message=self.message, title=self.identifier)
+            value = self.prompt.evaluate(message=self.message,
+                                         title=self.identifier)
             if value is None:
                 return
 
-            self.fix('track',
+            self.fix(
+                'track',
                 ident=self.identifier,
                 key=self.key,
                 value=self.process_value(value)

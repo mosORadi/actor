@@ -6,12 +6,18 @@ import sys
 from plugins import DBusMixin
 from util import dbus_error_handler
 
+
 class CLIClient(DBusMixin):
 
     bus_name = "org.freedesktop.Actor"
     object_path = "/Actor"
 
-    commands = ('activity-start', 'activity-stop', 'flow-start', 'flow-stop', 'report')
+    commands = (
+        'activity-start',
+        'activity-stop',
+        'flow-start',
+        'flow-stop',
+        'report')
 
     @dbus_error_handler
     def command_activity_start(self, identifier):

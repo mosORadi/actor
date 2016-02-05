@@ -40,7 +40,8 @@ class OverlayWindow(PyQt5.QtWidgets.QMainWindow):
         self.frame.setGeometry(PyQt5.QtCore.QRect(0, 0, 400, 400))
         self.frame.setFrameShape(PyQt5.QtWidgets.QFrame.StyledPanel)
         self.frame.setFrameShadow(PyQt5.QtWidgets.QFrame.Raised)
-        self.frame.setStyleSheet("QFrame {"
+        self.frame.setStyleSheet(
+            "QFrame {"
             "background-color: rgba(255, 255, 255, 15); "
             "}"
         )
@@ -81,7 +82,8 @@ class OverlayWindow(PyQt5.QtWidgets.QMainWindow):
         # This is a necessary override, since otherwise it seems
         # the background color opaqueness coefficient is summed up
         # with the underlying QFrame
-        self.title.setStyleSheet("QLabel {"
+        self.title.setStyleSheet(
+            "QLabel {"
             "background-color: rgba(255, 255, 255, 0); "
             "color: gray; "
             "font-size: 20pt; "
@@ -91,9 +93,11 @@ class OverlayWindow(PyQt5.QtWidgets.QMainWindow):
 
         self.description = PyQt5.QtWidgets.QLabel("", self.frame)
         self.description.setGeometry(PyQt5.QtCore.QRect(0, 70, 400, 70))
-        self.description.setAlignment(PyQt5.QtCore.Qt.AlignHCenter | PyQt5.QtCore.Qt.AlignTop)
+        self.description.setAlignment(
+            PyQt5.QtCore.Qt.AlignHCenter | PyQt5.QtCore.Qt.AlignTop)
 
-        self.description.setStyleSheet("QLabel {"
+        self.description.setStyleSheet(
+            "QLabel {"
             "background-color: rgba(255, 255, 255, 0); "
             "color: gray; "
             "font-size: 12pt; "
@@ -202,7 +206,8 @@ class ActorDesktopDBusProxy(dbus.service.Object):
             print("Actor-desktop already running, exiting.")
             sys.exit(0)
 
-        bus_name = dbus.service.BusName("org.freedesktop.ActorDesktop", bus=bus)
+        bus_name = dbus.service.BusName(
+            "org.freedesktop.ActorDesktop", bus=bus)
 
         super(ActorDesktopDBusProxy, self).__init__(bus_name, "/Desktop")
 
@@ -218,17 +223,29 @@ class ActorDesktopDBusProxy(dbus.service.Object):
     @dbus.service.method("org.freedesktop.ActorDesktop", in_signature='ss', out_signature='s',
                          async_callbacks=('reply_handler', 'error_handler'))
     def Prompt(self, message, title, reply_handler, error_handler):
-        self.prompt_generic(AsyncPromptInputThread, message, title, reply_handler)
+        self.prompt_generic(
+            AsyncPromptInputThread,
+            message,
+            title,
+            reply_handler)
 
     @dbus.service.method("org.freedesktop.ActorDesktop", in_signature='ss', out_signature='b',
                          async_callbacks=('reply_handler', 'error_handler'))
     def PromptYesNo(self, message, title, reply_handler, error_handler):
-        self.prompt_generic(AsyncPromptYesNoThread, message, title, reply_handler)
+        self.prompt_generic(
+            AsyncPromptYesNoThread,
+            message,
+            title,
+            reply_handler)
 
     @dbus.service.method("org.freedesktop.ActorDesktop", in_signature='ss', out_signature='s',
                          async_callbacks=('reply_handler', 'error_handler'))
     def Overlay(self, title, description, reply_handler, error_handler):
-        self.prompt_generic(AsyncOverlayThread, title, description, reply_handler)
+        self.prompt_generic(
+            AsyncOverlayThread,
+            title,
+            description,
+            reply_handler)
 
 
 class ActorDesktop(PyQt5.QtWidgets.QWidget):

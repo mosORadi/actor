@@ -13,6 +13,7 @@ class NoSuchPlugin(Exception):
 
 
 class PluginMount(type):
+
     def __init__(cls, name, bases, attrs):
         if not hasattr(cls, 'plugins'):
             cls.plugins = []
@@ -51,7 +52,7 @@ class Plugin(logger.LoggerMixin):
     # Make sure every plugin implements the run method
     def run(self):
         raise NotImplementedError("The run method needs to be"
-            "implemented by the plugin itself")
+                                  "implemented by the plugin itself")
 
 
 class Worker(Plugin):
@@ -120,6 +121,7 @@ class ContextProxyMixin(object):
     def fix(self, identifier, *args, **kwargs):
         return self.context.fixers.get(identifier, args, kwargs,
                                        rule_name=self.identifier)
+
 
 class Rule(ContextProxyMixin, Plugin):
     """

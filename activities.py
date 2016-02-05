@@ -89,7 +89,8 @@ class Activity(ContextProxyMixin, Plugin):
             active_window_process = self.report('active_window_process')
 
             if active_window_process:
-                emulator_processes = active_window_process.children(recursive=True)
+                emulator_processes = active_window_process.children(
+                    recursive=True)
 
                 # If we're running tmux, the commands are being executed
                 # under tmux server instead
@@ -108,7 +109,7 @@ class Activity(ContextProxyMixin, Plugin):
                     try:
                         command = ' '.join(process.cmdline())
                         if any([forbidden in command
-                               for forbidden in self.blacklisted_commands]):
+                                for forbidden in self.blacklisted_commands]):
                             process.kill()
                     except psutil.NoSuchProcess:
                         # If process ended in the mean time, ignore it

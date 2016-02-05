@@ -1,5 +1,6 @@
 import logging
 
+
 class LoggerMixin(object):
     """
     This mixin adds logging capabilities to the class. All clases inheriting
