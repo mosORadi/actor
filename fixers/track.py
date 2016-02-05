@@ -10,5 +10,5 @@ class TrackFixer(Fixer):
 
     def run(self, ident, key, value):
         filepath = os.path.join(CONFIG_DIR, ident + ".act")
-        with open(filepath, 'a') as f:
-            f.write("{0}: {1}\n".format(key, value))
+        with open(filepath, 'a') as fil:
+            fil.write("{0}: {1}\n".format(key, value))

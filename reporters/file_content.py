@@ -14,5 +14,5 @@ class FileContentReporter(Reporter):
 
     def run(self, path):
         if os.path.isfile(path):
-            with open(path, 'r') as f:
-                return f.read()
+            with open(path, 'r') as fil:
+                return fil.read()

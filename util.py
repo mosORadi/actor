@@ -11,9 +11,9 @@ def run(args):
         stderr=subprocess.PIPE
     )
     stdout, stderr = child.communicate()
-    rc = child.returncode
+    code = child.returncode
 
-    return stdout, stderr, rc
+    return stdout, stderr, code
 
 
 def run_async(args):
@@ -56,8 +56,8 @@ def dbus_error_handler(function):
     def wrapped(*args):
         try:
             function(*args)
-        except dbus.DBusException as e:
-            error = extract_dbus_exception_error(e)
+        except dbus.DBusException as exc:
+            error = extract_dbus_exception_error(exc)
             error = error or "DBus exception occured."
             sys.exit(error)
 

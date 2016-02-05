@@ -80,7 +80,7 @@ class Actor(LoggerMixin):
     # Logging related methods
 
     @staticmethod
-    def log_exception(exception_type, value, tb):
+    def log_exception(exception_type, value, trace):
         root_logger = logging.getLogger('main')
 
         if exception_type == KeyboardInterrupt:
@@ -90,7 +90,7 @@ class Actor(LoggerMixin):
         root_logger.error("Exception: %s", exception_type)
         root_logger.error("Value: %s", value)
         root_logger.error("Traceback (on a new line):\n%s",
-                          "\n".join(traceback.format_tb(tb)))
+                          "\n".join(traceback.format_tb(trace)))
 
     @staticmethod
     def setup_logging(daemon_mode=False, level='info'):
@@ -160,10 +160,10 @@ class Actor(LoggerMixin):
                     module_id = "{0}.{1}".format(category.__name__, module)
                     importlib.import_module(module_id)
                     self.debug(module_id + " loaded successfully.")
-                except Exception as e:
+                except Exception as exc:
                     self.warning(
                         "The {0} {1} module could not be loaded: {2} "
-                        .format(module, category.__name__[:-1], str(e)))
+                        .format(module, category.__name__[:-1], str(exc)))
                     self.info(traceback.format_exc())
 
     def load_configuration(self):
@@ -181,10 +181,10 @@ class Actor(LoggerMixin):
             try:
                 module_id = os.path.basename(path.rstrip('.py'))
                 imp.load_source(module_id, path)
-            except Exception as e:
+            except Exception as exc:
                 self.warning(
                     "Rule file {0} cannot be loaded, following error was "
-                    "encountered: {1}".format(path, str(e))
+                    "encountered: {1}".format(path, str(exc))
                 )
                 self.info(traceback.format_exc())
 
@@ -254,8 +254,8 @@ class Actor(LoggerMixin):
 
         sleep_file_path = os.path.join(HOME_DIR, 'actor-sleep')
         if os.path.exists(sleep_file_path):
-            with open(sleep_file_path, 'r') as f:
-                content = f.readlines()[0].strip()
+            with open(sleep_file_path, 'r') as input_file:
+                content = input_file.readlines()[0].strip()
                 content_hash = hashlib.sha1(content).hexdigest()
 
             return content_hash == SLEEP_HASH

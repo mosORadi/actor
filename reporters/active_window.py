@@ -149,14 +149,14 @@ class ActiveWindowProcessNameReporter(ActiveWindowPidReporter):
 
         # First try to read the cmdline
         try:
-            with open('/proc/%d/cmdline' % pid, 'r') as f:
-                return f.read().strip()
+            with open('/proc/%d/cmdline' % pid, 'r') as fil:
+                return fil.read().strip()
         except IOError:
             pass
 
         # Fallback to comm
         try:
-            with open('/proc/%d/comm' % pid, 'r') as f:
-                return f.read().strip()
+            with open('/proc/%d/comm' % pid, 'r') as fil:
+                return fil.read().strip()
         except IOError:
             pass
