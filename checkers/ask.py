@@ -2,6 +2,7 @@ import dbus
 
 from plugins import Checker
 
+
 class NotificationAskChecker(Checker):
     """
     Simple checker, that sends a D-Bus notification to ask user yes/no question.
@@ -24,7 +25,11 @@ class NotificationAskChecker(Checker):
         self.answer = ''
 
         self.bus = dbus.SessionBus()
-        self.bus.add_signal_receiver(self.set_answer, path='/org/freedesktop/Notifications', signal_name='ActionInvoked')
+        self.bus.add_signal_receiver(
+            self.set_answer,
+            path='/org/freedesktop/Notifications',
+            signal_name='ActionInvoked'
+        )
         self.question = self.options.get('question', '')
 
     def ask(self):
@@ -48,8 +53,8 @@ class NotificationAskChecker(Checker):
             interface = dbus.Interface(dbus_object, interface_name)
 
             self.last_notification = interface.Notify(app_name, replaces_id, app_icon,
-                                                  headline, message, choice_list, {},
-                                                  timeout)
+                                                      headline, message, choice_list, {},
+                                                      timeout)
 
         return self.answer == "yes"
 

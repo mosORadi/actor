@@ -3,6 +3,7 @@ import datetime
 from plugins import Checker
 from util import convert_timestamp
 
+
 class TimeIntervalChecker(Checker):
     """
     Checks whether the current time is in the defined interval.

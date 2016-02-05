@@ -1,5 +1,6 @@
 from plugins import Checker
 
+
 class HamsterActivityDailyDurationChecker(Checker):
     """
     Checks whether a time limit for a particular activity has not been
