@@ -1,9 +1,9 @@
+import datetime
 import subprocess
 import tempfile
 import os
 import dbus.mainloop.glib
 
-from datetime import datetime
 from test.base import ReporterTestCase
 from util import run
 from time import sleep
@@ -15,7 +15,10 @@ class TimeReporterTest(ReporterTestCase):
     module_name = 'time'
 
     def test_time_reporter(self):
-        assert self.plugin.run() == datetime.now().strftime("%H.%M")
+        reported_time = self.plugin.run()
+        actual_time = datetime.datetime.now()
+
+        assert actual_time - reported_time < datetime.timedelta(seconds=1)
 
 
 class WeekdayReporterTest(ReporterTestCase):
