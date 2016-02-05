@@ -32,8 +32,8 @@ class TmuxKillActivePaneFixer(Fixer):
                  '-F', '#{pane_active} #{pane_id}'])[0]
 
             active_pane_ids = active_pane_ids + [line[2:]
-                    for line in output.splitlines()
-                    if line.startswith('1 ')]
+                                                 for line in output.splitlines()
+                                                 if line.startswith('1 ')]
 
         return active_pane_ids
 

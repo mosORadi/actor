@@ -10,9 +10,9 @@ class PromptInputFixer(AsyncDBusEvalMixin, Fixer):
 
     def run(self, title, message):
         return self.interface.Prompt(message, title,
-            timeout=self.INFINITE_TIMEOUT,
-            reply_handler=self.reply_handler,
-            error_handler=self.error_handler)
+                                     timeout=self.INFINITE_TIMEOUT,
+                                     reply_handler=self.reply_handler,
+                                     error_handler=self.error_handler)
 
 
 class PromptYesNoFixer(AsyncDBusEvalMixin, Fixer):
@@ -24,9 +24,9 @@ class PromptYesNoFixer(AsyncDBusEvalMixin, Fixer):
 
     def run(self, title, message):
         return self.interface.PromptYesNo(message, title,
-            timeout=self.INFINITE_TIMEOUT,
-            reply_handler=self.reply_handler,
-            error_handler=self.error_handler)
+                                          timeout=self.INFINITE_TIMEOUT,
+                                          reply_handler=self.reply_handler,
+                                          error_handler=self.error_handler)
 
 
 class OverlayInputFixer(AsyncDBusEvalMixin, Fixer):
@@ -38,6 +38,6 @@ class OverlayInputFixer(AsyncDBusEvalMixin, Fixer):
 
     def run(self, header, message):
         return self.interface.Overlay(header, message,
-            timeout=self.INFINITE_TIMEOUT,
-            reply_handler=self.reply_handler,
-            error_handler=self.error_handler)
+                                      timeout=self.INFINITE_TIMEOUT,
+                                      reply_handler=self.reply_handler,
+                                      error_handler=self.error_handler)

@@ -21,13 +21,13 @@ class NotifyFixer(DBusMixin, Fixer):
     bus_name = 'org.freedesktop.Notifications'
     object_path = '/org/freedesktop/Notifications'
 
-
     def __init__(self, context):
         super(NotifyFixer, self).__init__(context)
 
         self.last_notification = 0
 
-    def run(self, message, headline="Actor Alert!", app_name="Actor", app_icon='', timeout=0):
+    def run(self, message, headline="Actor Alert!",
+            app_name="Actor", app_icon='', timeout=0):
         replaces_id = self.last_notification
         self.last_notification = self.interface.Notify(app_name, replaces_id, app_icon,
                                                        headline, message, [], {},
