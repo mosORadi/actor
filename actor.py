@@ -93,7 +93,7 @@ class Actor(LoggerMixin):
                           "\n".join(traceback.format_tb(trace)))
 
     @staticmethod
-    def setup_logging(daemon_mode=False, level='info'):
+    def setup_logging(level='info'):
         # Setup Actor logging
         level_map = {
             'debug': logging.DEBUG,

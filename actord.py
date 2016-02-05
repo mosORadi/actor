@@ -20,7 +20,7 @@ desktop.start()
 
 # Forward all exceptions to the log
 sys.excepthook = Actor.log_exception
-Actor.setup_logging(level=config.LOGGING_LEVEL, daemon_mode=True)
+Actor.setup_logging(level=config.LOGGING_LEVEL)
 
 # Initialize an Actor instance and setup proxy for it
 actor = Actor()
