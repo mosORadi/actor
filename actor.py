@@ -143,8 +143,8 @@ class Actor(LoggerMixin):
             root_logger.addHandler(stream_handler)
 
         if log_default_level_warning:
-            root_logger.warning("Logging level '{0}' not recognized, "
-                                "using 'info' instead".format(level))
+            root_logger.warning("Logging level %s not recognized, "
+                                "using 'info' instead", level)
 
     # Initialization related methods
 
