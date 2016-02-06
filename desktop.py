@@ -1,4 +1,5 @@
 #!/usr/bin/python -B
+from __future__ import print_function
 
 import sys
 import dbus
@@ -8,6 +9,10 @@ import dbus.mainloop.pyqt5
 import PyQt5.QtWidgets
 import PyQt5.QtGui
 import PyQt5.QtCore
+
+# This file uses PyQt5, which brings over some pep8
+# incompliant method names
+# pylint: disable=invalid-name
 
 
 class OverlayWindow(PyQt5.QtWidgets.QMainWindow):
@@ -47,27 +52,30 @@ class OverlayWindow(PyQt5.QtWidgets.QMainWindow):
         )
 
         # Center the frame
-        qr = self.frame.frameGeometry()
-        cp = PyQt5.QtWidgets.QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.frame.move(qr.topLeft())
+        coordinates = self.frame.frameGeometry()
+
+        desktop = PyQt5.QtWidgets.QDesktopWidget()
+        desktop_center = desktop.availableGeometry().center()
+
+        coordinates.moveCenter(desktop_center)
+        self.frame.move(coordinates.topLeft())
 
         self.layout().addWidget(self.frame)
 
     def create_input(self):
-        self.lineEdit = PyQt5.QtWidgets.QLineEdit(self.frame)
-        self.lineEdit.setObjectName("lineEdit")
-        self.lineEdit.setGeometry(PyQt5.QtCore.QRect(150, 150, 100, 30))
+        self.line_edit = PyQt5.QtWidgets.QLineEdit(self.frame)
+        self.line_edit.setObjectName("line_edit")
+        self.line_edit.setGeometry(PyQt5.QtCore.QRect(150, 150, 100, 30))
 
     def create_button(self):
-        self.pushButton = PyQt5.QtWidgets.QPushButton(self.frame)
-        self.pushButton.setText("Finished")
-        self.pushButton.setShortcut("Q")
-        self.pushButton.setGeometry(PyQt5.QtCore.QRect(150, 200, 100, 30))
-        self.pushButton.clicked.connect(self.handle_clicked)
+        self.push_button = PyQt5.QtWidgets.QPushButton(self.frame)
+        self.push_button.setText("Finished")
+        self.push_button.setShortcut("Q")
+        self.push_button.setGeometry(PyQt5.QtCore.QRect(150, 200, 100, 30))
+        self.push_button.clicked.connect(self.handle_clicked)
 
     def handle_clicked(self):
-        self.reply_signal.emit(self.lineEdit.text())
+        self.reply_signal.emit(self.line_edit.text())
         self.close()
 
     def set_reply_signal(self, signal):
@@ -106,6 +114,8 @@ class OverlayWindow(PyQt5.QtWidgets.QMainWindow):
         )
 
     def paintEvent(self, event=None):
+        # pylint: disable=unused-argument
+
         painter = PyQt5.QtGui.QPainter(self)
 
         painter.setOpacity(0.85)
@@ -196,6 +206,7 @@ class AsyncOverlayThread(AsyncPromptThreadBase):
 
 
 class ActorDesktopDBusProxy(dbus.service.Object):
+    # pylint: disable=interface-not-implemented
 
     def __init__(self, desktop):
         self.desktop = desktop
@@ -220,7 +231,8 @@ class ActorDesktopDBusProxy(dbus.service.Object):
         )
         thread.start()
 
-    @dbus.service.method("org.freedesktop.ActorDesktop", in_signature='ss', out_signature='s',
+    @dbus.service.method("org.freedesktop.ActorDesktop",
+                         in_signature='ss', out_signature='s',
                          async_callbacks=('reply_handler', 'error_handler'))
     def Prompt(self, message, title, reply_handler, error_handler):
         self.prompt_generic(
@@ -229,7 +241,8 @@ class ActorDesktopDBusProxy(dbus.service.Object):
             title,
             reply_handler)
 
-    @dbus.service.method("org.freedesktop.ActorDesktop", in_signature='ss', out_signature='b',
+    @dbus.service.method("org.freedesktop.ActorDesktop",
+                         in_signature='ss', out_signature='b',
                          async_callbacks=('reply_handler', 'error_handler'))
     def PromptYesNo(self, message, title, reply_handler, error_handler):
         self.prompt_generic(
@@ -238,7 +251,8 @@ class ActorDesktopDBusProxy(dbus.service.Object):
             title,
             reply_handler)
 
-    @dbus.service.method("org.freedesktop.ActorDesktop", in_signature='ss', out_signature='s',
+    @dbus.service.method("org.freedesktop.ActorDesktop",
+                         in_signature='ss', out_signature='s',
                          async_callbacks=('reply_handler', 'error_handler'))
     def Overlay(self, title, description, reply_handler, error_handler):
         self.prompt_generic(
@@ -257,11 +271,12 @@ class ActorDesktop(PyQt5.QtWidgets.QWidget):
 
     @PyQt5.QtCore.pyqtSlot(str, str)
     def prompt_input(self, message, title):
-        text, ok = PyQt5.QtWidgets.QInputDialog.getText(
+        text = PyQt5.QtWidgets.QInputDialog.getText(
             self,
             title,
             message,
-        )
+        )[0]
+
         self.sender().received.emit(text)
 
     @PyQt5.QtCore.pyqtSlot(str, str)
