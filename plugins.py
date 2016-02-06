@@ -77,6 +77,10 @@ class Worker(Plugin):
     side_effects = False
 
     def evaluate(self, *args, **kwargs):
+        """
+        Wraps the run method. Currently only adds the debug logging.
+        """
+
         self.debug('Running with args={0}, kwargs={1}'.format(args, kwargs))
 
         result = self.run(*args, **kwargs)

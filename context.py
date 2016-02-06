@@ -197,6 +197,12 @@ class PluginFactory(object):
 
 
 class Context(object):
+    """
+    Object to keep shared state. Provides:
+    - Access to plugins via PluginCaches and PluginFactories
+    - List of rule and tracker instances
+    - Current activity and flow
+    """
 
     def __init__(self):
         self.rules = []
