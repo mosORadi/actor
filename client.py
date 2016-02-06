@@ -75,6 +75,11 @@ class CLIClient(DBusMixin):
         args = self.process_args()
         self.run_command(args.command, args.options)
 
-if __name__ == "__main__":
+
+def main():
     client = CLIClient()
     client.main()
+
+
+if __name__ == "__main__":
+    main()

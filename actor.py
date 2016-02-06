@@ -295,8 +295,19 @@ class Actor(LoggerMixin):
         self.info("AcTor started.")
         loop.run()
 
-if __name__ == "__main__":
+
+def debug_main():
+    """
+    Run a instance of actor at a debug level.
+    """
+
     Actor.setup_logging(level='debug')
     actor = Actor()
-    proxy = ActorDBusProxy(actor)
+
+    # Initialize the DBus interface
+    ActorDBusProxy(actor)
     actor.main()
+
+
+if __name__ == "__main__":
+    debug_main()
