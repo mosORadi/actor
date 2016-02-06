@@ -9,6 +9,8 @@ class TrackReporter(Reporter):
     identifier = 'track'
 
     def run(self, ident, key):
+        # pylint: disable=arguments-differ
+
         filepath = os.path.join(CONFIG_DIR, ident + ".act")
         try:
             with open(filepath, 'r') as fil:

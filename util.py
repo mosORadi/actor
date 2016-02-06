@@ -61,6 +61,7 @@ def dbus_error_handler(function):
             error = error or "DBus exception occured."
             sys.exit(error)
 
+    # pylint: disable=protected-access
     wrapped._co_argcount = function.func_code.co_argcount
 
     return wrapped

@@ -16,6 +16,8 @@ class TimeIntervalChecker(Checker):
     identifier = 'time_interval'
 
     def run(self, start, end):
+        # pylint: disable=arguments-differ
+
         start = convert_timestamp(start)
         end = convert_timestamp(end)
 

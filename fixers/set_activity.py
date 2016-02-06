@@ -15,6 +15,8 @@ class SetHamsterActivityFixer(DBusMixin, Fixer):
     object_path = '/org/gnome/Hamster'
 
     def run(self, activity):
+        # pylint: disable=arguments-differ
+
         # First, let's detect the current activity to not
         # redefine the same activity over and over
         current_activity = self.report('hamster_activity')

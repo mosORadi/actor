@@ -16,4 +16,6 @@ class RegularExpressionChecker(Checker):
     identifier = 'regular_expression'
 
     def run(self, regexp, string):
+        # pylint: disable=arguments-differ
+
         return bool(re.search(regexp, string or ''))

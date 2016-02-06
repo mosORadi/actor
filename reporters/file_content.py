@@ -13,6 +13,8 @@ class FileContentReporter(Reporter):
     identifier = 'file_content'
 
     def run(self, path):
+        # pylint: disable=arguments-differ
+
         if os.path.isfile(path):
             with open(path, 'r') as fil:
                 return fil.read()

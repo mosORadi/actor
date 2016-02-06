@@ -43,6 +43,8 @@ class HamsterActivityDailyDurationReporter(Reporter):
     object_path = "/org/gnome/Hamster"
 
     def run(self, activity=None):
+        # pylint: disable=arguments-differ
+
         totals = dict()
 
         for fact in self.interface.GetTodaysFacts():

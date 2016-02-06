@@ -12,4 +12,6 @@ class SpeakFixer(Fixer):
     identifier = "speak"
 
     def run(self, text, language='en'):
+        # pylint: disable=arguments-differ
+
         run(['espeak', '-v', language, text])

@@ -24,6 +24,7 @@ from logger import LoggerMixin
 
 
 class ActorDBusProxy(dbus.service.Object):
+    # pylint: disable=interface-not-implemented
 
     def __init__(self, actor):
         self.actor = actor
@@ -40,6 +41,7 @@ class ActorDBusProxy(dbus.service.Object):
         super(ActorDBusProxy, self).__init__(bus_name, "/Actor")
 
     # Dbus interface
+    # pylint: disable=invalid-name
     @dbus.service.method("org.freedesktop.Actor", in_signature='s')
     def SetActivity(self, activity):
         self.actor.set_activity(activity)
@@ -154,6 +156,7 @@ class Actor(LoggerMixin):
         import fixers
         categories = [reporters, checkers, fixers]
 
+        # pylint: disable=broad-except
         for category in categories:
             for module in category.__all__:
                 try:
@@ -177,6 +180,7 @@ class Actor(LoggerMixin):
                  for path in os.listdir(CONFIG_DIR)
                  if path.endswith('.py')]
 
+        # pylint: disable=broad-except
         for path in rules:
             try:
                 module_id = os.path.basename(path.rstrip('.py'))
@@ -188,6 +192,7 @@ class Actor(LoggerMixin):
                 )
                 self.info(traceback.format_exc())
 
+        # pylint: disable=no-member
         for rule_class in Rule.plugins:
             self.rules.append(rule_class(self.context))
 

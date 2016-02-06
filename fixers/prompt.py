@@ -1,4 +1,5 @@
 from plugins import Fixer, AsyncDBusEvalMixin
+# pylint: disable=too-many-ancestors
 
 
 class PromptInputFixer(AsyncDBusEvalMixin, Fixer):
@@ -9,6 +10,8 @@ class PromptInputFixer(AsyncDBusEvalMixin, Fixer):
     object_path = '/Desktop'
 
     def run(self, title, message):
+        # pylint: disable=arguments-differ
+
         return self.interface.Prompt(message, title,
                                      timeout=self.INFINITE_TIMEOUT,
                                      reply_handler=self.reply_handler,
@@ -23,6 +26,8 @@ class PromptYesNoFixer(AsyncDBusEvalMixin, Fixer):
     object_path = '/Desktop'
 
     def run(self, title, message):
+        # pylint: disable=arguments-differ
+
         return self.interface.PromptYesNo(message, title,
                                           timeout=self.INFINITE_TIMEOUT,
                                           reply_handler=self.reply_handler,
@@ -37,6 +42,8 @@ class OverlayInputFixer(AsyncDBusEvalMixin, Fixer):
     object_path = '/Desktop'
 
     def run(self, header, message):
+        # pylint: disable=arguments-differ
+
         return self.interface.Overlay(header, message,
                                       timeout=self.INFINITE_TIMEOUT,
                                       reply_handler=self.reply_handler,

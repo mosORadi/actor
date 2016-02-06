@@ -10,6 +10,8 @@ class TaskWarriorReporter(Reporter):
     identifier = 'tasks'
 
     def run(self, warrior_options=None, rawfilter=None, taskfilter=None):
+        # pylint: disable=arguments-differ
+
         warrior_options = warrior_options or dict()
         taskfilter = taskfilter or dict()
         rawfilter = rawfilter or tuple()

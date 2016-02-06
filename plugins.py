@@ -4,6 +4,11 @@ import threading
 
 import logger
 
+# This file contains definitions of plugin classes, most of
+# which intentionally do not implement their abstract method
+# contracts.
+# pylint: disable=abstract-method
+
 
 class NoSuchPlugin(Exception):
     """
@@ -51,6 +56,14 @@ class Plugin(logger.LoggerMixin):
 
     # Make sure every plugin implements the run method
     def run(self):
+        """
+        Method that actually provides the custom runtime logic shipped
+        with the plugin.
+
+        Plugins are expected to override this methods to perform their
+        actions.
+        """
+
         raise NotImplementedError("The run method needs to be"
                                   "implemented by the plugin itself")
 
@@ -214,6 +227,10 @@ class AsyncEvalNonBlockingMixin(AsyncEvalMixinBase):
 
     def thread_handler(self, *args, **kwargs):
         self.running = True
+
+        # Here we intentionally call the evaluate on the grandparent to avoid
+        # getting into a deadlock
+        # pylint: disable=bad-super-call
         self.result = super(AsyncEvalMixinBase, self).evaluate(*args, **kwargs)
         self.completed = True
         self.running = False

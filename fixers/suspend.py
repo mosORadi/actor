@@ -15,6 +15,8 @@ class SuspendFixer(DBusMixin, Fixer):
     object_path = '/org/freedesktop/PowerManagement'
 
     def run(self, enforced=False):
+        # pylint: disable=arguments-differ
+
         if enforced:
             run(['sudo', 'pm-suspend'])
         else:
@@ -32,6 +34,8 @@ class SuspendUntilFixer(Fixer):
     identifier = "suspend_until"
 
     def run(self, until):
+        # pylint: disable=arguments-differ
+
         until = convert_timestamp(until)
 
         if datetime.datetime.now() > until:

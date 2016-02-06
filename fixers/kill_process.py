@@ -15,6 +15,8 @@ class KillProcessFixer(Fixer):
         os.kill(pid, signal.SIGKILL)
 
     def run(self, pid):
+        # pylint: disable=arguments-differ
+
         if pid is not None:
             pid = int(pid)
             self.kill(pid)

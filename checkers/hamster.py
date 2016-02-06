@@ -14,6 +14,8 @@ class HamsterActivityDailyDurationChecker(Checker):
     identifier = 'hamster_activity_duration'
 
     def run(self, activity, limit):
+        # pylint: disable=arguments-differ
+
         duration = self.context.report('hamster_activity_daily_duration',
                                        activity=activity)
 
@@ -33,6 +35,8 @@ class HamsterCategoryDailyDurationChecker(Checker):
     identifier = 'hamster_category_duration'
 
     def run(self, category, limit):
+        # pylint: disable=arguments-differ
+
         category_duration = 0
 
         activities = self.context.report('hamster_activity_daily_duration')

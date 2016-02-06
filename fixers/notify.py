@@ -28,6 +28,8 @@ class NotifyFixer(DBusMixin, Fixer):
 
     def run(self, message, headline="Actor Alert!",
             app_name="Actor", app_icon='', timeout=0):
+        # pylint: disable=arguments-differ
+
         replaces_id = self.last_notification
         self.last_notification = self.interface.Notify(app_name, replaces_id, app_icon,
                                                        headline, message, [], {},
