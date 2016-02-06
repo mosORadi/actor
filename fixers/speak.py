@@ -1,7 +1,5 @@
-import datetime
-
-from plugins import Fixer, DBusMixin
-from util import run, convert_timestamp
+from plugins import Fixer
+from util import run
 
 
 class SpeakFixer(Fixer):

@@ -1,5 +1,3 @@
-import dbus
-
 from plugins import Fixer, DBusMixin
 
 
