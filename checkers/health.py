@@ -19,9 +19,11 @@ class HealthChecker(Checker):
     stateless = False
 
     def __init__(self, maximum, reset_daily=True):
-        super(HealthChecker, self).__init__(**options)
+        super(HealthChecker, self).__init__()
+
         self.today = datetime.date.today()
         self.maximum = maximum
+        self.health = maximum
         self.reset_daily = reset_daily
 
     def decrease(self, delta=1):
