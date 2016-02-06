@@ -93,7 +93,7 @@ class ActiveWindowPidReporter(ActiveWindowNameReporter):
         try:
             psutil.Process(pid)
             return True
-        except Exception:
+        except psutil.NoSuchProcess:
             return False
 
     def run(self):
@@ -125,7 +125,7 @@ class ActiveWindowProcessReporter(ActiveWindowPidReporter):
 
         try:
             return psutil.Process(pid)
-        except Exception:
+        except psutil.NoSuchProcess:
             return None
 
 
