@@ -23,6 +23,9 @@ class OverlayWindow(PyQt5.QtWidgets.QMainWindow):
 
         self.app = app
 
+        # Used to emit the reply from the input from the correct signal
+        self.reply_signal = None
+
         self.setObjectName("OverlayWindow")
         self.resize(1920, 1080)
 
@@ -312,7 +315,7 @@ def main():
     app.setQuitOnLastWindowClosed(False)
 
     desktop = ActorDesktop(app)
-    proxy = ActorDesktopDBusProxy(desktop)
+    ActorDesktopDBusProxy(desktop)
     sys.exit(app.exec_())
 
 if __name__ == "__main__":

@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
 import multiprocessing
-import os
-import subprocess
 import sys
 sys.dont_write_bytecode = True
 

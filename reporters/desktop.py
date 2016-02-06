@@ -13,7 +13,7 @@ class SessionIdleTimeReporter(DBusMixin, Reporter):
     object_path = "/org/freedesktop/ScreenSaver"
 
     def run(self):
-        return (self.interface.GetSessionIdleTime() / 60000.0)
+        return self.interface.GetSessionIdleTime() / 60000.0
 
 
 class SessionLockedReporter(DBusMixin, Reporter):
@@ -41,4 +41,4 @@ class SessionActiveReporter(DBusMixin, Reporter):
     object_path = "/org/freedesktop/ScreenSaver"
 
     def run(self):
-        return (self.interface.GetActiveTime() / 60000.0)
+        return self.interface.GetActiveTime() / 60000.0

@@ -20,13 +20,15 @@ class NoSuchPlugin(Exception):
 class PluginMount(type):
 
     def __init__(cls, name, bases, attrs):
+        super(PluginMount, cls).__init__(name, bases, attrs)
+
         if not hasattr(cls, 'plugins'):
             cls.plugins = []
         else:
             # System generic plugin classes are marked with 'noplugin'
             # attribute. We do not want to mix those with user plugin
             # instances, so let's skip them
-            if not 'noplugin' in cls.__dict__:
+            if 'noplugin' not in cls.__dict__:
                 cls.plugins.append(cls)
 
 
@@ -113,9 +115,9 @@ class Fixer(Worker):
     Performs a custom action on the machine.
     """
 
-    side_effects = True
-
     __metaclass__ = PluginMount
+
+    side_effects = True
 
 
 class ContextProxyMixin(object):
@@ -168,8 +170,10 @@ class DBusMixin(object):
         try:
             self.bus = dbus.SessionBus()
             dbus_object = self.bus.get_object(self.bus_name, self.object_path)
-            self.interface = dbus.Interface(dbus_object,
-                                            self.interface_name or self.bus_name)
+            self.interface = dbus.Interface(
+                dbus_object,
+                self.interface_name or self.bus_name
+            )
         except dbus.exceptions.DBusException:
             self.interface = None
 
@@ -194,7 +198,10 @@ class AsyncEvalMixinBase(object):
 
     def __init__(self, *args, **kwargs):
         super(AsyncEvalMixinBase, self).__init__(*args, **kwargs)
-        self.reset()
+
+        self.running = False
+        self.completed = False
+        self.result = None
 
     def thread_handler(self, *args, **kwargs):
         raise NotImplementedError("This class is not meant to be run directly")

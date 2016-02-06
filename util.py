@@ -6,7 +6,7 @@ import sys
 
 def run(args):
     child = subprocess.Popen(
-        map(str, args),
+        [str(arg) for arg in args],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
@@ -17,7 +17,7 @@ def run(args):
 
 
 def run_async(args):
-    child = subprocess.Popen(map(str, args))
+    child = subprocess.Popen([str(arg) for arg in args])
     return child
 
 
