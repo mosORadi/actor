@@ -29,7 +29,7 @@ class HamsterActivityReporter(DBusMixin, Reporter):
         return activity
 
 
-class HamsterActivityDailyDurationReporter(Reporter):
+class HamsterActivityDailyDurationReporter(DBusMixin, Reporter):
     """
     Reports the cummulative time spent in a particular given activity,
     as tracked by Hamster Time Tracker.
