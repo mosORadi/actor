@@ -274,17 +274,29 @@ class Actor(LoggerMixin):
         self.context.clear_cache()
 
         for rule in self.rules:
-            rule.run()
+            try:
+                rule.run()
+            except Exception as e:
+                self.log_exception(*sys.exc_info())
 
         for tracker in self.trackers:
-            tracker.run()
+            try:
+                tracker.run()
+            except Exception as e:
+                self.log_exception(*sys.exc_info())
 
         # Make sure current activity is respected
         if self.context.activity is not None:
-            self.context.activity.run()
+            try:
+                self.context.activity.run()
+            except Exception as e:
+                self.log_exception(*sys.exc_info())
 
         if self.context.flow is not None:
-            self.context.flow.run()
+            try:
+                self.context.flow.run()
+            except Exception as e:
+                self.log_exception(*sys.exc_info())
 
         return True
 
