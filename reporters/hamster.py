@@ -17,7 +17,10 @@ class HamsterActivityReporter(DBusMixin, Reporter):
     def run(self):
         activity = None
 
-        today_facts = self.interface.GetTodaysFacts()
+        try:
+            today_facts = self.interface.GetTodaysFacts()
+        except Exception:
+            return None
 
         # See to_dbus_fact method in src/hamster-service
         if today_facts:
