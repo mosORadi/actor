@@ -16,6 +16,8 @@ class SetHamsterActivityFixer(DBusMixin, Fixer):
 
     def run(self, activity):
         # pylint: disable=arguments-differ
+        if not self.interface:
+            return
 
         # First, let's detect the current activity to not
         # redefine the same activity over and over
