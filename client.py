@@ -15,6 +15,7 @@ class CLIClient(DBusMixin):
     commands = (
         'activity-start',
         'activity-stop',
+        'activity-next',
         'flow-start',
         'flow-stop',
         'report')
@@ -28,6 +29,11 @@ class CLIClient(DBusMixin):
     def command_activity_stop(self):
         self.interface.UnsetActivity()
         print(u"Activity stopped.")
+
+    @dbus_error_handler
+    def command_activity_next(self):
+        self.interface.NextActivity()
+        print(u"Next activity started.")
 
     @dbus_error_handler
     def command_flow_start(self, identifier):

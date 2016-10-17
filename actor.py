@@ -50,6 +50,10 @@ class ActorDBusProxy(dbus.service.Object):
     def UnsetActivity(self):
         self.actor.unset_activity()
 
+    @dbus.service.method("org.freedesktop.Actor", in_signature='')
+    def NextActivity(self):
+        self.actor.next_activity()
+
     @dbus.service.method("org.freedesktop.Actor", in_signature='s')
     def SetFlow(self, activity):
         self.actor.set_flow(activity)
@@ -225,6 +229,17 @@ class Actor(LoggerMixin):
             self.context.activity = None
         else:
             self.info("Activity cannot be unset, flow in progress.")
+
+    def next_activity(self):
+        """
+        Starts the next activity in the current flow.
+        """
+
+        self.info("Force forwarding to next activity.")
+        if self.context.flow is not None:
+            self.context.flow.start_next_activity()
+        else:
+            self.error("Next activity cannot be started, no flow in progress.")
 
     def set_flow(self, identifier):
         """
