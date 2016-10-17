@@ -166,7 +166,9 @@ class DBusMixin(object):
 
     def __init__(self, *args, **kwargs):
         super(DBusMixin, self).__init__(*args, **kwargs)
+        self.initialize_interface()
 
+    def initialize_interface(self):
         try:
             self.bus = dbus.SessionBus()
             dbus_object = self.bus.get_object(self.bus_name, self.object_path)
