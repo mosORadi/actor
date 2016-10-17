@@ -48,7 +48,8 @@ WHITELISTED_TITLES = tuple()
 
 # The following commands are terminal emulators being used
 
-TERMINAL_EMULATORS = ('konsole', 'xterm', 'guake', 'gnome-terminal')
+TERMINAL_EMULATORS = ('konsole', 'xterm', 'guake', 'gnome-terminal',
+                      'xfce4-terminal')
 
 # Sleep hash is used to temporarily suspend Actor.
 
