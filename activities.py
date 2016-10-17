@@ -204,14 +204,18 @@ class Flow(ContextProxyMixin, Plugin):
         self.actor.unset_activity(force=True)
         self.current_activity_start = None
 
+    def start_next_activity(self):
+        self.end()
+
+        if self.next_activity is not None:
+            self.current_activity_index += 1
+            self.start(self.current_activity)
+        else:
+            self.actor.unset_flow()
+
     def run(self):
         if self.current_activity_index is None:
             self.current_activity_index = 0
             self.start(self.current_activity)
-        elif self.current_activity_expired and self.next_activity is not None:
-            self.end()
-            self.current_activity_index += 1
-            self.start(self.current_activity)
-        elif self.current_activity_expired and self.next_activity is None:
-            self.end()
-            self.actor.unset_flow()
+        elif self.current_activity_expired:
+            self.start_next_activity()
