@@ -4,6 +4,20 @@ import subprocess
 import sys
 
 
+class Periodic(object):
+    def __init__(self, seconds):
+        self.period = datetime.timedelta(seconds=seconds)
+        self.last_execution = datetime.datetime.fromtimestamp(0)
+
+    def __nonzero__(self):
+        now = datetime.datetime.now()
+        if now - self.period >= self.last_execution:
+            self.last_execution = now
+            return True
+        else:
+            return False
+
+
 def run(args):
     child = subprocess.Popen(
         [str(arg) for arg in args],

@@ -1,4 +1,6 @@
+import datetime
 from plugins import Fixer, DBusMixin
+from util import Periodic
 
 
 class NotifyFixer(DBusMixin, Fixer):
@@ -23,12 +25,14 @@ class NotifyFixer(DBusMixin, Fixer):
         super(NotifyFixer, self).__init__(context)
 
         self.last_notification = 0
+        self.timer = Periodic(30)
 
     def run(self, message, headline="Actor Alert!",
             app_name="Actor", app_icon='', timeout=0):
         # pylint: disable=arguments-differ
-
-        replaces_id = self.last_notification
-        self.last_notification = self.interface.Notify(app_name, replaces_id, app_icon,
-                                                       headline, message, [], {},
-                                                       timeout)
+        if self.timer:
+            replaces_id = self.last_notification
+            self.last_notification = self.interface.Notify(
+                app_name, replaces_id, app_icon,
+                headline, message, [], {}, timeout
+            )
