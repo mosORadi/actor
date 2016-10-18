@@ -1,4 +1,2 @@
-# pygobject, install via package manager
-PyYAML
 psutil
 tasklib

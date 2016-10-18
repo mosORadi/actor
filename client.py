@@ -18,6 +18,7 @@ class CLIClient(DBusMixin):
         'activity-next',
         'flow-start',
         'flow-stop',
+        'pause',
         'report')
 
     @dbus_error_handler
@@ -49,6 +50,11 @@ class CLIClient(DBusMixin):
     def command_report(self, identifier):
         result = self.interface.Report(identifier)
         print(u"{0}: {1}".format(identifier, result))
+
+    @dbus_error_handler
+    def command_pause(self, minutes):
+        self.interface.Pause(int(minutes))
+        print(u"Actor paused for {0} minutes.".format(minutes))
 
     def process_args(self):
         parser = argparse.ArgumentParser("CLI interface to Actor daemon")

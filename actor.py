@@ -2,6 +2,7 @@
 
 import os
 import sys
+import datetime
 import logging
 import hashlib
 import traceback
@@ -54,6 +55,10 @@ class ActorDBusProxy(dbus.service.Object):
     def NextActivity(self):
         self.actor.next_activity()
 
+    @dbus.service.method("org.freedesktop.Actor", in_signature='i')
+    def Pause(self, minutes):
+        self.actor.pause(minutes)
+
     @dbus.service.method("org.freedesktop.Actor", in_signature='s')
     def SetFlow(self, activity):
         self.actor.set_flow(activity)
@@ -82,6 +87,8 @@ class Actor(LoggerMixin):
 
         # Load the Actor configuration
         self.load_configuration()
+
+        self.pause_until = None
 
     # Logging related methods
 
@@ -264,6 +271,10 @@ class Actor(LoggerMixin):
         self.context.flow = None
         self.unset_activity()
 
+    def pause(self, minutes):
+        self.pause_until = datetime.datetime.now() + datetime.timedelta(minutes=minutes)
+        self.info('Pausing Actor for {0} minutes.'.format(minutes))
+
     # Runtime related methods
 
     def check_sleep_file(self):
@@ -284,6 +295,12 @@ class Actor(LoggerMixin):
         if self.check_sleep_file():
             self.warning('Sleep file exists, skipping.')
             return True
+
+        if self.pause_until and datetime.datetime.now() < self.pause_until:
+            return True
+        elif self.pause_until is not None:
+            self.info('Actor is resumed.')
+            self.pause_until = None
 
         # Clear the cached values
         self.context.clear_cache()
