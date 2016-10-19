@@ -17,6 +17,7 @@ import dbus.mainloop.glib
 from context import Context
 from plugins import Rule
 from trackers import Tracker
+from util import Expiration
 
 from config import CONFIG_DIR, HOME_DIR
 from config import (SLEEP_HASH, LOGGING_TARGET,
@@ -88,7 +89,7 @@ class Actor(LoggerMixin):
         # Load the Actor configuration
         self.load_configuration()
 
-        self.pause_until = None
+        self.pause_expired = Expiration()
 
     # Logging related methods
 
@@ -272,7 +273,7 @@ class Actor(LoggerMixin):
         self.unset_activity()
 
     def pause(self, minutes):
-        self.pause_until = datetime.datetime.now() + datetime.timedelta(minutes=minutes)
+        self.pause_expired = Expiration(minutes)
         self.info('Pausing Actor for {0} minutes.'.format(minutes))
 
     # Runtime related methods
@@ -296,11 +297,10 @@ class Actor(LoggerMixin):
             self.warning('Sleep file exists, skipping.')
             return True
 
-        if self.pause_until and datetime.datetime.now() < self.pause_until:
+        if not self.pause_expired:
             return True
-        elif self.pause_until is not None:
+        elif self.pause_expired.just_expired():
             self.info('Actor is resumed.')
-            self.pause_until = None
 
         # Clear the cached values
         self.context.clear_cache()
