@@ -24,6 +24,22 @@ class Periodic(object):
             return False
 
 
+class Expiration(object):
+    """
+    A helper class to abstract away handling of expiring time intervals.
+
+    Returns False until 'minutes' have passed since its initialization.
+    """
+
+    def __init__(self, minutes):
+        self.interval = datetime.timedelta(minutes=minutes)
+        self.expiration_point = datetime.datetime.now() + self.interval
+
+    def __nonzero__(self):
+        now = datetime.datetime.now()
+        return now >= self.expiration_point
+
+
 def run(args):
     child = subprocess.Popen(
         [str(arg) for arg in args],
