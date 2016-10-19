@@ -5,6 +5,12 @@ import sys
 
 
 class Periodic(object):
+    """
+    A helper class to abstract away handling of periodic time intervals.
+
+    Returns True once after every 'seconds' seconds.
+    """
+
     def __init__(self, seconds):
         self.period = datetime.timedelta(seconds=seconds)
         self.last_execution = datetime.datetime.fromtimestamp(0)
