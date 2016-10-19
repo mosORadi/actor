@@ -34,10 +34,23 @@ class Expiration(object):
     def __init__(self, minutes):
         self.interval = datetime.timedelta(minutes=minutes)
         self.expiration_point = datetime.datetime.now() + self.interval
+        self.expiration_notified = False
 
     def __nonzero__(self):
         now = datetime.datetime.now()
         return now >= self.expiration_point
+
+    def just_expired(self):
+        """
+        Returns True if called the first time after the object has expired.
+        """
+
+        if self and not self.expiration_notified:
+            self.expiration_notified = True
+            return True
+        else:
+            return False
+
 
 
 def run(args):
