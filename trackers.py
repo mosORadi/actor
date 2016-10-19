@@ -1,6 +1,7 @@
 import datetime
 
 from plugins import Plugin, PluginMount
+from util import Periodic
 
 
 class Tracker(Plugin):
@@ -96,17 +97,15 @@ class IntervalTracker(Tracker):
 
     def __init__(self, *args, **kwargs):
         super(IntervalTracker, self).__init__(*args, **kwargs)
-        self.last_recorded = datetime.datetime.now()
 
         if not isinstance(self.interval, int) or self.interval < 1:
             raise ValueError("Interval needs to be a positive integer")
 
+        self.interval_expired = Periodic(self.interval)
+
     @property
     def obtainable(self):
-        threshold = self.last_recorded + \
-            datetime.timedelta(minutes=self.interval)
-
-        return datetime.datetime.now() > threshold
+        return bool(self.interval_expired)
 
     @property
     def key(self):
@@ -126,5 +125,5 @@ class IntervalTracker(Tracker):
                 value=self.process_value(value)
             )
 
-            self.last_recorded = datetime.datetime.now()
+            self.interval_expired.start_new_interval()
             self.prompt.reset()
