@@ -9,19 +9,30 @@ class Periodic(object):
     A helper class to abstract away handling of periodic time intervals.
 
     Returns True once after every 'seconds' seconds.
+
+    If automatic_intervals is set to True, new interval starts immediately
+    after the object has been evaluated to True. Otherwise the new interval
+    starts manually by calling start_new_interval() method.
     """
 
-    def __init__(self, seconds):
+    def __init__(self, seconds, automatic_intervals=True):
         self.period = datetime.timedelta(seconds=seconds)
         self.last_execution = datetime.datetime.fromtimestamp(0)
+        self.automatic = automatic_intervals
 
     def __nonzero__(self):
         now = datetime.datetime.now()
         if now - self.period >= self.last_execution:
-            self.last_execution = now
+            # Mark the start of a new interval if automatic intervals are
+            # desired
+            if self.automatic:
+                self.last_execution = now
             return True
         else:
             return False
+
+    def start_new_interval(self):
+        self.last_execution = datetime.datetime.now()
 
 
 class Expiration(object):
