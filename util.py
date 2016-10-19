@@ -31,7 +31,7 @@ class Expiration(object):
     Returns False until 'minutes' have passed since its initialization.
     """
 
-    def __init__(self, minutes):
+    def __init__(self, minutes=0):
         self.interval = datetime.timedelta(minutes=minutes)
         self.expiration_point = datetime.datetime.now() + self.interval
         self.expiration_notified = False
@@ -44,6 +44,10 @@ class Expiration(object):
         """
         Returns True if called the first time after the object has expired.
         """
+
+        # Do not consider empty intervals as worthy of expiration notification
+        if not self.interval:
+            return False
 
         if self and not self.expiration_notified:
             self.expiration_notified = True
