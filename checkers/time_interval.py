@@ -28,5 +28,5 @@ class TimeIntervalChecker(Checker):
         time = self.report('time')
         time_shifted = time + datetime.timedelta(days=1)
 
-        return any([start <= time and time < end,
-                    start <= time_shifted and time_shifted < end])
+        return any([start <= time < end,
+                    start <= time_shifted < end])
