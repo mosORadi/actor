@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import sys
+import time
 import dbus
 import dbus.service
 import dbus.mainloop.pyqt5
@@ -141,8 +142,14 @@ class OverlayWindow(PyQt5.QtWidgets.QMainWindow):
         if event.type() == PyQt5.QtCore.QEvent.Close and event.spontaneous():
             event.ignore()
             return True  # Signalize that event was processed
-        else:
-            return super(OverlayWindow, self).event(event)
+        elif event.type() == PyQt5.QtCore.QEvent.Leave:
+            # If despite our best efforts with flags the window has been
+            # deactivated, raise on the top again
+            time.sleep(0.05)
+            self.raise_()
+            event.ignore()
+            return True
+        return super(OverlayWindow, self).event(event)
 
 
 class AsyncPromptThreadBase(PyQt5.QtCore.QThread):
