@@ -6,6 +6,10 @@ import config
 import util
 from plugins import Plugin, PluginMount, ContextProxyMixin
 
+# Define own our commands so that we don't kill ourselves under
+# any circumstances
+ACTOR_COMMANDS = ('actor', 'actor-desktop')
+
 
 class Activity(ContextProxyMixin, Plugin):
 
@@ -50,6 +54,7 @@ class Activity(ContextProxyMixin, Plugin):
         # the allowed values from the class with the global values from the
         # settings
         self.whitelisted_commands = (self.whitelisted_commands +
+                                     ACTOR_COMMANDS +
                                      config.WHITELISTED_COMMANDS)
 
         self.whitelisted_titles = (self.whitelisted_titles +
