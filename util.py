@@ -8,15 +8,15 @@ class Periodic(object):
     """
     A helper class to abstract away handling of periodic time intervals.
 
-    Returns True once after every 'seconds' seconds.
+    Returns True once after every 'minutes' minutes.
 
     If automatic_intervals is set to True, new interval starts immediately
     after the object has been evaluated to True. Otherwise the new interval
     starts manually by calling start_new_interval() method.
     """
 
-    def __init__(self, seconds, automatic_intervals=True):
-        self.period = datetime.timedelta(seconds=seconds)
+    def __init__(self, minutes, automatic_intervals=True):
+        self.period = datetime.timedelta(minutes=minutes)
         self.last_execution = datetime.datetime.fromtimestamp(0)
         self.automatic = automatic_intervals
 

@@ -26,7 +26,7 @@ class NotifyFixer(DBusMixin, Fixer):
         super(NotifyFixer, self).__init__(context)
 
         self.last_notification = 0
-        self.timer = Periodic(30)
+        self.timer = Periodic(0.5)
 
     def run(self, message, headline="Actor Alert!",
             app_name="Actor", app_icon='', timeout=0):
