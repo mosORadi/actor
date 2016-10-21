@@ -36,6 +36,25 @@ class SetHamsterActivityFixer(DBusMixin, Fixer):
             self.interface.AddFact(activity, 0, 0, False)
 
 
+class StopHamsterActivityFixer(DBusMixin, Fixer):
+    """
+    Simple fixer that stops current activity in Hamster.
+    """
+
+    identifier = "stop_hamster_activity"
+
+    bus_name = 'org.gnome.Hamster'
+    object_path = '/org/gnome/Hamster'
+
+    def run(self, activity):
+        # pylint: disable=arguments-differ
+        if not self.interface:
+            return
+
+        # Zero stands for now
+        self.interface.StopTracking(0)
+
+
 class SetTimewActivityFixer(Fixer):
     """
     Simple fixer, that sets current activity in Timewarrior.
