@@ -20,8 +20,7 @@ from trackers import Tracker
 from util import Expiration
 
 from config import CONFIG_DIR, HOME_DIR
-from config import (SLEEP_HASH, LOGGING_TARGET,
-                    LOGGING_FILE, LOGGING_TIMESTAMP)
+from config import LOGGING_TARGET, LOGGING_FILE, LOGGING_TIMESTAMP
 from logger import LoggerMixin
 
 
@@ -278,25 +277,7 @@ class Actor(LoggerMixin):
 
     # Runtime related methods
 
-    def check_sleep_file(self):
-        """
-        You can create one sleep file in your home directory.
-        It immediately suspends AcTor.
-        """
-
-        sleep_file_path = os.path.join(HOME_DIR, 'actor-sleep')
-        if os.path.exists(sleep_file_path):
-            with open(sleep_file_path, 'r') as input_file:
-                content = input_file.readlines()[0].strip()
-                content_hash = hashlib.sha1(content).hexdigest()
-
-            return content_hash == SLEEP_HASH
-
     def check_everything(self):
-        if self.check_sleep_file():
-            self.warning('Sleep file exists, skipping.')
-            return True
-
         if not self.pause_expired:
             return True
         elif self.pause_expired.just_expired():

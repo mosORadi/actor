@@ -50,37 +50,3 @@ WHITELISTED_TITLES = tuple()
 
 TERMINAL_EMULATORS = ('konsole', 'xterm', 'guake', 'gnome-terminal',
                       'xfce4-terminal')
-
-# Sleep hash is used to temporarily suspend Actor.
-
-# To set the correct Sleep hash, do the following
-
-# 1.) Make up a sleep phrase. This is a sentence you need to write
-#     to the ~/actor~sleep file in your home directory. Ideally,
-#     this will be something you commit to memory and know by heart,
-#     and will disencourage you from cheating. For example, any
-#     promise to your self that you will not procrastinate and you
-#     will use this bypass option only in need.
-
-# 2.) Generate the hash from your sleep phrase. Just write your sleep
-#     phrase into the ~/actor-sleep file and run the function
-#     generate_hash below
-
-# 3.) Hardcode the hash printed here.
-
-# 4.) Remove the ~/actor-sleep file so that you have to retype the
-#     secret phrase again.
-
-SLEEP_HASH = 'your-sleep-hashphrase-sha1-hash'
-
-# import os
-# import hashlib
-#
-# def generate_hash():
-#     HOME_DIR = os.path.expanduser("~")
-#     sleep_file_path = os.path.join(HOME_DIR, 'actor-sleep')
-#     if os.path.exists(sleep_file_path):
-#         with open(sleep_file_path, 'r') as f:
-#             content = f.readlines()[0].strip()
-#             content_hash = hashlib.sha1(content).hexdigest()
-#             return content_hash
