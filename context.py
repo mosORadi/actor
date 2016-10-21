@@ -1,6 +1,7 @@
-from plugins import (Reporter, Checker, Fixer, NoSuchPlugin
+from plugins import (Reporter, Checker, Fixer, NoSuchPlugin,
                      PluginCache, PluginFactory)
 from activities import Activity, Flow
+from timetracking import Timetracking
 
 
 class Context(object):
@@ -28,6 +29,8 @@ class Context(object):
 
         self.activities = PluginFactory(Activity, self)
         self.flows = PluginFactory(Flow, self)
+
+        self.timetracking = Timetracking(self)
 
     def clear_cache(self):
         """

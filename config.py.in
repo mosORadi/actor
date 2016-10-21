@@ -50,3 +50,6 @@ WHITELISTED_TITLES = tuple()
 
 TERMINAL_EMULATORS = ('konsole', 'xterm', 'guake', 'gnome-terminal',
                       'xfce4-terminal')
+
+# The timetracking interface you wish to use
+TIMETRACKER = 'timewarrior'
