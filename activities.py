@@ -25,7 +25,7 @@ class Activity(ContextProxyMixin, Plugin):
     notification_timeout = 30000
     notification_headline = "Actor"
 
-    hamster_activity = None
+    timetracking_id = None
 
     def __init__(self, *args, **kwargs):
         super(Activity, self).__init__(*args, **kwargs)
@@ -46,9 +46,9 @@ class Activity(ContextProxyMixin, Plugin):
                      headline=self.notification_headline)
 
         # Setup the current activity in the Hamster Time Tracker
-        if self.hamster_activity:
-            self.info("Setting the activity: %s" % self.hamster_activity)
-            self.fix('set_hamster_activity', activity=self.hamster_activity)
+        if self.timetracking_id:
+            self.info("Setting the activity: %s" % self.timetracking_id)
+            self.tracking.start(self.timetracking_id)
 
         # Get the list of all allowed commands / titles by joining
         # the allowed values from the class with the global values from the
@@ -133,9 +133,9 @@ class AfkTrackedActivity(Activity):
 
     def setup(self):
         # Setup the current activity in the Hamster Time Tracker
-        if self.hamster_activity:
-            self.info("Setting the activity: %s" % self.hamster_activity)
-            self.fix('set_hamster_activity', activity=self.hamster_activity)
+        if self.timetracking_id:
+            self.info("Setting the activity: %s" % self.timetracking_id)
+            self.tracking.start(self.timetracking_id)
 
         self.overlay = self.factory_fix('overlay')
 
