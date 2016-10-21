@@ -16,8 +16,10 @@ class CLIClient(DBusMixin):
         'activity-start',
         'activity-stop',
         'activity-next',
+        'activity-status',
         'flow-start',
         'flow-stop',
+        'flow-status',
         'pause',
         'report')
 
@@ -37,9 +39,19 @@ class CLIClient(DBusMixin):
         print(u"Next activity started.")
 
     @dbus_error_handler
+    def command_activity_status(self):
+        print(self.interface.ActivityStatus())
+
+    @dbus_error_handler
     def command_flow_start(self, identifier):
         self.interface.SetFlow(identifier)
         print(u"Flow %s started." % identifier)
+
+    @dbus_error_handler
+    def command_flow_status(self):
+        status_data = self.interface.FlowStatus()
+        print(u"Flow '{0}' active, enforcing '{1}' activity "
+               .format(*status_data))
 
     @dbus_error_handler
     def command_flow_stop(self):

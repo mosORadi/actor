@@ -55,6 +55,10 @@ class ActorDBusProxy(dbus.service.Object):
     def NextActivity(self):
         self.actor.next_activity()
 
+    @dbus.service.method("org.freedesktop.Actor", in_signature='')
+    def ActivityStatus(self):
+        return self.actor.context.activity.identifier
+
     @dbus.service.method("org.freedesktop.Actor", in_signature='i')
     def Pause(self, minutes):
         self.actor.pause(minutes)
@@ -66,6 +70,13 @@ class ActorDBusProxy(dbus.service.Object):
     @dbus.service.method("org.freedesktop.Actor", in_signature='')
     def UnsetFlow(self):
         self.actor.unset_flow()
+
+    @dbus.service.method("org.freedesktop.Actor", in_signature='')
+    def FlowStatus(self):
+        flow = self.actor.context.flow.identifier
+        activity = self.actor.context.activity.identifier
+        remaining = self.actor.context.flow.identifier
+        return self.actor.context.flow.identifier, self.actor.context.activity.identifier
 
     @dbus.service.method("org.freedesktop.Actor", in_signature='s')
     def Report(self, identifier):
