@@ -48,7 +48,7 @@ class Activity(ContextProxyMixin, Plugin):
         # Setup the current activity in the Hamster Time Tracker
         if self.timetracking_id:
             self.info("Setting the activity: %s" % self.timetracking_id)
-            self.tracking.start(self.timetracking_id)
+            self.timetracking.start(self.timetracking_id)
 
         # Get the list of all allowed commands / titles by joining
         # the allowed values from the class with the global values from the
@@ -135,7 +135,7 @@ class AfkActivity(Activity):
         # Setup the current activity in the Hamster Time Tracker
         if self.timetracking_id:
             self.info("Setting the activity: %s" % self.timetracking_id)
-            self.tracking.start(self.timetracking_id)
+            self.timetracking.start(self.timetracking_id)
 
         self.overlay = self.factory_fix('overlay')
 
@@ -165,7 +165,7 @@ class AfkTrackedActivity(Activity):
         # Setup the current activity in the Hamster Time Tracker
         if self.timetracking_id:
             self.info("Setting the activity: %s" % self.timetracking_id)
-            self.tracking.start(self.timetracking_id)
+            self.timetracking.start(self.timetracking_id)
 
         self.overlay = self.factory_fix('overlay')
 
