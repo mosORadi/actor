@@ -121,6 +121,36 @@ class Activity(ContextProxyMixin, Plugin):
                         pass
 
 
+class AfkActivity(Activity):
+    """
+    Implements a non-tracked activity that should occur away from
+    keyboard. Desktop is blocked using a overlay window.
+    """
+
+    noplugin = True
+    header = None
+    message = None
+
+    def setup(self):
+        # Setup the current activity in the Hamster Time Tracker
+        if self.timetracking_id:
+            self.info("Setting the activity: %s" % self.timetracking_id)
+            self.tracking.start(self.timetracking_id)
+
+        self.overlay = self.factory_fix('overlay')
+
+    def run(self):
+        value = self.overlay.evaluate(message=self.message, header=self.header)
+
+        if value is None:
+            return
+
+        self.overlay.reset()
+
+        # TODO: Handle activity teardown more gracefully
+        self.context.activity = None
+
+
 class AfkTrackedActivity(Activity):
     """
     Implements a input-terminated activity that should occur away from
