@@ -6,7 +6,7 @@ from plugins import Fixer, DBusMixin
 
 class SetHamsterActivityFixer(DBusMixin, Fixer):
     """
-    Simple fixer, that sets current activity in Hamster.
+    Simple fixer that sets current activity in Hamster.
 
     Accepted options (defaults in parentheses):
       - activity: Activity string as put in the Hamster (activity@Sample)
