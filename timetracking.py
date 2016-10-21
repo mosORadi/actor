@@ -13,7 +13,7 @@ class Timetracking(object):
         factory = PluginFactory(Timetracker, context)
         self.timetracker = factory.make(config.TIMETRACKER)
 
-    def start(self, activity, category, tags):
+    def start(self, activity, category=None, tags=None):
         self.timetracker.start(activity, category, tags)
 
     def stop(self):
