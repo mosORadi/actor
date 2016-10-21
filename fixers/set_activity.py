@@ -63,7 +63,7 @@ class SetTimewActivityFixer(Fixer):
       - activity: Activity string as put to timewarrior
     """
 
-    identifier = "timew_set"
+    identifier = "set_timew_activity"
 
     def run(self, activity):
         # pylint: disable=arguments-differ
@@ -84,7 +84,7 @@ class StopTimewActivityFixer(Fixer):
     Simple fixer, that stops current activity in Timewarrior.
     """
 
-    identifier = "timew_stop"
+    identifier = "stop_timew_activity"
 
     def run(self):
         # pylint: disable=arguments-differ
