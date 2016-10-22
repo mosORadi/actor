@@ -10,6 +10,7 @@ from plugins import Plugin, PluginMount, ContextProxyMixin
 # any circumstances
 ACTOR_COMMANDS = ('actor', 'actor-desktop')
 
+
 class ActivityTimetrackingMixin(object):
 
     timetracking_id = None
@@ -22,6 +23,7 @@ class ActivityTimetrackingMixin(object):
         if self.timetracking_id:
             self.info("Setting the activity: %s" % self.timetracking_id)
             self.timetracking.start(self.timetracking_id)
+
 
 class ActivityNotificationMixin(object):
 
@@ -38,6 +40,7 @@ class ActivityNotificationMixin(object):
             self.fix('notify', message=self.notification,
                      timeout=self.notification_timeout,
                      headline=self.notification_headline)
+
 
 class ActivityApplicationEnforcementMixin(object):
 
@@ -117,6 +120,7 @@ class ActivityApplicationEnforcementMixin(object):
                         # If process ended in the mean time, ignore it
                         pass
 
+
 class AcitivityStartupCommandsMixin(object):
 
     startup_commands = tuple()
@@ -130,9 +134,78 @@ class AcitivityStartupCommandsMixin(object):
         for command in self.startup_commands:
             util.run_async(command)
 
+
+class ActivityOverlayMixin(object):
+    """
+    Implements a non-tracked activity that should occur away from
+    keyboard. Desktop is blocked using a overlay window.
+    """
+
+    overlay_header = None
+    overlay_message = None
+
+    def active(self):
+        return any([self.overlay_header, self.overlay_message])
+
+    def setup_overlay(self):
+        self.overlay = self.factory_fix('overlay')
+
+    def run_overlay(self):
+        value = self.overlay.evaluate(message=self.overlay_message,
+                                      header=self.overlay_header)
+
+        if value is None:
+            return
+
+        self.overlay.reset()
+
+        # TODO: Handle activity teardown more gracefully
+        self.context.activity = None
+
+
+class ActivityTrackingOverlayMixin(object):
+    """
+    Implements a input-terminated activity that should occur away from
+    keyboard. Desktop is blocked using a overlay window.
+    """
+
+    tracking_overlay_header = None
+    tracking_overlay_message = None
+
+    def active(self):
+        return any([self.tracking_overlay_header,
+                    self.tracking_overlay_message])
+
+    def setup_tracking_overlay(self):
+        self.overlay = self.factory_fix('overlay')
+
+    def run_tracking_overlay(self):
+        value = self.overlay.evaluate(message=self.tracking_overlay_message,
+                                      header=self.tracking_overlay_header)
+
+        if value is None:
+            return
+
+        key = datetime.datetime.now().strftime("%Y-%m-%d")
+
+        self.fix(
+            'track',
+            ident=self.identifier,
+            key=key,
+            value=value
+        )
+
+        self.overlay.reset()
+
+        # TODO: Handle activity teardown more gracefully
+        self.context.activity = None
+
+
 class Activity(ActivityTimetrackingMixin,
                ActivityNotificationMixin,
                ActivityApplicationEnforcementMixin,
+               ActivityOverlayMixin,
+               ActivityTrackingOverlayMixin,
                ContextProxyMixin, Plugin):
 
     __metaclass__ = PluginMount
@@ -168,77 +241,6 @@ class Activity(ActivityTimetrackingMixin,
         # Execute all the run methods
         for run_method in self.run_methods:
             run_method()
-
-
-class AfkActivity(Activity):
-    """
-    Implements a non-tracked activity that should occur away from
-    keyboard. Desktop is blocked using a overlay window.
-    """
-
-    noplugin = True
-    header = None
-    message = None
-
-    def setup(self):
-        # Setup the current activity in the Hamster Time Tracker
-        if self.timetracking_id:
-            self.info("Setting the activity: %s" % self.timetracking_id)
-            self.timetracking.start(self.timetracking_id)
-
-        self.overlay = self.factory_fix('overlay')
-
-    def run(self):
-        value = self.overlay.evaluate(message=self.message, header=self.header)
-
-        if value is None:
-            return
-
-        self.overlay.reset()
-
-        # TODO: Handle activity teardown more gracefully
-        self.context.activity = None
-
-
-class AfkTrackedActivity(Activity):
-    """
-    Implements a input-terminated activity that should occur away from
-    keyboard. Desktop is blocked using a overlay window.
-    """
-
-    noplugin = True
-    header = None
-    message = None
-
-    def setup(self):
-        # Setup the current activity in the Hamster Time Tracker
-        if self.timetracking_id:
-            self.info("Setting the activity: %s" % self.timetracking_id)
-            self.timetracking.start(self.timetracking_id)
-
-        self.overlay = self.factory_fix('overlay')
-
-    @property
-    def key(self):
-        return datetime.datetime.now().strftime("%Y-%m-%d")
-
-    def run(self):
-        value = self.overlay.evaluate(message=self.message, header=self.header)
-
-        if value is None:
-            return
-
-        self.fix(
-            'track',
-            ident=self.identifier,
-            key=self.key,
-            value=value
-        )
-
-        self.overlay.reset()
-
-        # TODO: Handle activity teardown more gracefully
-        self.context.activity = None
 
 
 class Flow(ContextProxyMixin, Plugin):
