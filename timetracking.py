@@ -30,10 +30,10 @@ class HamsterTimetracker(Timetracker):
     identifier = 'hamster'
 
     def start(self, activity, category, tags):
-        self.context.fix('set_hamster_activity', activity=activity)
+        self.fix('set_hamster_activity', activity=activity)
 
     def stop(self):
-        self.context.fix('stop_hamster_activity')
+        self.fix('stop_hamster_activity')
 
 
 class TimewarriorTimetracker(Timetracker):
@@ -41,7 +41,7 @@ class TimewarriorTimetracker(Timetracker):
     identifier = 'timewarrior'
 
     def start(self, activity, category, tags):
-        self.context.fix('set_timew_activity', activity=activity)
+        self.fix('set_timew_activity', activity=activity)
 
     def stop(self):
-        self.context.fix('stop_timew_activity')
+        self.fix('stop_timew_activity')
