@@ -18,7 +18,7 @@ class ActivityTimetrackingMixin(object):
     def active(self):
         return self.timetracking_id is not None
 
-    def setup_timetracking(self):
+    def setup(self):
         # Setup the current activity in the Hamster Time Tracker
         if self.timetracking_id:
             self.info("Setting the activity: %s" % self.timetracking_id)
@@ -34,7 +34,7 @@ class ActivityNotificationMixin(object):
     def active(self):
         return self.notification is not None
 
-    def setup_notification(self):
+    def setup(self):
         # Issue a setup notification
         if self.notification:
             self.fix('notify', message=self.notification,
@@ -53,7 +53,7 @@ class ActivityApplicationEnforcementMixin(object):
                     self.whitelisted_commands,
                     self.whitelisted_titles])
 
-    def setup_application_enforcement(self):
+    def setup(self):
         # Get the list of all allowed commands / titles by joining
         # the allowed values from the class with the global values from the
         # settings
@@ -64,7 +64,7 @@ class ActivityApplicationEnforcementMixin(object):
         self.whitelisted_titles = (self.whitelisted_titles +
                                    config.WHITELISTED_TITLES)
 
-    def run_application_efnrocement(self):
+    def run(self):
         """
         Performs the periodic activity validation.
         - Enforces the allowed applications.
@@ -128,7 +128,7 @@ class AcitivityStartupCommandsMixin(object):
     def active(self):
         return self.startup_commands is not None
 
-    def setup_startup_commands(self):
+    def setup(self):
 
         # Execute the startup commands
         for command in self.startup_commands:
@@ -147,10 +147,10 @@ class ActivityOverlayMixin(object):
     def active(self):
         return any([self.overlay_header, self.overlay_message])
 
-    def setup_overlay(self):
+    def setup(self):
         self.overlay = self.factory_fix('overlay')
 
-    def run_overlay(self):
+    def run(self):
         value = self.overlay.evaluate(message=self.overlay_message,
                                       header=self.overlay_header)
 
@@ -176,10 +176,10 @@ class ActivityTrackingOverlayMixin(object):
         return any([self.tracking_overlay_header,
                     self.tracking_overlay_message])
 
-    def setup_tracking_overlay(self):
+    def setup(self):
         self.overlay = self.factory_fix('overlay')
 
-    def run_tracking_overlay(self):
+    def run(self):
         value = self.overlay.evaluate(message=self.tracking_overlay_message,
                                       header=self.tracking_overlay_header)
 
@@ -222,12 +222,10 @@ class Activity(ActivityTimetrackingMixin,
                          if 'active' in dir(cls) and cls.active(self)]
 
         # Collect the setup and run methods of the active mixins
-        for cls in active_mixins:
-            self.setup_methods += [getattr(self, method) for method in dir(cls)
-                                   if method.startswith('setup_')]
-            self.run_methods += [getattr(self, method) for method in dir(cls)
-                                 if method.startswith('run_')]
-
+        self.setup_methods = [cls.setup for cls in active_mixins
+                              if getattr(cls, 'setup', None) is not None]
+        self.run_methods = [cls.run for cls in active_mixins
+                            if getattr(cls, 'run', None) is not None]
 
         # Run initial setup for the activity
         self.setup()
@@ -235,12 +233,12 @@ class Activity(ActivityTimetrackingMixin,
     def setup(self):
         # Perform actual setup
         for setup_method in self.setup_methods:
-            setup_method()
+            setup_method(self)
 
     def run(self):
         # Execute all the run methods
         for run_method in self.run_methods:
-            run_method()
+            run_method(self)
 
 
 class Flow(ContextProxyMixin, Plugin):
