@@ -14,6 +14,9 @@ class ActivityTimetrackingMixin(object):
 
     timetracking_id = None
 
+    def active(self):
+        return self.timetracking_id is not None
+
     def setup_timetracking(self):
         # Setup the current activity in the Hamster Time Tracker
         if self.timetracking_id:
@@ -25,6 +28,9 @@ class ActivityNotificationMixin(object):
     notification = None
     notification_timeout = 30000
     notification_headline = "Actor"
+
+    def active(self):
+        return self.notification is not None
 
     def setup_notification(self):
         # Issue a setup notification
@@ -38,6 +44,11 @@ class ActivityApplicationEnforcementMixin(object):
     blacklisted_commands = tuple()
     whitelisted_commands = tuple()
     whitelisted_titles = tuple()
+
+    def active(self):
+        return any([self.blacklisted_commands,
+                    self.whitelisted_commands,
+                    self.whitelisted_titles])
 
     def setup_application_enforcement(self):
         # Get the list of all allowed commands / titles by joining
@@ -110,6 +121,9 @@ class AcitivityStartupCommandsMixin(object):
 
     startup_commands = tuple()
 
+    def active(self):
+        return self.startup_commands is not None
+
     def setup_startup_commands(self):
 
         # Execute the startup commands
@@ -129,8 +143,13 @@ class Activity(ActivityTimetrackingMixin,
         self.setup_methods = []
         self.run_methods = []
 
-        # Collect the setup and run methods in the order of the base classes
-        for cls in Activity.__bases__:
+        # Determine which mixins are active according to attributes
+        # set on this class by the user
+        active_mixins = [cls for cls in Activity.__bases__
+                         if 'active' in dir(cls) and cls.active(self)]
+
+        # Collect the setup and run methods of the active mixins
+        for cls in active_mixins:
             self.setup_methods += [getattr(self, method) for method in dir(cls)
                                    if method.startswith('setup_')]
             self.run_methods += [getattr(self, method) for method in dir(cls)
