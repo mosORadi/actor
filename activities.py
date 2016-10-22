@@ -10,46 +10,36 @@ from plugins import Plugin, PluginMount, ContextProxyMixin
 # any circumstances
 ACTOR_COMMANDS = ('actor', 'actor-desktop')
 
+class ActivityTimetrackingMixin(object):
 
-class Activity(ContextProxyMixin, Plugin):
+    timetracking_id = None
 
-    __metaclass__ = PluginMount
+    def setup_timetracking(self):
+        # Setup the current activity in the Hamster Time Tracker
+        if self.timetracking_id:
+            self.info("Setting the activity: %s" % self.timetracking_id)
+            self.timetracking.start(self.timetracking_id)
 
-    startup_commands = tuple()
-
-    blacklisted_commands = tuple()
-    whitelisted_commands = tuple()
-    whitelisted_titles = tuple()
+class ActivityNotificationMixin(object):
 
     notification = None
     notification_timeout = 30000
     notification_headline = "Actor"
 
-    timetracking_id = None
-
-    def __init__(self, *args, **kwargs):
-        super(Activity, self).__init__(*args, **kwargs)
-
-        # Run initial setup for the activity
-        self.setup()
-
-    def setup(self):
-        """
-        Performs the tasks related to the activity setup.
-        - Displays the activity instructions.
-        """
-
+    def setup_notification(self):
         # Issue a setup notification
         if self.notification:
             self.fix('notify', message=self.notification,
                      timeout=self.notification_timeout,
                      headline=self.notification_headline)
 
-        # Setup the current activity in the Hamster Time Tracker
-        if self.timetracking_id:
-            self.info("Setting the activity: %s" % self.timetracking_id)
-            self.timetracking.start(self.timetracking_id)
+class ActivityApplicationEnforcementMixin(object):
 
+    blacklisted_commands = tuple()
+    whitelisted_commands = tuple()
+    whitelisted_titles = tuple()
+
+    def setup_application_enforcement(self):
         # Get the list of all allowed commands / titles by joining
         # the allowed values from the class with the global values from the
         # settings
@@ -60,11 +50,7 @@ class Activity(ContextProxyMixin, Plugin):
         self.whitelisted_titles = (self.whitelisted_titles +
                                    config.WHITELISTED_TITLES)
 
-        # Execute the startup commands
-        for command in self.startup_commands:
-            util.run_async(command)
-
-    def run(self):
+    def run_application_efnrocement(self):
         """
         Performs the periodic activity validation.
         - Enforces the allowed applications.
@@ -119,6 +105,50 @@ class Activity(ContextProxyMixin, Plugin):
                     except psutil.NoSuchProcess:
                         # If process ended in the mean time, ignore it
                         pass
+
+class AcitivityStartupCommandsMixin(object):
+
+    startup_commands = tuple()
+
+    def setup_startup_commands(self):
+
+        # Execute the startup commands
+        for command in self.startup_commands:
+            util.run_async(command)
+
+class Activity(ActivityTimetrackingMixin,
+               ActivityNotificationMixin,
+               ActivityApplicationEnforcementMixin,
+               ContextProxyMixin, Plugin):
+
+    __metaclass__ = PluginMount
+
+    def __init__(self, *args, **kwargs):
+        super(Activity, self).__init__(*args, **kwargs)
+
+        self.setup_methods = []
+        self.run_methods = []
+
+        # Collect the setup and run methods in the order of the base classes
+        for cls in Activity.__bases__:
+            self.setup_methods += [getattr(self, method) for method in dir(cls)
+                                   if method.startswith('setup_')]
+            self.run_methods += [getattr(self, method) for method in dir(cls)
+                                 if method.startswith('run_')]
+
+
+        # Run initial setup for the activity
+        self.setup()
+
+    def setup(self):
+        # Perform actual setup
+        for setup_method in self.setup_methods:
+            setup_method()
+
+    def run(self):
+        # Execute all the run methods
+        for run_method in self.run_methods:
+            run_method()
 
 
 class AfkActivity(Activity):
