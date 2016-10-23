@@ -5,7 +5,6 @@ import sys
 import datetime
 import logging
 import hashlib
-import traceback
 import importlib
 import imp
 
@@ -20,7 +19,6 @@ from trackers import Tracker
 from util import Expiration
 
 from config import CONFIG_DIR, HOME_DIR
-from config import LOGGING_TARGET, LOGGING_FILE, LOGGING_TIMESTAMP
 from logger import LoggerMixin
 
 
@@ -129,7 +127,7 @@ class Actor(LoggerMixin):
                     self.warning(
                         "The {0} {1} module could not be loaded: {2} "
                         .format(module, category.__name__[:-1], str(exc)))
-                    self.info(traceback.format_exc())
+                    self.log_exception()
 
     def load_configuration(self):
         # Create the config directory, if it does not exist
@@ -152,7 +150,7 @@ class Actor(LoggerMixin):
                     "Rule file {0} cannot be loaded, following error was "
                     "encountered: {1}".format(path, str(exc))
                 )
-                self.info(traceback.format_exc())
+                self.log_exception()
 
         # pylint: disable=no-member
         for rule_class in Rule.plugins:
