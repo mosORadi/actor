@@ -1,15 +1,17 @@
 from plugins import (Reporter, Checker, Fixer, NoSuchPlugin,
                      PluginCache, PluginFactory)
+from logger import LoggerMixin
 from activities import Activity, Flow
 from timetracking import Timetracking
 
 
-class Context(object):
+class Context(LoggerMixin):
     """
     Object to keep shared state. Provides:
     - Access to plugins via PluginCaches and PluginFactories
     - List of rule and tracker instances
     - Current activity and flow
+    - Timetracking interface
     """
 
     def __init__(self):
@@ -42,3 +44,36 @@ class Context(object):
         self.reporters.cache.clear()
         self.checkers.cache.clear()
         self.fixers.cache.clear()
+
+    def set_activity(self, identifier):
+        """
+        Sets the current activity as given by the identifier.
+        """
+
+        self.info("Setting activity %s", identifier)
+        self.activity = self.activities.make(identifier)
+
+    def unset_activity(self):
+        """
+        Unsets the current activity.
+        """
+
+        self.info("Unsetting activity.")
+        self.activity = None
+
+    def set_flow(self, identifier):
+        """
+        Sets the current flow as given by the identifier.
+        """
+
+        self.info("Setting flow %s" % identifier)
+        self.flow = self.flows.make(identifier)
+
+    def unset_flow(self):
+        """
+        Unsets the current flow.
+        """
+
+        self.info("Unsetting flow.")
+        self.flow = None
+        self.unset_activity()

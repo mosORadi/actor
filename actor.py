@@ -166,25 +166,24 @@ class Actor(LoggerMixin):
 
     # Interface related methods
 
-    def set_activity(self, identifier, force=False):
+    def set_activity(self, identifier):
         """
         Sets the current activity as given by the identifier.
         """
 
-        self.info("Setting activity %s", identifier)
-        if self.context.flow is None or force:
-            self.context.activity = self.context.activities.make(identifier)
+        if self.context.flow is None:
+            self.context.set_activity(identifier)
         else:
-            self.info("Activity cannot be set, flow in progress.")
+            self.info("Activity %s cannot be set, flow in progress."
+                      % identifier)
 
-    def unset_activity(self, force=False):
+    def unset_activity(self):
         """
         Unsets the current activity.
         """
 
-        self.info("Unsetting activity.")
-        if self.context.flow is None or force:
-            self.context.activity = None
+        if self.context.flow is None:
+            self.context.unset_activity()
         else:
             self.info("Activity cannot be unset, flow in progress.")
 
@@ -204,23 +203,17 @@ class Actor(LoggerMixin):
         Sets the current flow as given by the identifier.
         """
 
-        self.info("Setting flow %s" % identifier)
         if self.context.flow is None:
-            self.context.flow = self.context.flows.make(
-                identifier,
-                args=(self,)
-            )
+            self.context.set_flow(identifier)
         else:
-            self.info("Flow already in progress")
+            self.info("Cannot set flow %s. flow already in progress" % identifier)
 
     def unset_flow(self):
         """
         Unsets the current flow.
         """
 
-        self.info("Unsetting flow.")
-        self.context.flow = None
-        self.unset_activity()
+        self.context.unset_flow()
 
     def pause(self, minutes):
         self.pause_expired = Expiration(minutes)
