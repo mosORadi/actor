@@ -101,74 +101,14 @@ class Actor(LoggerMixin):
 
         self.pause_expired = Expiration()
 
-    # Logging related methods
-
-    @staticmethod
-    def log_exception(exception_type, value, trace):
-        root_logger = logging.getLogger('main')
+    def handle_exception(self):
+        exception_type, value, trace = sys.exc_info()
 
         if exception_type == KeyboardInterrupt:
-            root_logger.error("Actor was interrupted.")
+            self.error("Actor was interrupted.")
             sys.exit(0)
-
-        root_logger.error("Exception: %s", exception_type)
-        root_logger.error("Value: %s", value)
-        root_logger.error("Traceback (on a new line):\n%s",
-                          "\n".join(traceback.format_tb(trace)))
-
-    @staticmethod
-    def setup_logging(level='info'):
-        # Setup Actor logging
-        level_map = {
-            'debug': logging.DEBUG,
-            'info': logging.INFO,
-            'warning': logging.WARNING,
-            'error': logging.ERROR,
-            'critical': logging.CRITICAL,
-        }
-
-        logging_level = level_map.get(level)
-
-        log_default_level_warning = False
-
-        if logging_level is None:
-            logging_level = logging.INFO
-            log_default_level_warning = True
-
-        # Setup main logger
-        root_logger = logging.getLogger('main')
-        root_logger.setLevel(logging.DEBUG)
-
-        # Define logging format
-        timeformat = '%(asctime)s:' if LOGGING_TIMESTAMP else ''
-        formatter = logging.Formatter(
-            timeformat + ' %(levelname)s: %(message)s',
-            datefmt='%m/%d/%Y %I:%M:%S %p',
-        )
-
-        # Define default handlers
-        stream_handler = logging.StreamHandler()
-        stream_handler.setLevel(logging_level)
-        stream_handler.setFormatter(formatter)
-
-        file_handler = logging.FileHandler(
-            filename=os.path.expanduser(LOGGING_FILE)
-        )
-        file_handler.setLevel(logging_level)
-        file_handler.setFormatter(formatter)
-
-        # Setup desired handlers
-        if LOGGING_TARGET == 'both':
-            root_logger.addHandler(file_handler)
-            root_logger.addHandler(stream_handler)
-        elif LOGGING_TARGET == 'file':
-            root_logger.addHandler(file_handler)
         else:
-            root_logger.addHandler(stream_handler)
-
-        if log_default_level_warning:
-            root_logger.warning("Logging level %s not recognized, "
-                                "using 'info' instead", level)
+            self.log_exception()
 
     # Initialization related methods
 
@@ -301,26 +241,26 @@ class Actor(LoggerMixin):
             try:
                 rule.run()
             except Exception as e:
-                self.log_exception(*sys.exc_info())
+                self.handle_exception(*sys.exc_info())
 
         for tracker in self.trackers:
             try:
                 tracker.run()
             except Exception as e:
-                self.log_exception(*sys.exc_info())
+                self.handle_exception(*sys.exc_info())
 
         # Make sure current activity is respected
         if self.context.activity is not None:
             try:
                 self.context.activity.run()
             except Exception as e:
-                self.log_exception(*sys.exc_info())
+                self.handle_exception(*sys.exc_info())
 
         if self.context.flow is not None:
             try:
                 self.context.flow.run()
             except Exception as e:
-                self.log_exception(*sys.exc_info())
+                self.handle_exception(*sys.exc_info())
 
         return True
 
