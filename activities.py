@@ -250,10 +250,9 @@ class Flow(ContextProxyMixin, Plugin):
 
     activities = tuple()
 
-    def __init__(self, context, actor):
+    def __init__(self, context):
         super(Flow, self).__init__(context)
 
-        self.actor = actor
         self.current_activity_index = None
         self.current_activity_start = None
 
@@ -282,10 +281,10 @@ class Flow(ContextProxyMixin, Plugin):
 
     def start(self, activity):
         self.current_activity_start = datetime.datetime.now()
-        self.actor.set_activity(activity[0], force=True)
+        self.context.set_activity(activity[0])
 
     def end(self):
-        self.actor.unset_activity(force=True)
+        self.context.unset_activity()
         self.current_activity_start = None
 
     def start_next_activity(self):
@@ -295,7 +294,7 @@ class Flow(ContextProxyMixin, Plugin):
             self.current_activity_index += 1
             self.start(self.current_activity)
         else:
-            self.actor.unset_flow()
+            self.context.unset_flow()
 
     def run(self):
         if self.current_activity_index is None:
