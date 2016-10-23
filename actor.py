@@ -2,9 +2,6 @@
 
 import os
 import sys
-import datetime
-import logging
-import hashlib
 import importlib
 import imp
 
@@ -18,7 +15,7 @@ from plugins import Rule
 from trackers import Tracker
 from util import Expiration
 
-from config import CONFIG_DIR, HOME_DIR
+from config import CONFIG_DIR
 from logger import LoggerMixin
 
 
