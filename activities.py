@@ -261,7 +261,6 @@ class Flow(ContextProxyMixin, Plugin):
         super(Flow, self).__init__(context)
 
         self.current_activity_index = None
-        self.current_activity_start = None
 
     @property
     def next_activity(self):
@@ -274,25 +273,11 @@ class Flow(ContextProxyMixin, Plugin):
     def current_activity(self):
         return self.activities[self.current_activity_index]
 
-    @property
-    def current_activity_expired(self):
-        # If the activity is no longer set, consider it expired
-        if self.context.activity is None:
-            return True
-
-        # Otherwise check if the time allocated ran out
-        duration = datetime.timedelta(minutes=self.current_activity[1])
-        end_time = self.current_activity_start + duration
-
-        return datetime.datetime.now() > end_time
-
     def start(self, activity):
-        self.current_activity_start = datetime.datetime.now()
-        self.context.set_activity(activity[0])
+        self.context.set_activity(activity[0], activity[1])
 
     def end(self):
         self.context.unset_activity()
-        self.current_activity_start = None
 
     def start_next_activity(self):
         self.end()
@@ -307,5 +292,5 @@ class Flow(ContextProxyMixin, Plugin):
         if self.current_activity_index is None:
             self.current_activity_index = 0
             self.start(self.current_activity)
-        elif self.current_activity_expired:
+        elif self.context.activity is None:
             self.start_next_activity()
