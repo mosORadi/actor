@@ -52,7 +52,7 @@ class ActorDBusProxy(dbus.service.Object):
 
     @dbus.service.method("org.freedesktop.Actor", in_signature='')
     def ActivityStatus(self):
-        return self.actor.context.activity.identifier
+        return self.actor.context.activity.identifier, self.actor.context.activity.expired.remaining
 
     @dbus.service.method("org.freedesktop.Actor", in_signature='i')
     def Pause(self, minutes):
