@@ -229,26 +229,26 @@ class Actor(LoggerMixin):
             try:
                 rule.run()
             except Exception as e:
-                self.handle_exception(*sys.exc_info())
+                self.handle_exception()
 
         for tracker in self.trackers:
             try:
                 tracker.run()
             except Exception as e:
-                self.handle_exception(*sys.exc_info())
+                self.handle_exception()
 
         # Make sure current activity is respected
         if self.context.activity is not None:
             try:
                 self.context.activity.run()
             except Exception as e:
-                self.handle_exception(*sys.exc_info())
+                self.handle_exception()
 
         if self.context.flow is not None:
             try:
                 self.context.flow.run()
             except Exception as e:
-                self.handle_exception(*sys.exc_info())
+                self.handle_exception()
 
         return True
 
