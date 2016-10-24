@@ -213,6 +213,9 @@ class Activity(ActivityTimetrackingMixin,
     def __init__(self, *args, **kwargs):
         super(Activity, self).__init__(*args, **kwargs)
 
+        time_limit = kwargs.get('time_limit')
+        self.expired = util.Expiration(time_limit) if time_limit else None
+
         self.setup_methods = []
         self.run_methods = []
 
@@ -236,6 +239,10 @@ class Activity(ActivityTimetrackingMixin,
             setup_method(self)
 
     def run(self):
+        # Check if the activity should still live
+        if self.expired:
+            self.context.unset_activity()
+
         # Execute all the run methods
         for run_method in self.run_methods:
             run_method(self)
