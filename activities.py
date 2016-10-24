@@ -210,10 +210,9 @@ class Activity(ActivityTimetrackingMixin,
 
     __metaclass__ = PluginMount
 
-    def __init__(self, *args, **kwargs):
-        super(Activity, self).__init__(*args, **kwargs)
+    def __init__(self, context, time_limit=None):
+        super(Activity, self).__init__(context)
 
-        time_limit = kwargs.get('time_limit')
         self.expired = util.Expiration(time_limit) if time_limit else None
 
         self.setup_methods = []
