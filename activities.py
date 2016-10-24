@@ -257,14 +257,27 @@ class Flow(ContextProxyMixin, Plugin):
 
     activities = tuple()
 
-    def __init__(self, context):
+    def __init__(self, context, time_limit):
         super(Flow, self).__init__(context)
 
         self.current_activity_index = None
+        self.time_limit = time_limit
+        self.plan = self.generate_plan()
+
+    def generate_plan(self):
+        time_required = sum([activity[1] for activity in self.activities])
+        time_deficit = time_required - self.time_limit
+
+        priority_minutes = sum([activity[1] * activity[2] for activity in self.activities])
+        shrink_factor = float(time_deficit) / priority_minutes
+
+        shrinked_activity_time = lambda a: a[1] * (1 - a[2]*shrink_factor)
+
+        return list([(a[0], shrinked_activity_time(a)) for a in self.activities])
 
     @property
     def current_activity(self):
-        return self.activities[self.current_activity_index]
+        return self.plan[self.current_activity_index]
 
     def start(self, activity):
         self.context.set_activity(activity[0], activity[1])
