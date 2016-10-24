@@ -52,7 +52,9 @@ class Context(LoggerMixin):
 
         self.info("Setting activity {0} ({1})"
                   .format(identifier, time_limit or 'unlimited'))
-        self.activity = self.activities.make(identifier, time_limit=time_limit)
+        self.activity = self.activities.make(identifier,
+                                             kwargs=dict(time_limit=time_limit))
+        self.info("Activity is now %s" % self.activity)
 
     def unset_activity(self):
         """
@@ -62,13 +64,15 @@ class Context(LoggerMixin):
         self.info("Unsetting activity.")
         self.activity = None
 
-    def set_flow(self, identifier):
+    def set_flow(self, identifier, time_limit=None):
         """
         Sets the current flow as given by the identifier.
         """
 
-        self.info("Setting flow %s" % identifier)
-        self.flow = self.flows.make(identifier)
+        self.info("Setting flow {0} ({1})"
+                  .format(identifier, time_limit or 'unlimited'))
+        self.flow = self.flows.make(identifier,
+                                    kwargs=dict(time_limit=time_limit))
 
     def unset_flow(self):
         """
