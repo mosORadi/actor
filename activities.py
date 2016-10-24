@@ -263,34 +263,22 @@ class Flow(ContextProxyMixin, Plugin):
         self.current_activity_index = None
 
     @property
-    def next_activity(self):
-        try:
-            return self.activities[(self.current_activity_index or 0) + 1]
-        except IndexError:
-            return None
-
-    @property
     def current_activity(self):
         return self.activities[self.current_activity_index]
 
     def start(self, activity):
         self.context.set_activity(activity[0], activity[1])
 
-    def end(self):
-        self.context.unset_activity()
-
     def start_next_activity(self):
-        self.end()
-
-        if self.next_activity is not None:
+        if self.current_activity_index is None:
+            self.current_activity_index = 0
+            self.start(self.current_activity)
+        elif self.current_activity_index + 1 < len(self.activities):
             self.current_activity_index += 1
             self.start(self.current_activity)
         else:
             self.context.unset_flow()
 
     def run(self):
-        if self.current_activity_index is None:
-            self.current_activity_index = 0
-            self.start(self.current_activity)
-        elif self.context.activity is None:
+        if self.context.activity is None:
             self.start_next_activity()
