@@ -256,7 +256,7 @@ class Flow(ContextProxyMixin, Plugin):
 
     activities = tuple()
 
-    def __init__(self, context, time_limit):
+    def __init__(self, context, time_limit=None):
         super(Flow, self).__init__(context)
 
         self.current_activity_index = None
