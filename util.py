@@ -66,6 +66,15 @@ class Expiration(object):
         else:
             return False
 
+    @property
+    def passed(self):
+        delta = datetime.datetime.now() + self.interval - self.expiration_point
+        return delta.total_seconds()
+
+    @property
+    def remaining(self):
+        delta =  self.expiration_point - datetime.datetime.now()
+        return delta.total_seconds()
 
 
 def run(args):
