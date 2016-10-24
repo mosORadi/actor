@@ -264,6 +264,9 @@ class Flow(ContextProxyMixin, Plugin):
         self.plan = self.generate_plan()
 
     def generate_plan(self):
+        if not self.time_limit:
+            return self.activities
+
         time_required = sum([activity[1] for activity in self.activities])
         time_deficit = time_required - self.time_limit
 
