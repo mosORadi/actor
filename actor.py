@@ -38,9 +38,9 @@ class ActorDBusProxy(dbus.service.Object):
 
     # Dbus interface
     # pylint: disable=invalid-name
-    @dbus.service.method("org.freedesktop.Actor", in_signature='s')
-    def SetActivity(self, activity):
-        self.actor.set_activity(activity)
+    @dbus.service.method("org.freedesktop.Actor", in_signature='si')
+    def SetActivity(self, activity, time_limit):
+        self.actor.set_activity(activity, time_limit or None)
 
     @dbus.service.method("org.freedesktop.Actor", in_signature='')
     def UnsetActivity(self):
@@ -58,9 +58,9 @@ class ActorDBusProxy(dbus.service.Object):
     def Pause(self, minutes):
         self.actor.pause(minutes)
 
-    @dbus.service.method("org.freedesktop.Actor", in_signature='s')
-    def SetFlow(self, activity):
-        self.actor.set_flow(activity)
+    @dbus.service.method("org.freedesktop.Actor", in_signature='si')
+    def SetFlow(self, activity, time_limit):
+        self.actor.set_flow(activity, time_limit or None)
 
     @dbus.service.method("org.freedesktop.Actor", in_signature='')
     def UnsetFlow(self):
@@ -161,13 +161,13 @@ class Actor(LoggerMixin):
 
     # Interface related methods
 
-    def set_activity(self, identifier):
+    def set_activity(self, identifier, time_limit=None):
         """
         Sets the current activity as given by the identifier.
         """
 
         if self.context.flow is None:
-            self.context.set_activity(identifier)
+            self.context.set_activity(identifier, time_limit)
         else:
             self.info("Activity %s cannot be set, flow in progress."
                       % identifier)
@@ -193,13 +193,13 @@ class Actor(LoggerMixin):
         else:
             self.error("Next activity cannot be started, no flow in progress.")
 
-    def set_flow(self, identifier):
+    def set_flow(self, identifier, time_limit=None):
         """
         Sets the current flow as given by the identifier.
         """
 
         if self.context.flow is None:
-            self.context.set_flow(identifier)
+            self.context.set_flow(identifier, time_limit)
         else:
             self.info("Cannot set flow %s. flow already in progress" % identifier)
 
