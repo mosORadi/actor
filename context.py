@@ -45,13 +45,14 @@ class Context(LoggerMixin):
         self.checkers.cache.clear()
         self.fixers.cache.clear()
 
-    def set_activity(self, identifier):
+    def set_activity(self, identifier, time_limit=None):
         """
         Sets the current activity as given by the identifier.
         """
 
-        self.info("Setting activity %s", identifier)
-        self.activity = self.activities.make(identifier)
+        self.info("Setting activity {0} ({1})"
+                  .format(identifier, time_limit or 'unlimited'))
+        self.activity = self.activities.make(identifier, time_limit=time_limit)
 
     def unset_activity(self):
         """
