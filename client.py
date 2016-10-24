@@ -24,8 +24,8 @@ class CLIClient(DBusMixin):
         'report')
 
     @dbus_error_handler
-    def command_activity_start(self, identifier):
-        self.interface.SetActivity(identifier)
+    def command_activity_start(self, identifier, time_limit):
+        self.interface.SetActivity(identifier, int(time_limit))
         print(u"Activity %s started." % identifier)
 
     @dbus_error_handler
@@ -43,8 +43,8 @@ class CLIClient(DBusMixin):
         print(self.interface.ActivityStatus())
 
     @dbus_error_handler
-    def command_flow_start(self, identifier):
-        self.interface.SetFlow(identifier)
+    def command_flow_start(self, identifier, time_limit):
+        self.interface.SetFlow(identifier, int(time_limit))
         print(u"Flow %s started." % identifier)
 
     @dbus_error_handler
