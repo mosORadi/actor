@@ -247,6 +247,21 @@ class Activity(ActivityTimetrackingMixin,
             run_method(self)
 
 
+class ActivitySpec(object):
+
+    def __init__(self, identifier, duration, max_shrinking):
+
+        self.identifier = identifier
+        self.duration = duration
+        self.max_shrinking = max_shrinking
+        self.shrinking = 1.0
+        self.skipped = False
+
+    def __repr__(self):
+        return "{0}, duration {1}, shrinking {2} (max {3}), skipped: {4}".format(
+                self.identifier, self.duration, self.shrinking, self.max_shrinking, self.skipped)
+
+
 class Flow(ContextProxyMixin, Plugin):
     """
     Defines a list of activities with their duration.
@@ -263,26 +278,58 @@ class Flow(ContextProxyMixin, Plugin):
         self.time_limit = time_limit
         self.plan = self.generate_plan()
 
+        self.info("====== generated plan =======")
+        self.info('\n'.join(map(repr, self.plan)))
+
     def generate_plan(self):
         if not self.time_limit:
             return self.activities
 
-        time_required = sum([activity[1] for activity in self.activities])
-        time_deficit = time_required - self.time_limit
+        planned_activities = [ActivitySpec(*a) for a in self.activities]
+        time_deficit = None
 
-        priority_minutes = sum([activity[1] * activity[2] for activity in self.activities])
-        shrink_factor = float(time_deficit) / priority_minutes
+        while True:
+            planned_activities = [a for a in planned_activities if not a.skipped]
+            time_required = sum([a.duration * a.shrinking for a in planned_activities])
 
-        shrinked_activity_time = lambda a: a[1] * (1 - a[2]*shrink_factor)
+            if time_required == 0:
+                raise Exception("Not enough time to initialize the flow.")
 
-        return list([(a[0], shrinked_activity_time(a)) for a in self.activities])
+            # Note: time_deficit may be negative, corresponding to
+            # prolonging intervals after a activity has been skipped
+            time_deficit = time_required - self.time_limit
+
+            # Allow deviations from desired time of magnitude 0.3s
+            if abs(time_deficit) <= 0.005:
+                break
+
+            # First try to shrink durations to erase the time deficit
+            something_shrinked = False
+            shrink_factor = 1 - (float(time_deficit) / time_required)
+
+            for activity in planned_activities:
+                proposed_shrinking = activity.shrinking * shrink_factor
+
+                if proposed_shrinking >= activity.max_shrinking:
+                    activity.shrinking = proposed_shrinking
+                    something_shrinked = True
+
+            # If we're not able to shrink any duration, we need to start skipping
+            if not something_shrinked:
+                # Skip activity with smallest max_shrinking factor (since
+                # it can be shortened the most, it's deemed as least important)
+
+                activity = min([(a.max_shrinking, a) for a in planned_activities])[1]
+                activity.skipped = True
+
+        return planned_activities
 
     @property
     def current_activity(self):
         return self.plan[self.current_activity_index]
 
     def start(self, activity):
-        self.context.set_activity(activity[0], activity[1])
+        self.context.set_activity(activity.identifier, activity.duration)
 
     def start_next_activity(self):
         if self.current_activity_index is None:
