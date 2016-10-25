@@ -257,6 +257,10 @@ class ActivitySpec(object):
         self.shrinking = 1.0
         self.skipped = False
 
+    @property
+    def planned_duration(self):
+        return self.duration * self.shrinking
+
     def __repr__(self):
         return "{0}, duration {1}, shrinking {2} (max {3}), skipped: {4}".format(
                 self.identifier, self.duration, self.shrinking, self.max_shrinking, self.skipped)
@@ -329,7 +333,8 @@ class Flow(ContextProxyMixin, Plugin):
         return self.plan[self.current_activity_index]
 
     def start(self, activity):
-        self.context.set_activity(activity.identifier, activity.duration)
+        self.context.set_activity(activity.identifier,
+                                  activity.planned_duration)
 
     def start_next_activity(self):
         if self.current_activity_index is None:
