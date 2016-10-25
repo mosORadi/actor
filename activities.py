@@ -249,11 +249,12 @@ class Activity(ActivityTimetrackingMixin,
 
 class ActivitySpec(object):
 
-    def __init__(self, identifier, duration, max_shrinking):
+    def __init__(self, identifier, duration, max_shrinking, priority=1):
 
         self.identifier = identifier
         self.duration = duration
         self.max_shrinking = max_shrinking
+        self.priority = priority
         self.shrinking = 1.0
         self.skipped = False
 
@@ -320,10 +321,11 @@ class Flow(ContextProxyMixin, Plugin):
 
             # If we're not able to shrink any duration, we need to start skipping
             if not something_shrinked:
-                # Skip activity with smallest max_shrinking factor (since
-                # it can be shortened the most, it's deemed as least important)
+                # Skip activity with lowest priority
+                # (in case of tie, lower max shrinking activity is skipped)
 
-                activity = min([(a.max_shrinking, a) for a in planned_activities])[1]
+                activity = min(planned_activities,
+                               key=lambda a: (a.priority, a.max_shrinking))
                 activity.skipped = True
 
         return planned_activities
