@@ -76,6 +76,10 @@ class Expiration(object):
         delta =  self.expiration_point - datetime.datetime.now()
         return delta.total_seconds()
 
+    @property
+    def duration(self):
+        return self.interval.total_seconds()
+
 
 def run(args):
     child = subprocess.Popen(
