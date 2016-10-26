@@ -201,11 +201,50 @@ class ActivityTrackingOverlayMixin(object):
         self.context.activity = None
 
 
+class ActivityProgressNotificationMixin(object):
+
+    """
+    Notifies user when activities are about to be changed.
+    """
+
+    progress_notifications = False
+    progress_checkpoints = [0.5, 0.25, 0.1]
+
+    def active(self):
+        return self.progress_notifications is not False
+
+    def setup(self):
+        # Create a copy of progress checkpoints to use for this
+        # activity only
+        self.checkpoints_to_notify = list(self.progress_checkpoints)
+
+    def run(self):
+        # If there are no remaining checkpoints, we have nothing
+        # to do
+        if not self.checkpoints_to_notify:
+            return
+
+        relative_remaining = self.expired.remaining / self.expired.duration
+        closest_checkpoint = self.checkpoints_to_notify[0]
+
+        if relative_remaining < closest_checkpoint:
+            # Pop the list of remaining checkpoints
+            self.checkpoints_to_notify = self.checkpoints_to_notify[1:]
+
+            # Notify
+            message = ("Less than {0}% time for current activity remaining."
+                       .format(closest_checkpoint * 100))
+
+            self.fix('notify', message=message, timeout=10000,
+                     headline="Actor")
+
+
 class Activity(ActivityTimetrackingMixin,
                ActivityNotificationMixin,
                ActivityApplicationEnforcementMixin,
                ActivityOverlayMixin,
                ActivityTrackingOverlayMixin,
+               ActivityProgressNotificationMixin,
                ContextProxyMixin, Plugin):
 
     __metaclass__ = PluginMount
