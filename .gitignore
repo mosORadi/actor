@@ -1,3 +1,7 @@
 *.nja
 *.pyc
 config.py
+.cache/
+actor.egg-info/
+build/
+dist/
