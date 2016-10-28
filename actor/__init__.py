@@ -1,3 +1,3 @@
 """
-This module contains core actor-related functionality.
+This top-level module provides Actor itself.
 """
