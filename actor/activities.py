@@ -1,6 +1,7 @@
 import datetime
 import itertools
 import psutil
+import subprocess
 
 import config
 import util
@@ -239,12 +240,35 @@ class ActivityProgressNotificationMixin(object):
                      headline="Actor")
 
 
+class ActivityBackgroundMusicMixin(object):
+    """
+    Plays activity specific music in the background.
+    Restricts playback to headphones only if required.
+    """
+
+    background_music_path = None
+    background_music_headphones_required = True
+
+    def active(self):
+        return self.background_music_path is not None
+
+    def setup(self):
+        args = ['mplayer', self.background_music_path]
+        self.music_process = subprocess.Popen(args)
+
+    def run(self):
+        if self.background_music_headphones_required:
+            if not self.report('headphones_plugged'):
+                self.music_process.kill()
+
+
 class Activity(ActivityTimetrackingMixin,
                ActivityNotificationMixin,
                ActivityApplicationEnforcementMixin,
                ActivityOverlayMixin,
                ActivityTrackingOverlayMixin,
                ActivityProgressNotificationMixin,
+               ActivityBackgroundMusicMixin,
                ContextProxyMixin, Plugin):
 
     __metaclass__ = PluginMount
