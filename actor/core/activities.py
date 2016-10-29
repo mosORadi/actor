@@ -3,9 +3,9 @@ import itertools
 import psutil
 import subprocess
 
-import config
 import util
 from plugins import Plugin, PluginMount, ContextProxyMixin
+from config import config
 
 # Define own our commands so that we don't kill ourselves under
 # any circumstances

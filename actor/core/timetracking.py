@@ -3,7 +3,7 @@ Provides a layer that exposes time-tracking abilities, regardless of the user
 selected backend (Hamster, Timewarrior, etc.).
 """
 
-import config
+from config import config
 
 from plugins import PluginMount, PluginFactory, Plugin
 

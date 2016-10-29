@@ -5,7 +5,7 @@ import sys
 sys.dont_write_bytecode = True
 
 from actor import Actor, ActorDBusProxy
-import config
+from config import config
 
 
 # Start the desktop service in a separate process

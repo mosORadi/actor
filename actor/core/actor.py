@@ -15,7 +15,7 @@ from plugins import Rule
 from trackers import Tracker
 from util import Expiration
 
-from config import CONFIG_DIR
+from config import config
 from logger import LoggerMixin
 
 
@@ -128,13 +128,13 @@ class Actor(LoggerMixin):
 
     def load_configuration(self):
         # Create the config directory, if it does not exist
-        if not os.path.exists(CONFIG_DIR):
-            os.mkdir(CONFIG_DIR)
+        if not os.path.exists(config.CONFIG_DIR):
+            os.mkdir(config.CONFIG_DIR)
 
         # Load the rule files. They will be automatically
         # added to the Rule pluginmount.
-        rules = [os.path.join(CONFIG_DIR, path)
-                 for path in os.listdir(CONFIG_DIR)
+        rules = [os.path.join(config.CONFIG_DIR, path)
+                 for path in os.listdir(config.CONFIG_DIR)
                  if path.endswith('.py')]
 
         # pylint: disable=broad-except

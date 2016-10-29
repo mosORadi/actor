@@ -3,7 +3,7 @@ import sys
 import logging
 import traceback
 
-import config
+from config import config
 
 
 class LoggerMixin(object):
@@ -89,7 +89,7 @@ class LoggerMixin(object):
         if config.LOGGING_TARGET == 'both':
             cls.logger.addHandler(file_handler)
             cls.logger.addHandler(stream_handler)
-        elif LOGGING_TARGET == 'file':
+        elif config.LOGGING_TARGET == 'file':
             cls.logger.addHandler(file_handler)
         else:
             cls.logger.addHandler(stream_handler)
