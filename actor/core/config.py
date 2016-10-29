@@ -1,7 +1,24 @@
 import os
 
 
+class CustomOverride(type):
+
+    def __init__(cls, name, bases, attrs):
+        super(CustomOverride, cls).__init__(name, bases, attrs)
+
+        base_class = bases[0]
+
+        if not hasattr(cls, '_custom'):
+            cls._custom = None
+        elif cls._custom is None:
+            base_class._custom = cls
+        else:
+            raise RuntimeError("Config object was overriden multiple times")
+
+
 class Config(object):
+
+    __metaclass__ = CustomOverride
 
     # User's home directory. There should be no need to override this.
     HOME_DIR = os.path.expanduser('~')
