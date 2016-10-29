@@ -1,7 +1,7 @@
 import datetime
 
-from plugins import Fixer, DBusMixin
-from util import run, convert_timestamp
+from actor.core.plugins import Fixer, DBusMixin
+from actor.core.util import run, convert_timestamp
 
 
 class SuspendFixer(DBusMixin, Fixer):

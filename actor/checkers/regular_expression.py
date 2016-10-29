@@ -1,6 +1,6 @@
 import re
 
-from plugins import Checker
+from actor.core.plugins import Checker
 
 
 class RegularExpressionChecker(Checker):

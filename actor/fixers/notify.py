@@ -1,7 +1,7 @@
 import dbus
 
-from plugins import Fixer, DBusMixin
-from util import Periodic
+from actor.core.plugins import Fixer, DBusMixin
+from actor.core.util import Periodic
 
 
 class NotifyFixer(DBusMixin, Fixer):

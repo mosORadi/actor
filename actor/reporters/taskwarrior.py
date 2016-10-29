@@ -1,4 +1,4 @@
-from plugins import Reporter
+from actor.core.plugins import Reporter
 from tasklib import TaskWarrior
 
 

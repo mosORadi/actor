@@ -1,6 +1,6 @@
 import os
 
-from plugins import Reporter
+from actor.core.plugins import Reporter
 
 AUDIO_CARD_PATH = '/proc/asound/card0/codec#0'
 

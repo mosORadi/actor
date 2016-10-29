@@ -1,4 +1,4 @@
-from plugins import Reporter, DBusMixin
+from actor.core.plugins import Reporter, DBusMixin
 
 
 class SessionIdleTimeReporter(DBusMixin, Reporter):

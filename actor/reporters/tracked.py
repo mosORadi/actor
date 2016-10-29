@@ -1,7 +1,7 @@
 import os
 
-from plugins import Reporter
-from config import CONFIG_DIR
+from actor.core.plugins import Reporter
+from actor.core.config import config
 
 
 class TrackReporter(Reporter):
@@ -11,7 +11,7 @@ class TrackReporter(Reporter):
     def run(self, ident, key):
         # pylint: disable=arguments-differ
 
-        filepath = os.path.join(CONFIG_DIR, ident + ".act")
+        filepath = os.path.join(config.CONFIG_DIR, ident + ".act")
         try:
             with open(filepath, 'r') as fil:
                 data = fil.readlines()

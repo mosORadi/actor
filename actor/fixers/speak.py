@@ -1,5 +1,5 @@
-from plugins import Fixer
-from util import run
+from actor.core.plugins import Fixer
+from actor.core.util import run
 
 
 class SpeakFixer(Fixer):

@@ -1,5 +1,5 @@
-from plugins import Reporter
-from util import run
+from actor.core.plugins import Reporter
+from actor.core.util import run
 
 
 class TaskWarriorReporter(Reporter):

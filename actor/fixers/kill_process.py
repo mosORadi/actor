@@ -1,7 +1,7 @@
 import os
 import signal
 
-from plugins import Fixer
+from actor.core.plugins import Fixer
 
 
 class KillProcessFixer(Fixer):

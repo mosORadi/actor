@@ -1,7 +1,7 @@
 import shlex
 import subprocess
 
-from plugins import Fixer, DBusMixin
+from actor.core.plugins import Fixer, DBusMixin
 
 
 class SetHamsterActivityFixer(DBusMixin, Fixer):

@@ -1,7 +1,7 @@
 import datetime
 
-from plugins import Checker
-from util import convert_timestamp
+from actor.core.plugins import Checker
+from actor.core.util import convert_timestamp
 
 
 class TimeIntervalChecker(Checker):

@@ -1,9 +1,9 @@
 import wnck
 import gtk
 import psutil
-from util import run
 
-from plugins import Reporter
+from actor.core.util import run
+from actor.core.plugins import Reporter
 
 
 class ActiveWindowNameReporter(Reporter):

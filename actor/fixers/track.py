@@ -1,7 +1,7 @@
 import os
 
-from plugins import Fixer
-from config import config
+from actor.core.plugins import Fixer
+from actor.core.config import config
 
 
 class TrackFixer(Fixer):

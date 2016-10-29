@@ -1,6 +1,6 @@
 import os
 
-from plugins import Reporter
+from actor.core.plugins import Reporter
 
 
 class FileContentReporter(Reporter):

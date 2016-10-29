@@ -1,4 +1,4 @@
-from plugins import Checker
+from actor.core.plugins import Checker
 import datetime
 
 

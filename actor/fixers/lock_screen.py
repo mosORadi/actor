@@ -1,4 +1,4 @@
-from plugins import Fixer, DBusMixin
+from actor.core.plugins import Fixer, DBusMixin
 
 
 class LockScreenFixer(DBusMixin, Fixer):

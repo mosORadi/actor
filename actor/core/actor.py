@@ -108,10 +108,10 @@ class Actor(LoggerMixin):
     # Initialization related methods
 
     def import_plugins(self):
-        import reporters
-        import checkers
-        import fixers
-        categories = [reporters, checkers, fixers]
+        import actor.reporters
+        import actor.checkers
+        import actor.fixers
+        categories = [actor.reporters, actor.checkers, actor.fixers]
 
         # pylint: disable=broad-except
         for category in categories:

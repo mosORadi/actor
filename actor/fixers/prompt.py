@@ -1,4 +1,4 @@
-from plugins import Fixer, AsyncDBusEvalMixin
+from actor.core.plugins import Fixer, AsyncDBusEvalMixin
 # pylint: disable=too-many-ancestors
 
 
