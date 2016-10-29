@@ -1,11 +1,7 @@
 import os
 
-path_parts = os.path.dirname(os.path.realpath(__file__)).split('/')
-
 
 class Config(object):
-
-    PROJECT_ROOT = '/'.join(path_parts) + '/'
 
     # User's home directory. There should be no need to override this.
     HOME_DIR = os.path.expanduser('~')
