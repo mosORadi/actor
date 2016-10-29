@@ -4,7 +4,7 @@ import multiprocessing
 import sys
 sys.dont_write_bytecode = True
 
-from actor import Actor, ActorDBusProxy
+from main import Actor, ActorDBusProxy
 from config import config
 
 
