@@ -20,6 +20,14 @@ class Config(object):
 
     __metaclass__ = CustomOverride
 
+    def __getattr__(self, name):
+        if name.isupper() and self._custom is not None:
+            default_value = getattr(self, name, None)
+            value = getattr(self._custom, name, default_value)
+            return value
+
+        return super(Config, self).__getattr__(name)
+
     # User's home directory. There should be no need to override this.
     HOME_DIR = os.path.expanduser('~')
 
