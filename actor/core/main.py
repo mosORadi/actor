@@ -133,7 +133,8 @@ class Actor(LoggerMixin):
         # added to the Rule pluginmount.
         rules = [os.path.join(config.CONFIG_DIR, path)
                  for path in os.listdir(config.CONFIG_DIR)
-                 if path.endswith('.py')]
+                 if path.endswith('.py')
+                 and not path.endswith('config.py')]
 
         # pylint: disable=broad-except
         for path in rules:
