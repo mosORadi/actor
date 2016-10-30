@@ -31,6 +31,10 @@ class Config(object):
 
     @classmethod
     def _load_customizations(cls):
+        # Create the config directory, if it does not exist
+        if not os.path.exists(cls.CONFIG_DIR):
+            os.mkdir(cls.CONFIG_DIR)
+
         path = os.path.join(cls.CONFIG_DIR, 'config.py')
         module_id = os.path.basename(path.rstrip('.py'))
         imp.load_source(module_id, path)

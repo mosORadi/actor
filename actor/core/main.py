@@ -125,10 +125,6 @@ class Actor(LoggerMixin):
                     self.log_exception()
 
     def load_plugins(self):
-        # Create the config directory, if it does not exist
-        if not os.path.exists(config.CONFIG_DIR):
-            os.mkdir(config.CONFIG_DIR)
-
         # Load the rule files. They will be automatically
         # added to the Rule pluginmount.
         rules = [os.path.join(config.CONFIG_DIR, path)
