@@ -1,3 +1,4 @@
+import imp
 import os
 
 
@@ -20,6 +21,9 @@ class Config(object):
 
     __metaclass__ = CustomOverride
 
+    def __init__(self):
+        self._load_customizations()
+
     def __getattr__(self, name):
         if name.isupper() and self._custom is not None:
             default_value = getattr(self, name, None)
@@ -27,6 +31,11 @@ class Config(object):
             return value
 
         return super(Config, self).__getattr__(name)
+
+    def _load_customizations(self):
+        path = os.path.join(self.CONFIG_DIR, 'config.py')
+        module_id = os.path.basename(path.rstrip('.py'))
+        imp.load_source(module_id, path)
 
     # User's home directory. There should be no need to override this.
     HOME_DIR = os.path.expanduser('~')
