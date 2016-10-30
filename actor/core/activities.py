@@ -350,11 +350,12 @@ class Flow(ContextProxyMixin, Plugin):
         self.info('\n'.join(map(repr, self.plan)))
 
     def generate_plan(self):
-        if not self.time_limit:
-            return self.activities
-
         planned_activities = [ActivitySpec(*a) for a in self.activities]
         time_deficit = None
+
+        # If there is no time limit, we do not need to reschedule anything
+        if not self.time_limit:
+            return planned_activities
 
         while True:
             planned_activities = [a for a in planned_activities if not a.skipped]
