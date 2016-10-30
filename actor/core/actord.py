@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-import logging
 import multiprocessing
 import sys
 sys.dont_write_bytecode = True
@@ -32,7 +31,7 @@ def main(logging_level=config.LOGGING_LEVEL):
 
 
 def main_debug():
-    main(logging_level=logging.DEBUG)
+    main(logging_level='debug')
 
 if __name__ == '__main__':
     main_debug()
