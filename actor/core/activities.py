@@ -312,7 +312,7 @@ class Activity(ActivityTimetrackingMixin,
 
 class ActivitySpec(object):
 
-    def __init__(self, identifier, duration, max_shrinking, priority=1):
+    def __init__(self, identifier, duration, max_shrinking=0, priority=1):
 
         self.identifier = identifier
         self.duration = duration
