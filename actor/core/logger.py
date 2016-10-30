@@ -17,31 +17,38 @@ class LoggerMixin(object):
     logger = logging.getLogger('main')
 
     # Logging-related helpers
-    def log(self, log_func, message, *args):
-        log_func("%s: %s" % (self.__class__.__name__, message), *args)
+    @classmethod
+    def log(cls, log_func, message, *args):
+        log_func("%s: %s" % (cls.__name__, message), *args)
 
     # Interface to be leveraged by the class
-    def debug(self, message, *args):
-        self.log(self.logger.debug, message, *args)
+    @classmethod
+    def debug(cls, message, *args):
+        cls.log(cls.logger.debug, message, *args)
 
-    def info(self, message, *args):
-        self.log(self.logger.info, message, *args)
+    @classmethod
+    def info(cls, message, *args):
+        cls.log(cls.logger.info, message, *args)
 
-    def warning(self, message, *args):
-        self.log(self.logger.warning, message, *args)
+    @classmethod
+    def warning(cls, message, *args):
+        cls.log(cls.logger.warning, message, *args)
 
-    def error(self, message, *args):
-        self.log(self.logger.error, message, *args)
+    @classmethod
+    def error(cls, message, *args):
+        cls.log(cls.logger.error, message, *args)
 
-    def critical(self, message, *args):
-        self.log(self.logger.critical, message, *args)
+    @classmethod
+    def critical(cls, message, *args):
+        cls.log(cls.logger.critical, message, *args)
 
-    def log_exception(self):
+    @classmethod
+    def log_exception(cls):
         exception_type, value, trace = sys.exc_info()
 
-        self.error("Exception: %s", exception_type)
-        self.error("Value: %s", value)
-        self.error("Traceback (on a new line):\n%s",
+        cls.error("Exception: %s", exception_type)
+        cls.error("Value: %s", value)
+        cls.error("Traceback (on a new line):\n%s",
                    "\n".join(traceback.format_tb(trace)))
 
     # Logging setup related methods
