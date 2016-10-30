@@ -80,6 +80,8 @@ python class. Here's one that willmake sure you do not work on your computer
 past your bed time.
 
 ```python
+from actor.core.plugins import Rule
+
 class SleepCurfue(Rule):
     def run(self):
         if self.check('time_interval', '22.00', '05.00'):
@@ -90,6 +92,8 @@ However, you might want some warning before your computer denies you access.
 Here's a more advanced version that will also display a notification.
 
 ```python
+from actor.core.plugins import Rule
+
 class SleepCurfue(Rule):
     def run(self):
         if self.check('time_interval', '21.45', '22.00'):
@@ -97,6 +101,8 @@ class SleepCurfue(Rule):
         if self.check('time_interval', '22.00', '05.00'):
             self.fix('suspend')
 ```
+
+This file should be created in ```~/.actor/``` directory, i.e. ```~/.actor/sleep.py```.
 
 Examples: A morning creative workflow
 -------------------------------------
@@ -106,6 +112,8 @@ flexible). A flow or activity is just an empty python class with attributes. A
 heavily commented example follows:
 
 ```python
+from actor.core.activities import Activity, Flow
+
 class CreativeFlow(Flow):
 
     # Use this to start the flow via CLI: $ actor flow-start creative
@@ -173,6 +181,8 @@ class Writing(Activity):
     # Display notifications after 50%, 75% and 90% of time passes
     progress_notifications = True
 ```
+
+This file should be created in ```~/.actor/``` directory, i.e. ```~/.actor/creative.py```.
 
 Command line controls
 ---------------------
