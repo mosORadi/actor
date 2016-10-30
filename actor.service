@@ -1,8 +1,5 @@
 # Copy this to .config/systemd/user/actor.service
 
-# Change the filesystem paths to reflect your home
-# directory and the actor location
-
 # Enable with systemctl --user enable actor.service
 # Start with systemctl --user start actor.service
 [Unit]
@@ -12,7 +9,7 @@ After=graphical.target
 [Service]
 Type=simple
 Environment=DISPLAY=:0
-ExecStart=/path/to/actor/actord.py
+ExecStart=/usr/bin/actor-daemon
 Restart=always
 RestartSec=8s
 
