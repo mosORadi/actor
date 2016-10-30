@@ -6,12 +6,12 @@ AcTor
 
 ![AcTor](https://raw.githubusercontent.com/tbabej/actor/master/actor-logo.png  "Activity moniTor daemon")
 
-AcTor, or Activity Monitor Daemon, is a extremely pluggable deamon that
-monitors activity on your computer and executes user-defined actions 
+Actor (or ACTivity monitOR), is an extremely pluggable deamon that
+monitors activity on your computer and executes user-defined actions
 depending on the input.
 
-What can actor do
------------------
+What can actor do for you
+-------------------------
 
 Examples include (but are not limited to):
 
@@ -31,80 +31,164 @@ section.
 Install
 -------
 
-Basic installation steps are:
+To install Actor, you only need to run:
 
 ```
-git clone https://github.com/tbabej/actor.git
-cp ~/.config/systemd/user/actor.service
-systemctl --user enable actor.service  # Makes AcTor run at startup
+$ sudo pip install -U https://github.com/tbabej/actor
 ```
 
-To make AcTor actually enforce something, we need to define a rule:
+After that, you can run Actor easily by:
 
 ```
-mkdir config
-cd config
-vim exercise-break.yaml
+$ actor-daemon
 ```
 
-AcTor recognizes any .yaml files in the config directory. This must
-be valid yaml file, in the format as example below.
-
-You also need to define few local configuration values:
-
-```
-cp config.py.in config.py
-vim config.py
-```
-
-Now you're all set. Start actor with:
+This will, however, run make actor run directly in the terminal where you ran
+the command. To make it run at every session startup, like it should, you can
+use simple systemd service file (if your distribution uses systemd):
 
 ```
-systemctl --user start actor.service
+$ wget https://raw.githubusercontent.com/tbabej/actor/master/actor.service -O ~/.config/systemd/user/actor.service
+$ systemctl --user enable actor.service
+$ systemctl --user start actor.service
 ```
 
-Basic architecture. Do not skip this!
--------------------------------------
+Usage
+-----
 
-On a high level, AcTor is a tool that enforces user-defined rules.
+While it's running, Actor evaluates three different groups of user-defined
+plugins:
 
-Each rule:
+* **Flows**. A flow is a sequence of activities, with defined duration. Actor
+  automatically shrinks the durations to accomodate the available time window,
+  switches them when their respetive time is up and notifies you about it. A
+  typical morning work flow might consist of: read emails (30 min), prepare
+  plan for the day (15 min), code (2 hours), coffee break (10 min).
+* **Activities**. An activity describes a particular general activity you're
+  usually doing, i.e. development, book reading or writing. Actor supports
+  plethora of options when defining activities, so you can automatically track
+  time, perform starup actions, restrict allowed applications and much more.
+* **Rules**. In the most of basic use cases, a rule defines what should happen
+  when, i.e. my computer should suspend if it's sleep time. It's most flexible
+  kind of a plugin.
 
-1. takes defined input, which is
-1. evaluated using defined conditions,
-1. and depending on these conditions specific actions are undertaken.
-
-Each of this part of functionality is taken care of by a specific type of
-plugin:
-
-1. Input is provided by *reporters*
-1. Values from reporters are given to *checkers* which change their state
-   to false or true, depending on the values from the reporters. We call a
-   checker with state 'true' an *active checker*.
-1. Active checkers trigger fixers that are configured to be triggered by
-   these active checkers. Fixers interact with your system.
-
-Time for a explanatory example
+Examples: A sleep curfue rule!
 ------------------------------
 
-There's a big chance you suffer from lack of physical exercise. Let's
-demonstrate an example which will get you away from your computer!
+Currently, writing a rule (or an activity/flow) requires writing a simple
+python class. Here's one that willmake sure you do not work on your computer
+past your bed time.
 
-    - Morning exercise break:
-        reporters:
-        - TimeReporter:
-        checkers:
-        - TimeIntervalChecker:
-            start: "9.30"
-            end: "10.00"
-        fixers:
-        - LockScreenFixer:
+```python
+class SleepCurfue(Rule):
+    def run(self):
+        if self.check('time_interval', '22.00', '05.00'):
+            self.fix('suspend')
+```
 
-The example above takes input from one reporter (namely TimeReporter),
-plugs the output to the only specified checker (TimeIntervalChecker)
-and if this checker evaluates to true, the only fixer specified
-(LockScreenFixer) is run. Say goodbye to your computer from 9.30
-to 10.00. It's time for a little exercise!
+However, you might want some warning before your computer denies you access.
+Here's a more advanced version that will also display a notification.
+
+```python
+class SleepCurfue(Rule):
+    def run(self):
+        if self.check('time_interval', '21.45', '22.00'):
+            self.fix('notify', message="You should brush your teeth and stuff!")
+        if self.check('time_interval', '22.00', '05.00'):
+            self.fix('suspend')
+```
+
+Examples: A morning creative workflow
+-------------------------------------
+
+Flows and acitivities are easier to define than rules (since they are less
+flexible). A flow or activity is just an empty python class with attributes. A
+heavily commented example follows:
+
+```python
+class CreativeFlow(Flow):
+
+    # Use this to start the flow via CLI: $ actor flow-start creative
+    identifier = 'creative'
+
+    # List of activities and their durations
+    activities = (
+        ('actor_development', 55),
+        ('health_break', 5),
+        ('writing', 55),
+        ('health_break', 5),
+    )
+
+
+class ActorDevel(Activity):
+
+    # Identifier used to start the activity
+    identifier = 'actor_development'
+
+    # The category under which the activity should be tracked
+    timetracking_id = "development"
+
+    # Allowed and disallowed commands
+    whitelisted_commands = ('firefox', 'xfce4-terminal')
+    blacklisted_commands = ('mutt', 'newsbeuter')
+
+    # Notification
+    notification_headline = "Actor: Actor development"
+    notification = ("Hack on Actor and make it a better tool that will serve its users.")
+
+    # Display notifications after 50%, 75% and 90% of time passes
+    progress_notifications = True
+
+
+class HealthBreak(Activity):
+
+    # Identifier used to start the activity
+    identifier = 'health_break'
+
+    # The category under which the activity should be tracked
+    timetracking_id = 'healthbreak'
+
+    # Block all activity on computer and display this message
+    overlay_header = "Actor: Health break"
+    overlay_message = ("Standup and stretch some. If possible, do some squats and pushups. ")
+
+
+class Writing(Activity):
+
+    # Identifier used to start the activity
+    identifier = 'writing'
+
+    # The category under which the activity should be tracked
+    timetracking_id = "writing"
+
+    # Allowed and disallowed commands
+    whitelisted_commands = ('firefox', 'xfce4-terminal')
+    blacklisted_commands = ('mutt', 'newsbeuter')
+
+    # Notification
+    notification_headline = "Actor: Book writing"
+    notification = ("Develop your story. Make sure to not walk in circles. "
+                    "Paint a scene, or connect plotlines.")
+
+    # Display notifications after 50%, 75% and 90% of time passes
+    progress_notifications = True
+```
+
+Command line controls
+---------------------
+
+Usually you want to decide when to start particular flow or activity manually.
+To do that, use ```actor``` command:
+
+```bash
+$ actor flow-start morning
+Flow 'morning' started.
+$ actor flow-stop
+$ actor activity-start running
+Activity 'running' started.
+$ actor pause 4
+Actor paused for 4 minutes.
+```
 
 Available plugins
 -----------------
@@ -138,7 +222,6 @@ is handled via plugins. The current set of plugins provides integration with:
   * Health checkers (False until all of it's HP is not taken by HealthDecreaseFixer)
   * Tautology (always True, useful for testing)
   * Hamster activity/category duration
-
 * Fixers (available responses)
   * Killing processes
   * Locking sreen
