@@ -256,20 +256,3 @@ class Actor(LoggerMixin):
         gobject.timeout_add(2000, self.check_everything)
         self.info("AcTor started.")
         loop.run()
-
-
-def debug_main():
-    """
-    Run a instance of actor at a debug level.
-    """
-
-    Actor.setup_logging(level='debug')
-    actor = Actor()
-
-    # Initialize the DBus interface
-    ActorDBusProxy(actor)
-    actor.main()
-
-
-if __name__ == "__main__":
-    debug_main()

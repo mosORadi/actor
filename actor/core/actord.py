@@ -14,13 +14,13 @@ def start_desktop():
     desktop.main()
 
 
-def main():
+def main(logging_level=config.LOGGING_LEVEL):
     desktop = multiprocessing.Process(target=start_desktop)
     desktop.start()
 
     # Forward all exceptions to the log
     sys.excepthook = Actor.log_exception
-    Actor.setup_logging(level=config.LOGGING_LEVEL)
+    Actor.setup_logging(level=logging_level)
 
     # Initialize an Actor instance and setup proxy for it
     actor = Actor()
@@ -30,5 +30,8 @@ def main():
     actor.main()
 
 
+def main_debug():
+    main(logging_level=logging.DEBUG)
+
 if __name__ == '__main__':
-    main()
+    main_debug()

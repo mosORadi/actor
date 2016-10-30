@@ -29,7 +29,7 @@ setup(
         'console_scripts': [
             'actor = actor.core.client:main',
             'actor-daemon = actor.core.actord:main',
-            'actor-debug = actor.core.main:debug_main',
+            'actor-debug = actor.core.actord:main_debug',
         ]
     }
 )
