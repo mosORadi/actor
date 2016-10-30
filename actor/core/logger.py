@@ -43,8 +43,9 @@ class LoggerMixin(object):
         cls.log(cls.logger.critical, message, *args)
 
     @classmethod
-    def log_exception(cls):
-        exception_type, value, trace = sys.exc_info()
+    def log_exception(cls, exception_type=None, value=None, trace=None):
+        if exception_type is None:
+            exception_type, value, trace = sys.exc_info()
 
         cls.error("Exception: %s", exception_type)
         cls.error("Value: %s", value)
