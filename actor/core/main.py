@@ -88,11 +88,9 @@ class Actor(LoggerMixin):
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
         # Load the plugins
-        self.import_plugins()
         self.context = Context()
-
-        # Load the Actor configuration
-        self.load_configuration()
+        self.import_plugins()
+        self.load_plugins()
 
         self.pause_expired = Expiration()
 
@@ -126,7 +124,7 @@ class Actor(LoggerMixin):
                         .format(module, category.__name__[:-1], str(exc)))
                     self.log_exception()
 
-    def load_configuration(self):
+    def load_plugins(self):
         # Create the config directory, if it does not exist
         if not os.path.exists(config.CONFIG_DIR):
             os.mkdir(config.CONFIG_DIR)
