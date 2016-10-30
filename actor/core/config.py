@@ -36,8 +36,9 @@ class Config(object):
             os.mkdir(cls.CONFIG_DIR)
 
         path = os.path.join(cls.CONFIG_DIR, 'config.py')
-        module_id = os.path.basename(path.rstrip('.py'))
-        imp.load_source(module_id, path)
+        if os.path.exists(path):
+            module_id = os.path.basename(path.rstrip('.py'))
+            imp.load_source(module_id, path)
 
     # User's home directory. There should be no need to override this.
     HOME_DIR = os.path.expanduser('~')
