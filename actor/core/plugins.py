@@ -170,18 +170,27 @@ class DBusMixin(object):
 
     def __init__(self, *args, **kwargs):
         super(DBusMixin, self).__init__(*args, **kwargs)
+        self.bus = dbus.SessionBus()
         self.initialize_interface()
 
     def initialize_interface(self):
         try:
-            self.bus = dbus.SessionBus()
             dbus_object = self.bus.get_object(self.bus_name, self.object_path)
-            self.interface = dbus.Interface(
+            self._interface = dbus.Interface(
                 dbus_object,
                 self.interface_name or self.bus_name
             )
         except dbus.exceptions.DBusException:
-            self.interface = None
+            self._interface = None
+
+    @property
+    def interface(self):
+        if self._interface is not None:
+            return self._interface
+        else:
+            self.initialize_interface()
+            return self._interface
+
 
 
 class AsyncEvalMixinBase(object):
