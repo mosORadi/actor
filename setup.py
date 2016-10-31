@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+from setuptools.command.install import install
 
 install_requirements = ['psutil']
 
@@ -8,6 +9,27 @@ try:
     import importlib
 except ImportError:
     install_requirements.append('importlib')
+
+
+class InstallSystemdServiceFileInstall(install):
+    """
+    Installs systemd service user file during install.
+    """
+
+    def install_systemd_service(self):
+        import os
+
+        if os.path.isdir('/etc/systemd/user/'):
+            from pkg_resources import Requirement, resource_filename
+            from shutil import copy2
+            service_path = resource_filename(Requirement.parse("actor"),
+                                             "actor/static/actor.service")
+            copy2(service_path, '/etc/systemd/user/')
+
+    def run(self):
+        install.run(self)
+        self.install_systemd_service()
+
 
 setup(
     name='actor',
@@ -31,5 +53,8 @@ setup(
             'actor-daemon = actor.core.actord:main',
             'actor-debug = actor.core.actord:main_debug',
         ]
+    },
+    cmdclass={
+        'install': InstallSystemdServiceFileInstall,
     }
 )
