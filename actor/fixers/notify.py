@@ -32,16 +32,10 @@ class NotifyFixer(DBusMixin, Fixer):
             app_name="Actor", app_icon='', timeout=0):
         # pylint: disable=arguments-differ
 
-        def notify():
-            if not self.timer:
-                return
+        if not self.timer:
+            return
 
-            replaces_id = self.last_notification
-            self.last_notification = self.interface.Notify(app_name, replaces_id, app_icon,
-                                                           headline, message, [], {},
-                                                           timeout)
-        try:
-            notify()
-        except dbus.DBusException:
-            self.initialize_interface()
-            notify()
+        replaces_id = self.last_notification
+        self.last_notification = self.interface.Notify(app_name, replaces_id, app_icon,
+                                                       headline, message, [], {},
+                                                       timeout)
