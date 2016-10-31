@@ -48,9 +48,7 @@ the command. To make it run at every session startup, like it should, you can
 use simple systemd service file (if your distribution uses systemd):
 
 ```
-$ wget https://raw.githubusercontent.com/tbabej/actor/master/actor.service -O ~/.config/systemd/user/actor.service
-$ systemctl --user enable actor.service
-$ systemctl --user start actor.service
+$ systemctl --user --now enable actor.service
 ```
 
 Usage
