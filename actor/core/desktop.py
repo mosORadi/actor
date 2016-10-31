@@ -155,17 +155,17 @@ class OverlayWindow(PyQt5.QtWidgets.QMainWindow):
 
 class AsyncPromptThreadBase(PyQt5.QtCore.QThread):
 
-    def __init__(self, desktop, reply_handler, message, title):
+    def __init__(self, desktop, reply_handler, title, message):
         super(AsyncPromptThreadBase, self).__init__(desktop)
         self.reply_handler = reply_handler
-        self.message = message
         self.title = title
+        self.message = message
 
         self.communicator = self.Communicator()
         self.communicator.received.connect(self.return_result)
 
     def run(self):
-        self.communicator.prompted.emit(self.message, self.title)
+        self.communicator.prompted.emit(self.title, self.message)
 
 
 class AsyncPromptInputThread(AsyncPromptThreadBase):
@@ -233,33 +233,33 @@ class ActorDesktopDBusProxy(dbus.service.Object):
 
         super(ActorDesktopDBusProxy, self).__init__(bus_name, "/Desktop")
 
-    def prompt_generic(self, cls, message, title, reply_handler):
+    def prompt_generic(self, cls, title, message, reply_handler):
         thread = cls(
             self.desktop,
             reply_handler,
-            message,
-            title
+            title,
+            message
         )
         thread.start()
 
     @dbus.service.method("org.freedesktop.ActorDesktop",
                          in_signature='ss', out_signature='s',
                          async_callbacks=('reply_handler', 'error_handler'))
-    def Prompt(self, message, title, reply_handler, error_handler):
+    def Prompt(self, title, message, reply_handler, error_handler):
         self.prompt_generic(
             AsyncPromptInputThread,
-            message,
             title,
+            message,
             reply_handler)
 
     @dbus.service.method("org.freedesktop.ActorDesktop",
                          in_signature='ss', out_signature='b',
                          async_callbacks=('reply_handler', 'error_handler'))
-    def PromptYesNo(self, message, title, reply_handler, error_handler):
+    def PromptYesNo(self, title, message, reply_handler, error_handler):
         self.prompt_generic(
             AsyncPromptYesNoThread,
-            message,
             title,
+            message,
             reply_handler)
 
     @dbus.service.method("org.freedesktop.ActorDesktop",
@@ -312,7 +312,7 @@ class ActorDesktop(PyQt5.QtWidgets.QWidget):
         self.tray_icon.showMessage(title, message, icon, duration * 1000)
 
     @PyQt5.QtCore.pyqtSlot(str, str)
-    def prompt_input(self, message, title):
+    def prompt_input(self, title, message):
         text = PyQt5.QtWidgets.QInputDialog.getText(
             self,
             title,
@@ -322,7 +322,7 @@ class ActorDesktop(PyQt5.QtWidgets.QWidget):
         self.sender().received.emit(text)
 
     @PyQt5.QtCore.pyqtSlot(str, str)
-    def prompt_yesno(self, message, title):
+    def prompt_yesno(self, title, message):
         reply = PyQt5.QtWidgets.QMessageBox.question(
             self,
             title,
