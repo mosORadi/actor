@@ -34,7 +34,7 @@ Install
 To install Actor, you only need to run:
 
 ```
-$ sudo pip install -U https://github.com/tbabej/actor
+$ sudo pip install -U https://github.com/tbabej/actor/archive/master.zip
 ```
 
 After that, you can run Actor easily by:
