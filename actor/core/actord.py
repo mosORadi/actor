@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import atexit
 import multiprocessing
 import sys
 sys.dont_write_bytecode = True
@@ -13,10 +14,10 @@ def start_desktop():
     import desktop
     desktop.main()
 
-
 def main(logging_level=config.LOGGING_LEVEL):
     desktop = multiprocessing.Process(target=start_desktop)
     desktop.start()
+    atexit.register(desktop.terminate)
 
     # Forward all exceptions to the log
     sys.excepthook = Actor.log_exception
