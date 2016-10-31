@@ -46,6 +46,12 @@ class Config(object):
     # The location of the configuration directory
     CONFIG_DIR = os.path.join(HOME_DIR, '.actor')
 
+    # The source directory
+    SOURCE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+    # The static directory
+    STATIC_DIR = os.path.join(SOURCE_DIR, 'static')
+
     # Any process that shares the user session you are accessing. This is
     # here to provide a workaround so that actor can connect to your
     # dbus session bus, it reads the environment variable of DBUS

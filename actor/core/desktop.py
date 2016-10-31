@@ -12,6 +12,8 @@ import PyQt5.QtWidgets
 import PyQt5.QtGui
 import PyQt5.QtCore
 
+from config import config
+
 # This file uses PyQt5, which brings over some pep8
 # incompliant method names
 # pylint: disable=invalid-name
@@ -286,7 +288,7 @@ class ActorDesktop(PyQt5.QtWidgets.QWidget):
         self.setup_tray()
 
     def setup_tray(self):
-        icon_path = os.path.join(ASSETS_DIR, 'actor-logo.png')
+        icon_path = os.path.join(config.STATIC_DIR, 'actor-logo.png')
         icon = PyQt5.QtGui.QIcon(icon_path)
 
         self.tray_icon = PyQt5.QtWidgets.QSystemTrayIcon(self)
