@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 from setuptools.command.install import install
 
-install_requirements = ['psutil']
+install_requirements = ['psutil', 'pyqt5']
 
 version = '0.8.0'
 
