@@ -35,3 +35,23 @@ class NotifyFixer(DBusMixin, Fixer):
         self.last_notification = self.interface.Notify(app_name, replaces_id, app_icon,
                                                        headline, message, [], {},
                                                        timeout)
+
+
+class BaloonFixer(DBusMixin, Fixer):
+    """
+    Creates a system tray baloon with the message.
+
+    Accepted options (defaults in parentheses):
+      - message : Text of the message sent
+      - title   : Baloon title
+      - duration: Period during which the baloon is shown
+    """
+
+    identifier = "baloon"
+
+    bus_name = 'org.freedesktop.ActorDesktop'
+    object_path = '/Desktop'
+
+    def run(self, message, title='Actor alert!', duration=10):
+        # pylint: disable=arguments-differ
+        self.interface.ShowMessage(title, message, duration)
