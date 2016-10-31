@@ -272,6 +272,10 @@ class ActorDesktopDBusProxy(dbus.service.Object):
             description,
             reply_handler)
 
+    @dbus.service.method("org.freedesktop.ActorDesktop",
+                         in_signature='ssi', out_signature='')
+    def ShowMessage(self, title, message, duration):
+        self.desktop.show_message(title, message, duration)
 
 class ActorDesktop(PyQt5.QtWidgets.QWidget):
 
@@ -302,6 +306,10 @@ class ActorDesktop(PyQt5.QtWidgets.QWidget):
             icon_menu.addAction(action)
 
         self.tray_icon.setContextMenu(icon_menu)
+
+    def show_message(self, title, message, duration):
+        icon = PyQt5.QtWidgets.QSystemTrayIcon.Information
+        self.tray_icon.showMessage(title, message, icon, duration * 1000)
 
     @PyQt5.QtCore.pyqtSlot(str, str)
     def prompt_input(self, message, title):
