@@ -52,14 +52,6 @@ class Config(object):
     # The static directory
     STATIC_DIR = os.path.join(SOURCE_DIR, 'static')
 
-    # Any process that shares the user session you are accessing. This is
-    # here to provide a workaround so that actor can connect to your
-    # dbus session bus, it reads the environment variable of DBUS
-    # session bus from environment of the desktop process configured here.
-    # For KDE users, good desktop process plasma-desktop.
-
-    DESKTOP_PROCESS = "plasma-desktop"
-
     # The preferred way of logging. For systemd-based systems, use 'stdout'
     # and the Actor logging output will be available using journalctl.
     # For file-based logging, use 'file'
