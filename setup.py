@@ -16,7 +16,7 @@ setup(
     long_description=open('README.md').read(),
     author='Tomas Babej',
     author_email='tomasbabej@gmail.com',
-    license='MIT',
+    license='AGPLv3',
     url='https://github.com/tbabej/actor',
     download_url='https://github.com/tbabej/actor/downloads',
     packages=find_packages(),
