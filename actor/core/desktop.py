@@ -1,6 +1,7 @@
 #!/usr/bin/python -B
 from __future__ import print_function
 
+import os
 import sys
 import time
 import dbus
@@ -278,6 +279,29 @@ class ActorDesktop(PyQt5.QtWidgets.QWidget):
         super(ActorDesktop, self).__init__()
 
         self.app = app
+        self.setup_tray()
+
+    def setup_tray(self):
+        icon_path = os.path.join(ASSETS_DIR, 'actor-logo.png')
+        icon = PyQt5.QtGui.QIcon(icon_path)
+
+        self.tray_icon = PyQt5.QtWidgets.QSystemTrayIcon(self)
+        self.tray_icon.setIcon(icon)
+        self.tray_icon.show()
+
+        self.setWindowIcon(icon)
+
+        actions = [
+            PyQt5.QtWidgets.QAction("Mi&nimize", self, triggered=self.hide),
+            PyQt5.QtWidgets.QAction("Ma&ximize", self, triggered=self.showMaximized),
+            PyQt5.QtWidgets.QAction("&Restore", self, triggered=self.showNormal)
+        ]
+
+        icon_menu = PyQt5.QtWidgets.QMenu(self)
+        for action in actions:
+            icon_menu.addAction(action)
+
+        self.tray_icon.setContextMenu(icon_menu)
 
     @PyQt5.QtCore.pyqtSlot(str, str)
     def prompt_input(self, message, title):
