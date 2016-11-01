@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 from setuptools.command.install import install
 
-install_requirements = ['psutil', 'pyqt5']
+install_requirements = ['psutil']
 
 version = '0.8.0'
 
@@ -9,6 +9,11 @@ try:
     import importlib
 except ImportError:
     install_requirements.append('importlib')
+
+try:
+    import PyQt5
+except ImportError:
+    raise RuntimeError("Please install PyQt5 via your system package manager")
 
 
 class InstallSystemdServiceFileInstall(install):
