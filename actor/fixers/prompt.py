@@ -12,7 +12,7 @@ class PromptInputFixer(AsyncDBusEvalMixin, Fixer):
     def run(self, title, message):
         # pylint: disable=arguments-differ
 
-        return self.interface.Prompt(message, title,
+        return self.interface.Prompt(title, message,
                                      timeout=self.INFINITE_TIMEOUT,
                                      reply_handler=self.reply_handler,
                                      error_handler=self.error_handler)
@@ -28,7 +28,7 @@ class PromptYesNoFixer(AsyncDBusEvalMixin, Fixer):
     def run(self, title, message):
         # pylint: disable=arguments-differ
 
-        return self.interface.PromptYesNo(message, title,
+        return self.interface.PromptYesNo(title, message,
                                           timeout=self.INFINITE_TIMEOUT,
                                           reply_handler=self.reply_handler,
                                           error_handler=self.error_handler)
