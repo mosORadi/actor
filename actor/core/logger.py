@@ -1,3 +1,4 @@
+import contextlib
 import os
 import sys
 import logging
@@ -15,11 +16,21 @@ class LoggerMixin(object):
     """
 
     logger = logging.getLogger('main')
+    indentation = 0
+
+    @contextlib.contextmanager
+    def stage(self, description):
+        self.debug("Entering: {0}".format(description))
+        LoggerMixin.indentation += 1
+        yield
+        LoggerMixin.indentation -= 1
+        self.debug("Leaving: {0}".format(description))
 
     # Logging-related helpers
     @classmethod
     def log(cls, log_func, message, *args):
-        log_func("%s: %s" % (cls.__name__, message), *args)
+        log_func("{0}{1}: {2}".format('  ' * cls.indentation,
+                                      cls.__name__, message), *args)
 
     # Interface to be leveraged by the class
     @classmethod
