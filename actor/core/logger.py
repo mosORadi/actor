@@ -29,8 +29,12 @@ class LoggerMixin(object):
     # Logging-related helpers
     @classmethod
     def log(cls, log_func, message, *args):
-        log_func("{0}{1}: {2}".format('  ' * cls.indentation,
-                                      cls.__name__, message), *args)
+        if config.LOGGING_LEVEL == 'debug':
+            indent = '  ' * cls.indentation
+        else:
+            indent = ''
+
+        log_func("{0}{1}: {2}".format(indent, cls.__name__, message), *args)
 
     # Interface to be leveraged by the class
     @classmethod
