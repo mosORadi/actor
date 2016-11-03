@@ -218,33 +218,38 @@ class Actor(LoggerMixin):
         elif self.pause_expired.just_expired():
             self.info('Actor is resumed.')
 
-        # Clear the cached values
-        self.context.clear_cache()
+        with self.stage('Checking round'):
+            # Clear the cached values
+            self.context.clear_cache()
 
-        for rule in self.rules:
-            try:
-                rule.run()
-            except Exception as e:
-                self.handle_exception()
+            for rule in self.rules:
+                with self.stage('Evaluating rule: {0}'.format(rule.__class__.__name__)):
+                    try:
+                        rule.run()
+                    except Exception as e:
+                        self.handle_exception()
 
-        for tracker in self.trackers:
-            try:
-                tracker.run()
-            except Exception as e:
-                self.handle_exception()
+            for tracker in self.trackers:
+                with self.stage('Evaluating tracker: {0}'.format(tracker.__class__.__name__)):
+                    try:
+                        tracker.run()
+                    except Exception as e:
+                        self.handle_exception()
 
-        # Make sure current activity is respected
-        if self.context.activity is not None:
-            try:
-                self.context.activity.run()
-            except Exception as e:
-                self.handle_exception()
+            # Make sure current activity is respected
+            if self.context.activity is not None:
+                with self.stage('Evaluating activity: {0}'.format(activity.__class__.__name__)):
+                    try:
+                        self.context.activity.run()
+                    except Exception as e:
+                        self.handle_exception()
 
-        if self.context.flow is not None:
-            try:
-                self.context.flow.run()
-            except Exception as e:
-                self.handle_exception()
+            if self.context.flow is not None:
+                with self.stage('Evaluating flow: {0}'.format(flow.__class__.__name__)):
+                    try:
+                        self.context.flow.run()
+                    except Exception as e:
+                        self.handle_exception()
 
         return True
 
