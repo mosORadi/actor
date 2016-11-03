@@ -137,6 +137,7 @@ class Actor(LoggerMixin):
             try:
                 module_id = os.path.basename(path.rstrip('.py'))
                 imp.load_source(module_id, path)
+                self.debug(module_id + " loaded successfully.")
             except Exception as exc:
                 self.warning(
                     "Rule file {0} cannot be loaded, following error was "
