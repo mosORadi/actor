@@ -45,7 +45,7 @@ class LoggerMixin(object):
     # Logging-related helpers
     @classmethod
     def log(cls, log_func, message, *args):
-        if config.LOGGING_LEVEL == 'debug':
+        if cls.logger.isEnabledFor(logging.DEBUG):
             indent = '  ' * cls.indentation
         else:
             indent = ''
