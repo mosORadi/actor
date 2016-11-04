@@ -7,6 +7,21 @@ import traceback
 from config import config
 
 
+def plugin_formatter(template, *args):
+    """
+    Formats the template with class names of any plugin instances.
+    """
+
+    def is_plugin(obj):
+        base_classes = obj.__class__.__bases__
+        base_names = [cls.__name__ for cls in base_classes]
+        return 'Plugin' in base_names
+
+    newargs = [arg.__class__.__name__ if is_plugin(arg) else arg
+               for arg in args]
+    return template.format(*newargs)
+
+
 class LoggerMixin(object):
     """
     This mixin adds logging capabilities to the class. All clases inheriting
@@ -19,12 +34,13 @@ class LoggerMixin(object):
     indentation = 0
 
     @contextlib.contextmanager
-    def stage(self, description):
-        self.debug("Entering: {0}".format(description))
+    def stage(self, description, *args):
+        label = plugin_formatter(description, *args)
+        self.debug("Entering: {0}".format(label))
         LoggerMixin.indentation += 1
         yield
         LoggerMixin.indentation -= 1
-        self.debug("Leaving: {0}".format(description))
+        self.debug("Leaving: {0}".format(label))
 
     # Logging-related helpers
     @classmethod
