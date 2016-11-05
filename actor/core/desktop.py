@@ -285,7 +285,23 @@ class ActorDesktop(PyQt5.QtWidgets.QWidget):
         super(ActorDesktop, self).__init__()
 
         self.app = app
+        self.startup_wait()
         self.setup_tray()
+
+    def startup_wait(self):
+        """
+        Prolongs the startup sequence until we're sure all system components
+        (such as systray) are ready.
+        """
+
+        timeout = 60
+
+        while timeout > 0:
+            if PyQt5.QtWidgets.QSystemTrayIcon.isSystemTrayAvailable():
+                break
+
+            time.sleep(1)
+            timeout = timeout - 1
 
     def setup_tray(self):
         icon_path = os.path.join(config.STATIC_DIR, 'actor-logo.png')
