@@ -2,6 +2,7 @@
 
 import os
 import sys
+import time
 import importlib
 import imp
 
@@ -11,7 +12,7 @@ import dbus.service
 import dbus.mainloop.glib
 
 from context import Context
-from plugins import Rule
+from plugins import Rule, DBusMixin
 from trackers import Tracker
 from util import Expiration
 
@@ -78,14 +79,20 @@ class ActorDBusProxy(dbus.service.Object):
         return self.actor.context.reporters.get(identifier)
 
 
-class Actor(LoggerMixin):
+class Actor(DBusMixin, LoggerMixin):
+
+    bus_name = 'org.freedesktop.ActorDesktop'
+    object_path = '/Desktop'
 
     def __init__(self):
+        # Start dbus mainloop, must happen before super call
+        # as DBusMixin's __init__ needs this
+        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+        super(Actor, self).__init__()
+
         self.rules = []
         self.trackers = []
-
-        # Start dbus mainloop
-        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
         # Load the plugins
         self.context = Context()
@@ -102,6 +109,29 @@ class Actor(LoggerMixin):
             sys.exit(0)
         else:
             self.log_exception()
+
+    def wait_for_desktop(self):
+        """
+        Waits until desktop process is available (verified by dedicated
+        DBus call). Times out after 60 seconds.
+        """
+
+        timeout = 60
+        self.info('Waiting for desktop process.')
+
+        while timeout > 0:
+            desktop_setup_finished = (self.interface and
+                                      self.interface.SetupFinished())
+
+            if desktop_setup_finished:
+                self.info('Desktop process setup finished.')
+                break
+            else:
+                timeout = timeout - 1
+                time.sleep(1)
+
+        if timeout <= 0:
+            self.info('Waiting for desktop process timed out.')
 
     # Initialization related methods
 
@@ -257,5 +287,9 @@ class Actor(LoggerMixin):
         # Start the main loop
         loop = gobject.MainLoop()
         gobject.timeout_add(2000, self.check_everything)
+
+        # Wait for the desktop process
+        self.wait_for_desktop()
+
         self.info("AcTor started.")
         loop.run()
