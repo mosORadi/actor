@@ -279,11 +279,18 @@ class ActorDesktopDBusProxy(dbus.service.Object):
     def ShowMessage(self, title, message, duration):
         self.desktop.show_message(title, message, duration)
 
+
+    @dbus.service.method("org.freedesktop.ActorDesktop", out_signature='b')
+    def SetupFinished(self):
+        return self.desktop.setup_finished
+
+
 class ActorDesktop(PyQt5.QtWidgets.QWidget):
 
     def __init__(self, app):
         super(ActorDesktop, self).__init__()
 
+        self.setup_finished = False
         self.app = app
         self.startup_wait()
         self.setup_tray()
@@ -373,6 +380,8 @@ def main():
 
     desktop = ActorDesktop(app)
     ActorDesktopDBusProxy(desktop)
+    desktop.setup_finished = True
+
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
