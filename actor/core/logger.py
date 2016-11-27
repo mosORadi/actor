@@ -13,7 +13,10 @@ def plugin_formatter(template, *args):
     """
 
     def is_plugin(obj):
-        base_classes = obj.__class__.__bases__
+        if obj.__class__ == type:
+            return False
+
+        base_classes = obj.__class__.mro()
         base_names = [cls.__name__ for cls in base_classes]
         return 'Plugin' in base_names
 
@@ -45,12 +48,16 @@ class LoggerMixin(object):
     # Logging-related helpers
     @classmethod
     def log(cls, log_func, message, *args):
+        # Format message using our custom formatter
+        message = plugin_formatter(message, *args)
+
+        # Indent stuff if debug mode is used
         if cls.logger.isEnabledFor(logging.DEBUG):
             indent = '  ' * cls.indentation
         else:
             indent = ''
 
-        log_func("{0}{1}: {2}".format(indent, cls.__name__, message), *args)
+        log_func("{0}{1}: {2}".format(indent, cls.__name__, message))
 
     # Interface to be leveraged by the class
     @classmethod
