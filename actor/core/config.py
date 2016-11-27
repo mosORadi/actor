@@ -21,24 +21,19 @@ class Config(object):
 
     __metaclass__ = CustomOverride
 
-    def __getattr__(self, name):
-        if name.isupper() and self._custom is not None:
-            default_value = getattr(self, name, None)
-            value = getattr(self._custom, name, default_value)
-            return value
-
-        return super(Config, self).__getattr__(name)
-
-    @classmethod
-    def _load_customizations(cls):
+    def _load_customizations(self):
         # Create the config directory, if it does not exist
-        if not os.path.exists(cls.CONFIG_DIR):
-            os.mkdir(cls.CONFIG_DIR)
+        if not os.path.exists(self.CONFIG_DIR):
+            os.mkdir(self.CONFIG_DIR)
 
-        path = os.path.join(cls.CONFIG_DIR, 'config.py')
+        path = os.path.join(self.CONFIG_DIR, 'config.py')
         if os.path.exists(path):
             module_id = os.path.basename(path.rstrip('.py'))
             imp.load_source(module_id, path)
+
+        for name, value in self._custom.__dict__.items():
+            if name.isupper():
+                setattr(self, name, value)
 
     # User's home directory. There should be no need to override this.
     HOME_DIR = os.path.expanduser('~')
