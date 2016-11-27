@@ -268,14 +268,14 @@ class Actor(DBusMixin, LoggerMixin):
 
             # Make sure current activity is respected
             if self.context.activity is not None:
-                with self.stage('Evaluating activity: {0}'.format(activity.__class__.__name__)):
+                with self.stage('Evaluating activity: {0}'.format(self.context.activity.__class__.__name__)):
                     try:
                         self.context.activity.run()
                     except Exception as e:
                         self.handle_exception()
 
             if self.context.flow is not None:
-                with self.stage('Evaluating flow: {0}'.format(flow.__class__.__name__)):
+                with self.stage('Evaluating flow: {0}'.format(self.context.flow.__class__.__name__)):
                     try:
                         self.context.flow.run()
                     except Exception as e:
