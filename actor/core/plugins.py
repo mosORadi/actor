@@ -83,10 +83,10 @@ class Worker(Plugin):
         Wraps the run method. Currently only adds the debug logging.
         """
 
-        self.debug('Running with args={0}, kwargs={1}'.format(args, kwargs))
+        self.debug('Running with args={0}, kwargs={1}', args, kwargs)
 
         result = self.run(*args, **kwargs)
-        self.debug('Result: {0}'.format(result))
+        self.debug('Result: {0}', result)
 
         return result
 

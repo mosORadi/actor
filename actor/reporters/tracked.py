@@ -20,4 +20,4 @@ class TrackReporter(Reporter):
                     if line.startswith(key):
                         return line.split(':')[1].strip()
         except IOError as exc:
-            self.debug("Encountered an IOError, %s" % str(exc))
+            self.debug("Encountered an IOError, {0}", str(exc))

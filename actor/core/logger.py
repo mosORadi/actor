@@ -39,11 +39,11 @@ class LoggerMixin(object):
     @contextlib.contextmanager
     def stage(self, description, *args):
         label = plugin_formatter(description, *args)
-        self.debug("Entering: {0}".format(label))
+        self.debug("Entering: {0}", label)
         LoggerMixin.indentation += 1
         yield
         LoggerMixin.indentation -= 1
-        self.debug("Leaving: {0}".format(label))
+        self.debug("Leaving: {0}", label)
 
     # Logging-related helpers
     @classmethod
@@ -85,9 +85,9 @@ class LoggerMixin(object):
         if exception_type is None:
             exception_type, value, trace = sys.exc_info()
 
-        cls.error("Exception: %s", exception_type)
-        cls.error("Value: %s", value)
-        cls.error("Traceback (on a new line):\n%s",
+        cls.error("Exception: {}", exception_type)
+        cls.error("Value: {}", value)
+        cls.error("Traceback:\n{}",
                    "\n".join(traceback.format_tb(trace)))
 
     # Logging setup related methods

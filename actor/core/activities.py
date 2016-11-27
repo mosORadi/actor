@@ -22,7 +22,7 @@ class ActivityTimetrackingMixin(object):
     def setup(self):
         # Setup the current activity in the Hamster Time Tracker
         if self.timetracking_id:
-            self.info("Setting the activity: %s" % self.timetracking_id)
+            self.info("Setting the activity: {0}", self.timetracking_id)
             self.timetracking.start(self.timetracking_id)
 
 

@@ -150,8 +150,8 @@ class Actor(DBusMixin, LoggerMixin):
                     self.debug(module_id + " loaded successfully.")
                 except Exception as exc:
                     self.warning(
-                        "The {0} {1} module could not be loaded: {2} "
-                        .format(module, category.__name__[:-1], str(exc)))
+                        "The {0} {1} module could not be loaded: {2} ",
+                        module, category.__name__[:-1], str(exc))
                     self.log_exception()
 
     def load_plugins(self):
@@ -171,7 +171,7 @@ class Actor(DBusMixin, LoggerMixin):
             except Exception as exc:
                 self.warning(
                     "Rule file {0} cannot be loaded, following error was "
-                    "encountered: {1}".format(path, str(exc))
+                    "encountered: {1}", path, str(exc)
                 )
                 self.log_exception()
 
@@ -227,7 +227,7 @@ class Actor(DBusMixin, LoggerMixin):
         if self.context.flow is None:
             self.context.set_flow(identifier, time_limit)
         else:
-            self.info("Cannot set flow %s. flow already in progress" % identifier)
+            self.info("Cannot set flow {0}. flow already in progress", identifier)
 
     def unset_flow(self):
         """
@@ -238,7 +238,7 @@ class Actor(DBusMixin, LoggerMixin):
 
     def pause(self, minutes):
         self.pause_expired = Expiration(minutes)
-        self.info('Pausing Actor for {0} minutes.'.format(minutes))
+        self.info('Pausing Actor for {0} minutes.', minutes)
 
     # Runtime related methods
 
@@ -253,14 +253,14 @@ class Actor(DBusMixin, LoggerMixin):
             self.context.clear_cache()
 
             for rule in self.rules:
-                with self.stage('Evaluating rule: {0}'.format(rule.__class__.__name__)):
+                with self.stage('Evaluating rule: {0}', rule):
                     try:
                         rule.run()
                     except Exception as e:
                         self.handle_exception()
 
             for tracker in self.trackers:
-                with self.stage('Evaluating tracker: {0}'.format(tracker.__class__.__name__)):
+                with self.stage('Evaluating tracker: {0}', tracker):
                     try:
                         tracker.run()
                     except Exception as e:
@@ -268,14 +268,14 @@ class Actor(DBusMixin, LoggerMixin):
 
             # Make sure current activity is respected
             if self.context.activity is not None:
-                with self.stage('Evaluating activity: {0}'.format(self.context.activity.__class__.__name__)):
+                with self.stage('Evaluating activity: {0}', self.context.activity):
                     try:
                         self.context.activity.run()
                     except Exception as e:
                         self.handle_exception()
 
             if self.context.flow is not None:
-                with self.stage('Evaluating flow: {0}'.format(self.context.flow.__class__.__name__)):
+                with self.stage('Evaluating flow: {0}', self.context.flow):
                     try:
                         self.context.flow.run()
                     except Exception as e:
