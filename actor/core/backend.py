@@ -4,7 +4,9 @@ Provides long term storage backend implementations.
 
 from pony import orm
 
-db = orm.Database('sqlite', '/home/tbabej/.actor/data.db', create_db=True)
+from config import config
+
+db = orm.Database('sqlite', config.DB_FILE, create_db=True)
 
 class Record(db.Entity):
     name = orm.Required(str)

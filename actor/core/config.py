@@ -41,6 +41,9 @@ class Config(object):
     # The location of the configuration directory
     CONFIG_DIR = os.path.join(HOME_DIR, '.actor')
 
+    # The location of the database
+    DB_FILE = os.path.join(CONFIG_DIR, 'actor.db')
+
     # The source directory
     SOURCE_DIR = os.path.dirname(os.path.dirname(__file__))
 
