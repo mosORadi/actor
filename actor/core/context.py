@@ -3,6 +3,7 @@ from plugins import (Reporter, Checker, Fixer, NoSuchPlugin,
 from logger import LoggerMixin
 from activities import Activity, Flow
 from timetracking import Timetracking
+from backend import Backend
 
 
 class Context(LoggerMixin):
@@ -33,6 +34,7 @@ class Context(LoggerMixin):
         self.flows = PluginFactory(Flow, self)
 
         self.timetracking = Timetracking(self)
+        self.backend = Backend()
 
     def clear_cache(self):
         """
