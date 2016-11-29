@@ -2,6 +2,7 @@
 Provides long term storage backend implementations.
 """
 
+import datetime
 from pony import orm
 
 from config import config
@@ -22,8 +23,22 @@ class Backend(object):
     Backend implementation using local sqlite database.
     """
 
+    @staticmethod
+    def convert_key(key):
+        """
+        Generates key out of given object.
+        """
+
+        if isinstance(key, datetime.datetime):
+            return key.strftime("%Y-%m-%d %H:%M:%S")
+        elif isinstance(key, datetime.date):
+            return key.strftime("%Y-%m-%d")
+
+        return key
+
     @orm.db_session
     def put(self, name, key, value, meta=False):
+        key = self.convert_key(key)
         record = self.get(name, key, value_only=False)
 
         if not record:
@@ -33,6 +48,7 @@ class Backend(object):
 
     @orm.db_session
     def get(self, name, key, value_only=True):
+        key = self.convert_key(key)
         matching = Record.select(lambda r: r.name == name and r.key == key)
 
         if value_only:
