@@ -10,14 +10,4 @@ class TrackReporter(Reporter):
 
     def run(self, ident, key):
         # pylint: disable=arguments-differ
-
-        filepath = os.path.join(config.CONFIG_DIR, ident + ".act")
-        try:
-            with open(filepath, 'r') as fil:
-                data = fil.readlines()
-
-                for line in data:
-                    if line.startswith(key):
-                        return line.split(':')[1].strip()
-        except IOError as exc:
-            self.debug("Encountered an IOError, {0}", str(exc))
+        return self.context.backend.get(ident, key)
