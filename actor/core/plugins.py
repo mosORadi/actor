@@ -133,6 +133,10 @@ class ContextProxyMixin(object):
     def timetracking(self):
         return self.context.timetracking
 
+    @property
+    def backend(self):
+        return self.context.backend
+
     def report(self, identifier, *args, **kwargs):
         return self.context.reporters.get(identifier, args, kwargs,
                                           rule_name=self.identifier)

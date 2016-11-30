@@ -1,1 +1,2 @@
 recursive-include actor/static *
+include fastentrypoints.py
