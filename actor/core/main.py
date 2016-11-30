@@ -77,7 +77,6 @@ class ActorDBusProxy(dbus.service.Object):
 
     @dbus.service.method("org.freedesktop.Actor", in_signature='s')
     def Report(self, identifier):
-        self.actor.context.backend.put('meta_report', datetime.datetime.now(), identifier)
         return self.actor.context.reporters.get(identifier)
 
 
