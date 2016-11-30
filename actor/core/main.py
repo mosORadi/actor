@@ -2,6 +2,7 @@
 
 import os
 import sys
+import datetime
 import time
 import importlib
 import imp
@@ -76,6 +77,7 @@ class ActorDBusProxy(dbus.service.Object):
 
     @dbus.service.method("org.freedesktop.Actor", in_signature='s')
     def Report(self, identifier):
+        self.actor.context.backend.put('meta_report', datetime.datetime.now(), identifier)
         return self.actor.context.reporters.get(identifier)
 
 
@@ -238,6 +240,7 @@ class Actor(DBusMixin, LoggerMixin):
 
     def pause(self, minutes):
         self.pause_expired = Expiration(minutes)
+        self.context.backend.put('meta_pause', datetime.datetime.now(), minutes)
         self.info('Pausing Actor for {0} minutes.', minutes)
 
     # Runtime related methods
