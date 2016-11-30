@@ -12,7 +12,7 @@ db = orm.Database('sqlite', config.DB_FILE, create_db=True)
 class Record(db.Entity):
     name = orm.Required(str)
     key = orm.Required(str)
-    value = orm.Required(orm.Json)
+    value = orm.Optional(orm.Json)
     orm.composite_key(name, key)
 
 db.generate_mapping(create_tables=True)
