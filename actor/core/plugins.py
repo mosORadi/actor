@@ -1,6 +1,7 @@
 import dbus
 import time
 import threading
+import util
 
 import logger
 
@@ -30,6 +31,45 @@ class PluginMount(type):
             # instances, so let's skip them
             if 'noplugin' not in cls.__dict__:
                 cls.plugins.append(cls)
+
+class PersistentStateMixin(object):
+    """
+    Provides store/restoration capabilities for plugins that want to keep state
+    across restarts.
+    """
+
+    def store(self):
+        """
+        Encodes attributes marked as persistent by self.persistent_attrs
+        attribute.
+        """
+
+        data_dict = {
+            attribute: getattr(self, attribute)
+            for attribute in self.persistent_attrs
+        }
+
+        return util.json_encode(data_dict)
+
+    @staticmethod
+    def restore(data, mount, context):
+        """
+        Given a stored class persistent dict, reinitializes the class and
+        restores the stored attributes to it.
+        """
+
+        data_dict = util.json_decode(data)
+
+        # Reinitialize the class
+        identifier = data_dict.pop('identifier')
+        cls = mount.get_plugin(identifier)
+        instance = cls(context, setup=False)
+
+        # Restore the attributes
+        for attribute, value in data_dict.items():
+            setattr(instance, attribute, value)
+
+        return instance
 
 
 class Plugin(logger.LoggerMixin):
