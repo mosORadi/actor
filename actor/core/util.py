@@ -1,7 +1,66 @@
 import datetime
 import dbus
+import json
+import pickle
 import subprocess
 import sys
+
+
+def json_encode(data):
+    """
+    A simple wrapper around json.dumps that uses JsonPicklerEncoder.
+    """
+    return json.dumps(data, cls=JsonPicklerEncoder)
+
+
+def json_decode(data):
+    """
+    A simple wrapper around json.loads that uses JsonPicklerDecoder.
+    """
+    return json.loads(data, object_hook=JsonPicklerDecoder.unpickle)
+
+
+class JsonPicklerEncoder(json.JSONEncoder):
+    """
+    Extends regular JSONEncoder with ability to serialize arbitrary objects
+    using pickle.dumps.
+    """
+
+    def default(self, obj):
+        """
+        Keep a mark before the pickled object so we can tell it's been
+        pickled.
+        """
+        data = "pickled|" + pickle.dumps(obj)
+        return data
+
+
+class JsonPicklerDecoder(json.JSONDecoder):
+    """
+    Provides a unpickle method that deserializes JSON strings that might
+    contain some attributes marked as pickled objects.
+    """
+
+    @classmethod
+    def unpickle(cls, obj):
+        """
+        Recursively unpickle already deserialized JSON structure.
+        """
+
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                obj[key] = cls.unpickle(value)
+            return obj
+
+        elif isinstance(obj, list):
+            obj = list([cls.unpickle(v) for v in obj])
+            return obj
+
+        elif isinstance(obj, str) or isinstance(obj, unicode):
+            if obj.startswith('pickled|'):
+                return pickle.loads(obj[8:])
+
+        return obj
 
 
 class Periodic(object):
