@@ -12,6 +12,7 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 
+from activities import Activity, Flow
 from context import Context
 from plugins import Rule, DBusMixin
 from trackers import Tracker
@@ -101,6 +102,7 @@ class Actor(DBusMixin, LoggerMixin):
         self.load_plugins()
 
         self.pause_expired = Expiration()
+        self.period = 0
 
     def handle_exception(self):
         exception_type, value, trace = sys.exc_info()
@@ -283,15 +285,64 @@ class Actor(DBusMixin, LoggerMixin):
                     except Exception as e:
                         self.handle_exception()
 
+    def store_everything(self):
+        """
+        Stores current state into the backend.
+        """
+        backend = self.context.backend
+
+        backend.put('meta_store', 'current_flow',
+            self.context.flow.store()
+            if self.context.flow else None
+        )
+        backend.put('meta_store', 'current_activity',
+            self.context.activity.store()
+            if self.context.activity else None
+        )
+
+    def restore_everyting(self):
+        """
+        Restores state from persistent data in the backend.
+        """
+        backend = self.context.backend
+
+        flow_data = backend.get('meta_store', 'current_flow')
+        if flow_data is not None:
+            self.context.flow = Flow.restore(flow_data,
+                    mount=self.context.flows,
+                    context=self.context
+            )
+
+        activity_data = backend.get('meta_store', 'current_activity')
+        if activity_data is not None:
+            self.context.activity = Activity.restore(activity_data,
+                    mount=self.context.activities,
+                    context=self.context
+            )
+
+
+    def periodic_executor(self):
+        """
+        Executes Actor's periodic methods in proper intervals which are given
+        as multiplies of the base interval.
+        """
+        self.period += 1
+        self.check_everything()
+
+        if self.period % 4 == 0:
+            self.store_everything()
+
         return True
 
     def main(self):
         # Start the main loop
         loop = gobject.MainLoop()
-        gobject.timeout_add(2000, self.check_everything)
+        gobject.timeout_add(2000, self.periodic_executor)
 
         # Wait for the desktop process
         self.wait_for_desktop()
 
+        self.info("Restoring status from the database")
+        self.restore_everyting()
         self.info("AcTor started.")
         loop.run()
