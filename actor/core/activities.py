@@ -4,7 +4,7 @@ import psutil
 import subprocess
 
 import util
-from plugins import Plugin, PluginMount, ContextProxyMixin
+from plugins import Plugin, PluginMount, ContextProxyMixin, PersistentStateMixin
 from config import config
 
 # Define own our commands so that we don't kill ourselves under
@@ -269,11 +269,14 @@ class Activity(ActivityTimetrackingMixin,
                ActivityTrackingOverlayMixin,
                ActivityProgressNotificationMixin,
                ActivityBackgroundMusicMixin,
+               PersistentStateMixin,
                ContextProxyMixin, Plugin):
 
     __metaclass__ = PluginMount
 
-    def __init__(self, context, time_limit=None):
+    persistent_attrs = ('identifier', 'expired')
+
+    def __init__(self, context, time_limit=None, setup=True):
         super(Activity, self).__init__(context)
 
         self.expired = util.Expiration(time_limit) if time_limit else None
@@ -330,7 +333,7 @@ class ActivitySpec(object):
                 self.identifier, self.duration, self.shrinking, self.max_shrinking, self.skipped)
 
 
-class Flow(ContextProxyMixin, Plugin):
+class Flow(PersistentStateMixin, ContextProxyMixin, Plugin):
     """
     Defines a list of activities with their duration.
     """
@@ -339,15 +342,19 @@ class Flow(ContextProxyMixin, Plugin):
 
     activities = tuple()
 
-    def __init__(self, context, time_limit=None):
+    persistent_attrs = ('identifier', 'current_activity_index', 'plan')
+
+    def __init__(self, context, time_limit=None, setup=True):
         super(Flow, self).__init__(context)
 
         self.current_activity_index = None
         self.time_limit = time_limit
-        self.plan = self.generate_plan()
 
-        self.info("====== generated plan =======")
-        self.info('\n'.join(map(repr, self.plan)))
+        if setup:
+            self.plan = self.generate_plan()
+
+            self.info("====== generated plan =======")
+            self.info('\n'.join(map(repr, self.plan)))
 
     def generate_plan(self):
         planned_activities = [ActivitySpec(*a) for a in self.activities]
